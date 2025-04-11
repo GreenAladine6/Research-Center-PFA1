@@ -1,4 +1,471 @@
 {
-    "orders": [],
-    "menu": []
+  "GRADE": {
+    "columns": [
+      {
+        "name": "ID_GRADE",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "NAME_GRA",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "LABORATORY": {
+    "columns": [
+      {
+        "name": "LABO_ID",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "NAME_LAB",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "DIRECTOR",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "PARTNER": {
+    "columns": [
+      {
+        "name": "PARTNER_ID",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "NAME_PAR",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "EMAIL_PAR",
+        "type": "TEXT",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "PHONE",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "ADRESS",
+        "type": "TEXT",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "CREATION_DATE",
+        "type": "DATE",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "WEBSITE",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "NOTES",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "AMOUNT",
+        "type": "REAL",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "TYPE_EV": {
+    "columns": [
+      {
+        "name": "TYPE_EV",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "DESCRIPTION",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "PROJECT": {
+    "columns": [
+      {
+        "name": "ID_PROJECT",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "ID_MANGER",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "NAME_PROJECT",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "BUDGET",
+        "type": "REAL",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "DATE_BEGIN",
+        "type": "DATE",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "DATE__END",
+        "type": "DATE",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "STATUS",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "RESEARCHER": {
+    "columns": [
+      {
+        "name": "ID_RESEARCHER",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "ID_GRADE",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "FULL_NAME",
+        "type": "TEXT",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "NUM_TEL",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "EMAIL_REAS",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "EQUIPEMENT": {
+    "columns": [
+      {
+        "name": "ID_EQUIPEMENT",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "NAME_EQ",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "PURCHASE_DATE",
+        "type": "DATE",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "LABORATOIRE_ID",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "EVENT": {
+    "columns": [
+      {
+        "name": "ID_EVEN",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "TYPE_EV",
+        "type": "TEXT",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "DATE_BEG",
+        "type": "DATE",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "HEURE",
+        "type": "DATETIME",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "LIEU",
+        "type": "TEXT",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "DATEND",
+        "type": "DATE",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "ID_ORGANISOR",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "PUBLICATION": {
+    "columns": [
+      {
+        "name": "ID_PUB",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "ID_RESEARCHER",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "TITLE",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "DATE_PUB",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "LIEN",
+        "type": "TEXT",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "ASSIGN": {
+    "columns": [
+      {
+        "name": "LABO_ID",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "ID_PROJECT",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      }
+    ],
+    "foreign_keys": []
+  },
+  "COLLABORATE": {
+    "columns": [
+      {
+        "name": "PARTNER_ID",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "ID_PROJECT",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      }
+    ],
+    "foreign_keys": []
+  },
+  "PARTICIPATE": {
+    "columns": [
+      {
+        "name": "ID_EVEN",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "ID_RESEARCHER",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      }
+    ],
+    "foreign_keys": []
+  },
+  "RESERVE": {
+    "columns": [
+      {
+        "name": "ID_PROJECT",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "ID_EQUIPEMENT",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "ID_RESERVATION",
+        "type": "INTEGER",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "START_DATE",
+        "type": "DATE",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      },
+      {
+        "name": "END_DATE",
+        "type": "DATE",
+        "not_null": false,
+        "default_value": null,
+        "primary_key": false
+      }
+    ],
+    "foreign_keys": []
+  },
+  "WORK": {
+    "columns": [
+      {
+        "name": "ID_PROJECT",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      },
+      {
+        "name": "ID_RESEARCHER",
+        "type": "INTEGER",
+        "not_null": true,
+        "default_value": null,
+        "primary_key": true
+      }
+    ],
+    "foreign_keys": []
+  }
 }

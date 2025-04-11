@@ -13,7 +13,7 @@ class JSONDatabase:
             with open(self.filename, "r", encoding="utf-8") as file:
                 self.data = json.load(file)
         except (FileNotFoundError, json.JSONDecodeError):
-            self.data = {"orders": [], "menu": []}  # Default structure
+            self.data = {"PROJECT": [], "EVENTS": []}  # Default structure
             self._save_data()
 
     def _save_data(self):
@@ -68,8 +68,8 @@ if __name__ == "__main__":
     
 
     # Get a specific item
-    center = db.get_item("projects", 1)
-    print("center item:", center)
+    research = db.get_item("", 1)
+    print("research item:", research)
     
 
 

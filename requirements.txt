@@ -7,4 +7,10 @@ bcrypt==4.3.0
 python-dotenv==1.0.1
 gunicorn==23.0.0
 requests==2.32.3
+Flask-Migrate==4.0.0
+Flask-RESTful==1.0.0
+Flask-RESTPlus==0.13.0
+Flask-RESTX==1.0.0
+Flask-Admin==1.6.0
+Flask-SQLAlchemy==3.1.0
 flask_jwt_extended

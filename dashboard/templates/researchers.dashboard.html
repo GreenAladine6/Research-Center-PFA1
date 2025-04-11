@@ -1,0 +1,61 @@
+{% extends "dashboard.html" %}
+{% block head %} 
+    <title>Dashboard | Researchers</title>
+    <link href="{{ url_for('dashboard.static', filename='css/style1.css') }}" rel="stylesheet" />
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            width: 70%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+        .spinner {
+            display: none;
+            width: 25px;
+            height: 25px;
+            border: 4px solid rgba(0,0,0,0.1);
+            border-left-color: #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .project-card {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .project-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-0 { background-color: #ffcccc; color: #cc0000; } /* Not Started */
+        .status-1 { background-color: #fff2cc; color: #e69138; } /* In Progress */
+        .status-2 { background-color: #d9ead3; color: #38761d; } /* Completed */
+    </style>
+{% endblock %}

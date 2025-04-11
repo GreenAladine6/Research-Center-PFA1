@@ -7,6 +7,7 @@ from utils.config import Config
 from dotenv import load_dotenv
 import os
 
+
 load_dotenv()
 
 dashboard_bp = Blueprint('dashboard', __name__, template_folder='templates', static_folder='static')
@@ -16,14 +17,14 @@ TOKEN = os.getenv('TOKEN')
 @dashboard_bp.route('/')
 def index():
     if request.cookies.get(TOKEN):
-        return redirect('/dashboard/menu')
+        return redirect('/dashboard/projects')
     return redirect('/dashboard/login')
 
 @dashboard_bp.route('/login', methods=['GET'])
 def login():
     print(request.cookies.get(TOKEN))
     if request.cookies.get(TOKEN):
-        return redirect('/dashboard/menu')
+        return redirect('/dashboard/projects')
     return render_template('login.html')
 
 @dashboard_bp.get('/projects')
@@ -68,12 +69,13 @@ def researchers():
         return render_template('researchers.dashboard.html', title='Researchers', researchers=researchers)
     return redirect('/dashboard/login')
 
-@dashboard_bp.get('/equipments')
+
+@dashboard_bp.get('/equipements')
 def equipments():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
-        equipments = db.select_query("equipments")
-        return render_template('equipments.dashboard.html', title='Equipments', equipments=equipments)
+        equipments = db.select_query("equipements")
+        return render_template('equipements.dashboard.html', title='Equipments', equipments=equipments)
     return redirect('/dashboard/login')
 
 @dashboard_bp.get("/logout")

@@ -2,6 +2,8 @@ from flask import Flask, redirect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dashboard.dashboard import dashboard_bp
+from api.project import projects_bp
+from api.auth import auth_bp
 from utils.config import Config
 from Database.db import JSONDatabase
 
@@ -34,10 +36,11 @@ app.config.from_object(Config)
 
 # Register blueprints
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
-app.register_blueprint(project_api, url_prefix='/api/project')
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
-app.register_blueprint(events_api, url_prefix='/api/events')
-app.register_blueprint(pubs_api, url_prefix='/api/pubs')
+app.register_blueprint(projects_bp, url_prefix='/api/project')
+
+
+
 
 
 @app.template_filter('datetimeformat')
