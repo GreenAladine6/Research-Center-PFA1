@@ -13,7 +13,12 @@ class JSONDatabase:
             with open(self.filename, "r", encoding="utf-8") as file:
                 self.data = json.load(file)
         except (FileNotFoundError, json.JSONDecodeError):
-            self.data = {"PROJECT": [], "EVENTS": []}  # Default structure
+            self.data = {
+                "PROJECT": [], "EVENT": [], "RESEARCHER": [], "WORK": [], 
+                "RESERVE": [], "PARTICIPATE": [], "COLLABORATE": [], 
+                "ASSIGN": [], "PUBLICATION": [], "EQUIPEMENT": [], 
+                "PARTNER": [], "LABORATORY": [], "GRADE": [], "TYPE_EV": []
+            }
             self._save_data()
 
     def _save_data(self):
