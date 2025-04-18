@@ -8,7 +8,7 @@ python-dotenv==1.0.1
 gunicorn==23.0.0
 requests==2.32.3
 Flask-Migrate==4.0.0
-Flask-RESTful==1.0.0
+Flask-RESTful
 Flask-RESTPlus==0.13.0
 Flask-RESTX==1.0.0
 Flask-Admin==1.6.0

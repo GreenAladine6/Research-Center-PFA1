@@ -73,8 +73,8 @@ if __name__ == "__main__":
     
 
     # Get a specific item
-    research = db.get_item("", 1)
-    print("research item:", research)
+    projects = db.get_item("project", 1)
+    print("research item:", projects)
     
 
 

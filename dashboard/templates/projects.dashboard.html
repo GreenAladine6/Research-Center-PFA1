@@ -358,7 +358,7 @@
     <!-- Projects Grid -->
     {% if project %}
     <div class="projects-grid">
-        {% for p in project %}
+        {% for p in projects %}
         <div class="project-card" data-project-id="{{ p.id_project }}">
             <div class="project-image-container">
                 <img src="{{ url_for('static', filename=p.image) if p.image else url_for('static', filename='images/default-project.jpg') }}" 

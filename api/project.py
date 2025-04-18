@@ -43,22 +43,7 @@ def validate_project_data(data, require_all_fields=True):
 
 @projects_bp.post('/')
 def create_project():
-    """Create a new project.
-    
-    Request Form:
-    - image: Project image file
-    - name_project: Project name (required)
-    - id_manager: Manager ID (required)
-    - state: Project state (required)
-    - budget: Project budget (required)
-    - date_begin: Start date (YYYY-MM-DD) (required)
-    - date_end: End date (YYYY-MM-DD) (required)
-    
-    Returns:
-    - 201: Project created successfully
-    - 400: Invalid request data
-    - 500: Server error
-    """
+    """Create a new project."""
     db = JSONDatabase()
     
     # Check for required fields
@@ -109,12 +94,7 @@ def create_project():
 
 @projects_bp.get('/')
 def get_projects():
-    """Get all projects.
-    
-    Returns:
-    - 200: List of all projects
-    - 500: Server error
-    """
+    projects = []
     try:
         db = JSONDatabase()
         projects = db.select_query("PROJECT")
@@ -125,27 +105,12 @@ def get_projects():
 
 @projects_bp.get('/<int:project_id>')
 def get_project(project_id):
-    """Get a specific project by ID.
-    
-    Args:
-        project_id: The ID of the project to retrieve
-    
-    Returns:
-    - 200: Project data
-    - 404: Project not found
-    - 500: Server error
-    """
-    try:
-        db = JSONDatabase()
-        project = db.select_query("PROJECT", {"ID_PROJECT": project_id})
-        
-        if not project:
-            return jsonify({"error": "Project not found"}), 404
-            
-        return jsonify(project[0]), 200
-    except Exception as e:
-        current_app.logger.error(f"Error fetching project {project_id}: {str(e)}")
-        return jsonify({"error": "Failed to fetch project"}), 500
+    items = []
+    db = JSONDatabase()
+    items = db.select_query("PROJECT", {"ID_PROJECT": project_id})
+    if project_id:
+        return db.get_item("PROJECT", int(project_id))
+    return items
 
 @projects_bp.put('/<int:project_id>')
 def update_project(project_id):
