@@ -11,20 +11,20 @@ File: style.css
 :root {
   --bs-body-bg: #fff;
   --bs-body-bg-rgb: 255, 255, 255;
-  --pc-heading-color: #343a40;
+  --pc-heading-color: #d0d3d6;
   --pc-active-background: #e9ecef;
   --pc-sidebar-background: #fff;
-  --pc-sidebar-color: #141414;
+  --pc-sidebar-color: #c6c4c4;
   --pc-sidebar-color-rgb: 20, 20, 20;
   --pc-sidebar-active-color: var(--bs-primary);
   --pc-sidebar-shadow: 1px 0 0 0px rgb(240 240 240);
-  --pc-sidebar-caption-color: #495057;
+  --pc-sidebar-caption-color: #d0d3d6;
   --pc-header-background: #fff;
   --pc-header-color: #141414;
   --pc-header-shadow: 0 1px 0 0px rgb(240 240 240);
   --pc-card-box-shadow: none;
   --pc-header-submenu-background: #ffffff;
-  --pc-header-submenu-color: #6c757d;
+  --pc-header-submenu-color: #d0d3d6;
 }
 
 [data-pc-theme_contrast=true] {
@@ -3955,7 +3955,7 @@ textarea.form-control-lg {
 .navbar {
   --bs-navbar-padding-x: 0;
   --bs-navbar-padding-y: calc(1rem / 2);
-  --bs-navbar-color: rgba(0, 0, 0, 0.55);
+  --bs-navbar-color: #c6c4c4;
   --bs-navbar-hover-color: rgba(0, 0, 0, 0.7);
   --bs-navbar-disabled-color: rgba(0, 0, 0, 0.3);
   --bs-navbar-active-color: rgba(0, 0, 0, 0.9);
@@ -22215,11 +22215,13 @@ select.form-control[data-multiselectsplitter-firstselect-selector], select.form-
   --primary-dark: #3D6D6F;
   --primary-text: #FFFFFF;
   
-  /* Secondary Color - Warm Gray */
-  --secondary-color: #6D7B8D;
-  --secondary-light: #9FA6B2;
-  --secondary-dark: #4A5568;
-  --secondary-text: #FFFFFF;
+ /* Secondary Color - Warm White */
+--secondary-color: #FDF6E3;       /* Base warm white (soft ivory) */
+--secondary-light: #FFFDF7;       /* Lighter warm white */
+--secondary-dark: #E6DDC6;        /* Slightly darker warm white */
+--secondary-text: #333333;        /* Dark gray for readability */
+
+
   
   /* Background Colors */
   --bg-light: #F5F7FA;
