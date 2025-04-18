@@ -221,12 +221,11 @@ def delete_project(project_id):
     db = JSONDatabase()
     
     try:
-        # Check if project exists
-        projects = db.select_query("PROJECT", {"ID_PROJECT": project_id})
-        if not projects:
-            return jsonify({"error": "Project not found"}), 404
+        project = db.get_item("PROJECT", project_id)
         
-        project = projects[0]
+        # Check if project exists
+        if not project:
+            return jsonify({"error": "Project not found"}), 404
         
         # Delete associated image if it exists
         if "IMAGE" in project:

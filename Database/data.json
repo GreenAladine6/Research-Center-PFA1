@@ -1,33 +1,6 @@
 {
     "PROJECT": [
         {
-            "NAME_PROJECT": "Genome Sequencing Initiative",
-            "BUDGET": 1500000.0,
-            "DATE_BEGIN": "2023-01-15",
-            "DATE__END": "2025-12-31",
-            "STATE": "Active",
-            "ID_MANGER": 6,
-            "id": 1
-        },
-        {
-            "NAME_PROJECT": "Quantum Algorithm Development",
-            "BUDGET": 850000.0,
-            "DATE_BEGIN": "2023-03-01",
-            "DATE__END": "2024-06-30",
-            "STATE": "Active",
-            "ID_MANGER": 2,
-            "id": 2
-        },
-        {
-            "NAME_PROJECT": "Climate Change Impact Study",
-            "BUDGET": 1200000.0,
-            "DATE_BEGIN": "2022-09-01",
-            "DATE__END": "2023-08-31",
-            "STATE": "Completed",
-            "ID_MANGER": 1,
-            "id": 3
-        },
-        {
             "NAME_PROJECT": "Neural Network Optimization",
             "BUDGET": 950000.0,
             "DATE_BEGIN": "2023-05-10",
