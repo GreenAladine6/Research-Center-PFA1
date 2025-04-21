@@ -138,6 +138,54 @@ $(function() {
               $(document).on("scroll", onScroll);
           });
       });
+
+      // Add more staff cards on button click
+      $('#staff-more-btn').click(function() {
+          var container = $('#staff-container');
+          var currentCount = container.children().length;
+          for (var i = 1; i <= 3; i++) {
+              var newIndex = currentCount + i;
+              var newCard = `
+              <div class="col-lg-4 mb-4">
+                <div class="card mb-3" style="max-width: 100%;">
+                  <div class="row g-0">
+                    <div class="col-md-4">
+                      <img src="assets/images/staff-placeholder.png" class="img-fluid rounded-start" alt="Staff Member" />
+                    </div>
+                    <div class="col-md-8">
+                      <div class="card-body">
+                        <h5 class="card-title">Staff Member Name ${newIndex}</h5>
+                        <p class="card-text"><small class="text-muted">Position / Role</small></p>
+                        <p class="card-text">Brief description or bio of the staff member goes here. Highlight their expertise and contributions.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>`;
+              container.append(newCard);
+          }
+      });
+
+      // Add more project cards on button click
+      $('#project-more-btn').click(function() {
+          var container = $('#project-container');
+          var currentCount = container.children().length;
+          for (var i = 1; i <= 3; i++) {
+              var newIndex = currentCount + i;
+              var newCard = `
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card" style="width: 18rem;">
+                  <img src="assets/images/project-placeholder.png" class="card-img-top" alt="Project Image" />
+                  <div class="card-body">
+                    <h5 class="card-title">Project Title ${newIndex}</h5>
+                    <p class="card-text">This is a brief description of the project. It highlights key features and objectives.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                  </div>
+                </div>
+              </div>`;
+              container.append(newCard);
+          }
+      });
   });
 
   function onScroll(event){
@@ -173,6 +221,15 @@ $(function() {
         $(".naccs ul").height(listItemHeight + "px");
       }
   });
+	
+
+	// Menu Dropdown Toggle
+  if($('.menu-trigger').length){
+    $(".menu-trigger").on('click', function() { 
+      $(this).toggleClass('active');
+      $('.header-area .nav').slideToggle(200);
+    });
+  }
 
 
 	// Page loading animation
@@ -195,7 +252,48 @@ $(function() {
     });
   }
 
+  // Animate statistics numbers from 0 to final value
+  function animateNumbers() {
+    $('.statistic-item h3').each(function() {
+      var $this = $(this);
+      var countTo = parseInt($this.text());
+      $({ countNum: 0 }).animate({ countNum: countTo }, {
+        duration: 2000,
+        easing: 'swing',
+        step: function() {
+          $this.text(Math.floor(this.countNum));
+        },
+        complete: function() {
+          $this.text(this.countNum);
+        }
+      });
+    });
+  }
 
+  // Trigger animation when statistics section is visible
+  function isScrolledIntoView(elem) {
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
 
+    var elemTop = $(elem).offset().top;
+    var elemBottom = elemTop + $(elem).height();
+
+    return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+  }
+
+  $(window).on('scroll', function() {
+    if (isScrolledIntoView('#statistics')) {
+      animateNumbers();
+      // Remove scroll event after animation to prevent repeated animation
+      $(window).off('scroll');
+    }
+  });
+
+  // Also trigger animation if statistics section is already visible on page load
+  $(document).ready(function() {
+    if (isScrolledIntoView('#statistics')) {
+      animateNumbers();
+    }
+  });
 
 })(window.jQuery);
