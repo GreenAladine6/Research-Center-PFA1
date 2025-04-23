@@ -173,6 +173,16 @@
             "NAME_LAB": "Environmental Science Lab",
             "DIRECTOR": "Dr. James Wilson",
             "id": 5
+        },
+        {
+            "NAME_LAB": "BioTech Lab",
+            "DIRECTOR": "Dr. Smith",
+            "id": 6
+        },
+        {
+            "NAME_LAB": "BioTech Lab",
+            "DIRECTOR": "Dr. Smith",
+            "id": 7
         }
     ],
     "GRADE": [
@@ -219,6 +229,14 @@
         {
             "NAME_GRA": "Principal Investigator",
             "id": 11
+        },
+        {
+            "NAME_GRA": "Senior Researcher",
+            "id": 12
+        },
+        {
+            "NAME_GRA": "Senior Researcher",
+            "id": 13
         }
     ],
     "TYPE_EV": [

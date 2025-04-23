@@ -1,602 +1,581 @@
+<script type="text/javascript">
+  var gk_isXlsx = false;
+  var gk_xlsxFileLookup = {};
+  var gk_fileData = {};
+  function filledCell(cell) {
+    return cell !== '' && cell != null;
+  }
+  function loadFileData(filename) {
+  if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+      try {
+          var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+          var firstSheetName = workbook.SheetNames[0];
+          var worksheet = workbook.Sheets[firstSheetName];
 
+          // Convert sheet to JSON to filter blank rows
+          var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+          // Filter out blank rows (rows where all cells are empty, null, or undefined)
+          var filteredData = jsonData.filter(row => row.some(filledCell));
+
+          // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+          var headerRowIndex = filteredData.findIndex((row, index) =>
+            row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+          );
+          // Fallback
+          if (headerRowIndex === -1 || headerRowIndex > 25) {
+            headerRowIndex = 0;
+          }
+
+          // Convert filtered JSON back to CSV
+          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+          csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+          return csv;
+      } catch (e) {
+          console.error(e);
+          return "";
+      }
+  }
+  return gk_fileData[filename] || "";
+  }
+</script>
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
 
-    <title>Chain App Dev - App Landing Page HTML5 Template</title>
+<title>Chain App Dev - App Landing Page HTML5 Template</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-    <link rel="stylesheet" href="assets/css/templatemo-chain-app-dev.css">
-    <link rel="stylesheet" href="assets/css/animated.css">
-    <link rel="stylesheet" href="assets/css/owl.css">
-  </head>
+<!-- Additional CSS Files -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/css/templatemo-chain-app-dev.css">
+<link rel="stylesheet" href="assets/css/animated.css">
+<link rel="stylesheet" href="assets/css/owl.css">
+
+<!-- Custom CSS for Statistics Hover Effect -->
+<style>
+.statistic-card:hover {
+  transform: scale(1.05);
+}
+</style>
+</head>
 
 <body>
 
-  <!-- ***** Preloader Start ***** -->
-  <div id="js-preloader" class="js-preloader">
-    <div class="preloader-inner">
-      <span class="dot"></span>
-      <div class="dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
+<!-- ***** Preloader Start ***** -->
+<div id="js-preloader" class="js-preloader">
+<div class="preloader-inner">
+<span class="dot"></span>
+<div class="dots">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+</div>
+</div>
+<!-- ***** Preloader End ***** -->
+
+<!-- ***** Header Area Start ***** -->
+<header class="header-area header-sticky wow slideInDown" data-wow-duration="0.75s" data-wow-delay="0s">
+<div class="container">
+<div class="row">
+  <div class="col-12">
+    <nav class="main-nav">
+      <!-- ***** Logo Start ***** -->
+      <a href="index.html" class="logo">
+        <img src="assets/images/logo.png" alt="Chain App Dev">
+      </a>
+      <!-- ***** Logo End ***** -->
+      <!-- ***** Menu Start ***** -->
+      <ul class="nav">
+        <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+        <li class="scroll-to-section"><a href="events.html">Events</a></li>
+        <li class="scroll-to-section"><a href="project.html">Project</a></li>
+        <li class="scroll-to-section"><a href="staff.html">Staff</a></li>
+        <li class="scroll-to-section"><a href="pubs.html">Publications</a></li>
+        <li class="scroll-to-section"><a href="about-us.html">About Us</a></li>
+        <li class="scroll-to-section"><a href="#contact" class="contact-btn">Contact</a></li>
+      </ul>        
+      <a class='menu-trigger'>
+          <span>Menu</span>
+      </a>
+      <!-- ***** Menu End ***** -->
+    </nav>
   </div>
-  <!-- ***** Preloader End ***** -->
+</div>
+</div>
+</header>
+<!-- ***** Header Area End ***** -->
 
-  <!-- ***** Header Area Start ***** -->
-  <header class="header-area header-sticky wow slideInDown" data-wow-duration="0.75s" data-wow-delay="0s">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <nav class="main-nav">
-            <!-- ***** Logo Start ***** -->
-            <a href="index.html" class="logo">
-              <img src="assets/images/logo.png" alt="Chain App Dev">
-            </a>
-            <!-- ***** Logo End ***** -->
-            <!-- ***** Menu Start ***** -->
-            <ul class="nav">
-              <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
-              <li class="scroll-to-section"><a href="events.html">Events</a></li>
-              <li class="scroll-to-section"><a href="project.html">Project</a></li>
-              <li class="scroll-to-section"><a href="staff.html">Staff</a></li>
-              <li class="scroll-to-section"><a href="pubs.html">Publications</a></li>
-              <li class="scroll-to-section"><a href="about-us.html">About Us</a></li>
-              <li class="scroll-to-section"><a href="contact_us.html">Contact</a></li>
-            </ul>        
-            <a class='menu-trigger'>
-                <span>Menu</span>
-            </a>
-            <!-- ***** Menu End ***** -->
-          </nav>
-        </div>
-      </div>
-    </div>
-  </header>
-  <!-- ***** Header Area End ***** -->
-
-        </div>
-      </div>
-    </div>
-  </header>
-  <!-- ***** Header Area End ***** -->
-  
-  <div id="modal" class="popupContainer" style="display:none;">
-    <div class="popupHeader">
-        <span class="header_title">Login</span>
-        <span class="modal_close"><i class="fa fa-times"></i></span>
-    </div>
-
-    <section class="popupBody">
-        <!-- Social Login -->
-        <div class="social_login">
-            <div class="">
-                <a href="#" class="social_box fb">
-                    <span class="icon"><i class="fab fa-facebook"></i></span>
-                    <span class="icon_title">Connect with Facebook</span>
-
-                </a>
-
-                <a href="#" class="social_box google">
-                    <span class="icon"><i class="fab fa-google-plus"></i></span>
-                    <span class="icon_title">Connect with Google</span>
-                </a>
-            </div>
-
-            <div class="centeredText">
-                <span>Or use your Email address</span>
-            </div>
-
-            <div class="action_btns">
-                <div class="one_half"><a href="#" id="login_form" class="btn">Login</a></div>
-                <div class="one_half last"><a href="#" id="register_form" class="btn">Sign up</a></div>
-            </div>
-        </div>
-
-        <!-- Username & Password Login form -->
-        <div class="user_login">
-            <form>
-                <label>Email / Username</label>
-                <input type="text" />
-                <br />
-
-                <label>Password</label>
-                <input type="password" />
-                <br />
-
-                <div class="checkbox">
-                    <input id="remember" type="checkbox" />
-                    <label for="remember">Remember me on this computer</label>
-                </div>
-
-                <div class="action_btns">
-                    <div class="one_half"><a href="#" class="btn back_btn"><i class="fa fa-angle-double-left"></i> Back</a></div>
-                    <div class="one_half last"><a href="#" class="btn btn_red">Login</a></div>
-                </div>
-            </form>
-
-            <a href="#" class="forgot_password">Forgot password?</a>
-        </div>
-
-        <!-- Register Form -->
-        <div class="user_register">
-            <form>
-                <label>Full Name</label>
-                <input type="text" />
-                <br />
-
-                <label>Email Address</label>
-                <input type="email" />
-                <br />
-
-                <label>Password</label>
-                <input type="password" />
-                <br />
-
-                <div class="checkbox">
-                    <input id="send_updates" type="checkbox" />
-                    <label for="send_updates">Send me occasional email updates</label>
-                </div>
-
-                <div class="action_btns">
-                    <div class="one_half"><a href="#" class="btn back_btn"><i class="fa fa-angle-double-left"></i> Back</a></div>
-                    <div class="one_half last"><a href="#" class="btn btn_red">Register</a></div>
-                </div>
-            </form>
-        </div>
-    </section>
+<div id="modal" class="popupContainer" style="display:none;">
+<div class="popupHeader">
+  <span class="header_title">Login</span>
+  <span class="modal_close"><i class="fa fa-times"></i></span>
 </div>
 
-  <div class="main-banner wow fadeIn" id="top" data-wow-duration="1s" data-wow-delay="0.5s">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="row">
-            <div class="col-lg-6 align-self-center">
-              <div class="left-content show-up header-text wow fadeInLeft" data-wow-duration="1s" data-wow-delay="1s">
-                <div class="row">
-                  <div class="col-lg-12">
-                    <h2>WELCOME TO OUR WEBSITE</h2>
-                    <p>ENSIT RESAERCH CENTER</p>
-                  </div>
-                  <div class="col-lg-12">
-                    <div class="white-button first-button scroll-to-section">
-                      <a href="#contact">Free Quote <i class="fab fa-apple"></i></a>
-                    </div>
-                    <div class="white-button scroll-to-section">
-                      <a href="#contact">Free Quote <i class="fab fa-google-play"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="right-image wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.5s">
-                <img src="assets/images/slider-dec.png" alt="">
-              </div>
-            </div>
-          </div>
-        </div>
+<section class="popupBody">
+  <!-- Social Login -->
+  <div class="social_login">
+      <div class="">
+          <a href="#" class="social_box fb">
+              <span class="icon"><i class="fab fa-facebook"></i></span>
+              <span class="icon_title">Connect with Facebook</span>
+          </a>
+
+          <a href="#" class="social_box google">
+              <span class="icon"><i class="fab fa-google-plus"></i></span>
+              <span class="icon_title">Connect with Google</span>
+          </a>
       </div>
-    </div>
+
+      <div class="centeredText">
+          <span>Or use your Email address</span>
+      </div>
+
+      <div class="action_btns">
+          <div class="one_half"><a href="#" id="login_form" class="btn">Login</a></div>
+          <div class="one_half last"><a href="#" id="register_form" class="btn">Sign up</a></div>
+      </div>
   </div>
 
+  <!-- Username & Password Login form -->
+  <div class="user_login">
+      <form>
+          <label>Email / Username</label>
+          <input type="text" />
+          <br />
 
+          <label>Password</label>
+          <input type="password" />
+          <br />
 
-  <div id="about" class="about-us section">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-6 align-self-center">
-          <div class="section-heading">
-            <h4>About <em>What We Do</em> &amp; Who We Are</h4>
-            <img src="assets/images/heading-line-dec.png" alt="">
-            <p>At [Your Research Center Name], we are committed to advancing knowledge, driving innovation, and creating impactful solutions through rigorous research and interdisciplinary collaboration. Founded in [Year], our center serves as a hub for scientists, scholars, and industry experts dedicated to addressing some of the most pressing challenges of our time.
-
-              Our mission is to foster cutting-edge research that contributes to both academic excellence and real-world impact. We work across diverse domains including [e.g., environmental science, artificial intelligence, biomedical research, social sciences], with the aim of generating insights that inform policy, improve lives, and shape the future.
-              
-              We support a dynamic research environment through state-of-the-art facilities, international partnerships, and a strong commitment to mentoring the next generation of researchers. At the heart of our work lies a belief in curiosity-driven exploration, ethical research practices, and collaboration without boundaries.
-              
-              Whether you are a researcher, student, policymaker, or industry partner, we invite you to engage with us and be part of a community dedicated to discovery and innovation.</p>
+          <div class="checkbox">
+              <input id="remember" type="checkbox" />
+              <label for="remember">Remember me on this computer</label>
           </div>
-          <div class="row">
-            <div class="col-lg-6">
-              <div class="box-item">
-                <h4><a href="#">Researcher Management</a></h4>
-                
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="box-item">
-                <h4><a href="#">Project Tracking &amp; Help</a></h4>
-               
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="box-item">
-                <h4><a href="#">Publication Management</a></h4>
-              
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="box-item">
-                <h4><a href="#">Funding and Budget Monitoring</a></h4>
-                
-              </div>
-            </div>
-            <div class="col-lg-12">
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eismod tempor idunte ut labore et dolore adipiscing  magna.</p>
-              <div class="gradient-button">
-                <a href="#">Start 14-Day Free Trial</a>
-              </div>
-              <span>*No Credit Card Required</span>
-            </div>
+
+          <div class="action_btns">
+              <div class="one_half"><a href="#" class="btn back_btn"><i class="fa fa-angle-double-left"></i> Back</a></div>
+              <div class="one_half last"><a href="#" class="btn btn_red">Login</a></div>
           </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="right-image">
-            <img src="assets/images/about-right-dec.png" alt="">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="clients" class="the-clients">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 offset-lg-2">
-          <div class="section-heading">
-            <h4>Check What <em>The Clients Say</em> About Our App Dev</h4>
-            <img src="assets/images/heading-line-dec.png" alt="">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eismod tempor incididunt ut labore et dolore magna.</p>
-          </div>
-        </div>
-        <div class="col-lg-12">
-          <div class="naccs">
-            <div class="grid">
-              <div class="row">
-                <div class="col-lg-7 align-self-center">
-                  <div class="menu">
-                    <div class="first-thumb active">
-                      <div class="thumb">
-                        <div class="row">
-                          <div class="col-lg-4 col-sm-4 col-12">
-                            <h4>David Martino Co</h4>
-                            <span class="date">30 November 2021</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 d-none d-sm-block">
-                            <span class="category">Financial Apps</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 col-12">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <span class="rating">4.8</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="thumb">
-                        <div class="row">
-                          <div class="col-lg-4 col-sm-4 col-12">
-                            <h4>Jake Harris Nyo</h4>
-                            <span class="date">29 November 2021</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 d-none d-sm-block">
-                            <span class="category">Digital Business</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 col-12">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <span class="rating">4.5</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="thumb">
-                        <div class="row">
-                          <div class="col-lg-4 col-sm-4 col-12">
-                            <h4>May Catherina</h4>
-                            <span class="date">27 November 2021</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 d-none d-sm-block">
-                            <span class="category">Business &amp; Economics</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 col-12">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <span class="rating">4.7</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="thumb">
-                        <div class="row">
-                          <div class="col-lg-4 col-sm-4 col-12">
-                            <h4>Random User</h4>
-                            <span class="date">24 November 2021</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 d-none d-sm-block">
-                            <span class="category">New App Ecosystem</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 col-12">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <span class="rating">3.9</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="last-thumb">
-                      <div class="thumb">
-                        <div class="row">
-                          <div class="col-lg-4 col-sm-4 col-12">
-                            <h4>Mark Amber Do</h4>
-                            <span class="date">21 November 2021</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 d-none d-sm-block">
-                            <span class="category">Web Development</span>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 col-12">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <span class="rating">4.3</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> 
-                <div class="col-lg-5">
-                  <ul class="nacc">
-                    <li class="active">
-                      <div>
-                        <div class="thumb">
-                          <div class="row">
-                            <div class="col-lg-12">
-                              <div class="client-content">
-                                <img src="assets/images/quote.png" alt="">
-                                <p>“Lorem ipsum dolor sit amet, consectetur adpiscing elit, sed do eismod tempor idunte ut labore et dolore magna aliqua darwin kengan
-                                  lorem ipsum dolor sit amet, consectetur picing elit massive big blasta.”</p>
-                              </div>
-                              <div class="down-content">
-                                <img src="assets/images/client-image.jpg" alt="">
-                                <div class="right-content">
-                                  <h4>David Martino</h4>
-                                  <span>CEO of David Company</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <div>
-                        <div class="thumb">
-                          <div class="row">
-                            <div class="col-lg-12">
-                              <div class="client-content">
-                                <img src="assets/images/quote.png" alt="">
-                                <p>“CTO, Lorem ipsum dolor sit amet, consectetur adpiscing elit, sed do eismod tempor idunte ut labore et dolore magna aliqua darwin kengan
-                                  lorem ipsum dolor sit amet, consectetur picing elit massive big blasta.”</p>
-                              </div>
-                              <div class="down-content">
-                                <img src="assets/images/client-image.jpg" alt="">
-                                <div class="right-content">
-                                  <h4>Jake H. Nyo</h4>
-                                  <span>CTO of Digital Company</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <div>
-                        <div class="thumb">
-                          <div class="row">
-                            <div class="col-lg-12">
-                              <div class="client-content">
-                                <img src="assets/images/quote.png" alt="">
-                                <p>“May, Lorem ipsum dolor sit amet, consectetur adpiscing elit, sed do eismod tempor idunte ut labore et dolore magna aliqua darwin kengan
-                                  lorem ipsum dolor sit amet, consectetur picing elit massive big blasta.”</p>
-                              </div>
-                              <div class="down-content">
-                                <img src="assets/images/client-image.jpg" alt="">
-                                <div class="right-content">
-                                  <h4>May C.</h4>
-                                  <span>Founder of Catherina Co.</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <div>
-                        <div class="thumb">
-                          <div class="row">
-                            <div class="col-lg-12">
-                              <div class="client-content">
-                                <img src="assets/images/quote.png" alt="">
-                                <p>“Lorem ipsum dolor sit amet, consectetur adpiscing elit, sed do eismod tempor idunte ut labore et dolore magna aliqua darwin kengan
-                                  lorem ipsum dolor sit amet, consectetur picing elit massive big blasta.”</p>
-                              </div>
-                              <div class="down-content">
-                                <img src="assets/images/client-image.jpg" alt="">
-                                <div class="right-content">
-                                  <h4>Random Staff</h4>
-                                  <span>Manager, Digital Company</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <div>
-                        <div class="thumb">
-                          <div class="row">
-                            <div class="col-lg-12">
-                              <div class="client-content">
-                                <img src="assets/images/quote.png" alt="">
-                                <p>“Mark, Lorem ipsum dolor sit amet, consectetur adpiscing elit, sed do eismod tempor idunte ut labore et dolore magna aliqua darwin kengan
-                                  lorem ipsum dolor sit amet, consectetur picing elit massive big blasta.”</p>
-                              </div>
-                              <div class="down-content">
-                                <img src="assets/images/client-image.jpg" alt="">
-                                <div class="right-content">
-                                  <h4>Mark Am</h4>
-                                  <span>CTO, Amber Do Company</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>          
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-  <footer>
-    <div class="container">
-
-      <div class="row">
-        <div class="col-lg-3">
-          <div class="footer-widget">
-            <h4>Contact Us</h4>
-            <p>ensit beb alioua tunis</p>
-            <p><a href="#">123456789</a></p>
-            <p><a href="mailto:reaserch center@info@gmail.com">reaserch center@info@gmail.com</a></p>
-          </div>
-        </div>
-        <div class="col-lg-3">
-          <div class="footer-widget">
-            <h4>About Us</h4>
-            <ul>
-              <li><a href="#">Home</a></li>
-              <li><a href="#">Services</a></li>
-              <li><a href="#">About</a></li>
-              <li><a href="#">Testimonials</a></li>
-              <li><a href="#">Pricing</a></li>
-            </ul>
-            <ul>
-              <li><a href="#">About</a></li>
-              <li><a href="#">Testimonials</a></li>
-              <li><a href="#">Pricing</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-lg-3">
-          <div class="footer-widget">
-            <h4>Useful Links</h4>
-            <ul>
-              <li><a href="#">Free Apps</a></li>
-              <li><a href="#">App Engine</a></li>
-              <li><a href="#">Programming</a></li>
-              <li><a href="#">Development</a></li>
-              <li><a href="#">App News</a></li>
-            </ul>
-            <ul>
-              <li><a href="#">App Dev Team</a></li>
-              <li><a href="#">Digital Web</a></li>
-              <li><a href="#">Normal Apps</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-lg-3">
-          <div class="footer-widget">
-            <h4>About Our Company</h4>
-            <div class="logo">
-              <img src="assets/images/white-logo.png" alt="">
-            </div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
-          </div>
-        </div>
-        <div class="col-lg-12">
-          <div class="copyright-text">
-            <p>Copyright © 2023 Your Organization Name. All Rights Reserved.</p>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-
-  <!-- Scripts -->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/js/owl-carousel.js"></script>
-  <script src="assets/js/animation.js"></script>
-  <script src="assets/js/imagesloaded.js"></script>
-  <script src="assets/js/popup.js"></script>
-  <script src="scripts_fixed.js"></script>
-  <script src="assets/js/custom.js"></script>
-  <div id="form-overlay" style="display:none;">
-    <div id="contact-form-container" style="background: white; padding: 20px; border-radius: 8px; width: 80%; max-width: 500px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001;">
-      <form id="contact-form">
-        <h2>Contact Us</h2>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;">
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;">
-
-        <label for="message">Message:</label>
-        <textarea id="message" name="message" rows="5" required style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
-
-        <div class="form-buttons" style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button type="submit" style="padding: 8px 16px; cursor: pointer;">Send</button>
-          <button type="button" id="cancel-contact-btn" style="padding: 8px 16px; cursor: pointer;">Cancel</button>
-        </div>
       </form>
+
+      <a href="#" class="forgot_password">Forgot password?</a>
+  </div>
+
+  <!-- Register Form -->
+  <div class="user_register">
+      <form>
+          <label>Full Name</label>
+          <input type="text" />
+          <br />
+
+          <label>Email Address</label>
+          <input type="email" />
+          <br />
+
+          <label>Password</label>
+          <input type="password" />
+          <br />
+
+          <div class="checkbox">
+              <input id="send_updates" type="checkbox" />
+              <label for="send_updates">Send me occasional email updates</label>
+          </div>
+
+          <div class="action_btns">
+              <div class="one_half"><a href="#" class="btn back_btn"><i class="fa fa-angle-double-left"></i> Back</a></div>
+              <div class="one_half last"><a href="#" class="btn btn_red">Register</a></div>
+          </div>
+      </form>
+  </div>
+</section>
+</div>
+
+<div class="main-banner wow fadeIn" id="top" data-wow-duration="1s" data-wow-delay="0.5s">
+<div class="container">
+<div class="row">
+  <div class="col-lg-12">
+    <div class="row">
+      <div class="col-lg-6 align-self-center">
+        <div class="left-content show-up header-text wow fadeInLeft" data-wow-duration="1s" data-wow-delay="1s">
+          <div class="row">
+            <div class="col-lg-12">
+              <h2>WELCOME TO OUR WEBSITE</h2>
+              <p>ENSIT RESEARCH CENTER</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="right-image wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.5s">
+          <img src="assets/images/slider-dec.png" alt="">
+        </div>
+      </div>
     </div>
   </div>
+</div>
+</div>
+</div>
+
+<div id="about" class="about-us section">
+<div class="container">
+<div class="row">
+  <div class="col-lg-6 align-self-center">
+    <div class="section-heading">
+      <h4>About <em>What We Do</em> & Who We Are</h4>
+      <img src="assets/images/heading-line-dec.png" alt="">
+      <p>At ENSIT Research Center, we are committed to advancing knowledge, driving innovation, and creating impactful solutions through rigorous research and interdisciplinary collaboration. Founded in 2010, our center serves as a hub for scientists, scholars, and industry experts dedicated to addressing some of the most pressing challenges of our time.
+
+        Our mission is to foster cutting-edge research that contributes to both academic excellence and real-world impact. We work across diverse domains including environmental science, artificial intelligence, biomedical research, and social sciences, with the aim of generating insights that inform policy, improve lives, and shape the future.
+        
+        We support a dynamic research environment through state-of-the-art facilities, international partnerships, and a strong commitment to mentoring the next generation of researchers. At the heart of our work lies a belief in curiosity-driven exploration, ethical research practices, and collaboration without boundaries.
+        
+        Whether you are a researcher, student, policymaker, or industry partner, we invite you to engage with us and be part of a community dedicated to discovery and innovation.</p>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="box-item">
+          <h4><a href="#">Researcher Management</a></h4>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="box-item">
+          <h4><a href="#">Project Tracking & Help</a></h4>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="box-item">
+          <h4><a href="#">Publication Management</a></h4>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="box-item">
+          <h4><a href="#">Funding and Budget Monitoring</a></h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="right-image">
+          <img src="assets/images/about-right-dec.png" alt="">
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- Projects Section -->
+<section id="projects" class="section" style="padding: 60px 0; background-color: #ffffff;">
+<div class="container">
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <div class="section-heading">
+      <h4>Our <em>Projects</em></h4>
+      <img src="assets/images/heading-line-dec.png" alt="">
+      <p>Discover our innovative projects driving impact across various domains.</p>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100" style="border: 2px solid #4b8ef1; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div class="card-body text-center">
+        <i class="fas fa-project-diagram fa-3x mb-3" style="color: #4b8ef1;"></i>
+        <h5 class="card-title">AI for Sustainable Energy</h5>
+        <p class="card-text">Developing AI-driven solutions to optimize renewable energy systems and reduce carbon footprints.</p>
+        <a href="project.html" class="btn" style="background-color: #4b8ef1; color: white; padding: 10px 20px; border-radius: 4px;">Learn More</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- Events Section -->
+<section id="events" class="section" style="padding: 60px 0; background-color: #f9f9f9;">
+<div class="container">
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <div class="section-heading">
+      <h4>Upcoming <em>Events</em></h4>
+      <img src="assets/images/heading-line-dec.png" alt="">
+      <p>Join us for engaging events fostering collaboration and innovation.</p>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100" style="border: 2px solid #4b8ef1; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div class="card-body text-center">
+        <i class="fas fa-calendar-alt fa-3x mb-3" style="color: #4b8ef1;"></i>
+        <h5 class="card-title">Annual Research Symposium</h5>
+        <p class="card-text">A platform to showcase groundbreaking research, featuring keynote speeches and workshops.</p>
+        <a href="events.html" class="btn" style="background-color: #4b8ef1; color: white; padding: 10px 20px; border-radius: 4px;">Learn More</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- Staff Section -->
+<section id="staff" class="section" style="padding: 60px 0; background-color: #ffffff;">
+<div class="container">
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <div class="section-heading">
+      <h4>Our <em>Staff</em></h4>
+      <img src="assets/images/heading-line-dec.png" alt="">
+      <p>Meet the dedicated team behind our research excellence.</p>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100" style="border: 2px solid #4b8ef1; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div class="card-body text-center">
+        <i class="fas fa-user-tie fa-3x mb-3" style="color: #4b8ef1;"></i>
+        <h5 class="card-title">Dr. Jane Smith</h5>
+        <p class="card-text">Lead Researcher in AI, with over 20 years of experience in machine learning and data science.</p>
+        <a href="staff.html" class="btn" style="background-color: #4b8ef1; color: white; padding: 10px 20px; border-radius: 4px;">Learn More</a>
+      </div>
+    </div>
+    <div class="three-dots" style="text-align: center; font-size: 24px; color: #4b8ef1; margin-top: 8px;">&#8226; &#8226; &#8226;</div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- Project Statistics Section -->
+<section id="project-statistics" class="section" style="padding: 60px 0; background-color: #f9f9f9;">
+<div class="container">
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <div class="section-heading">
+      <h4>Our <em>Project Achievements</em></h4>
+      <img src="assets/images/heading-line-dec.png" alt="">
+      <p>Highlighting the scale and impact of our research projects.</p>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="statistic-card" style="border: 2px solid #4b8ef1; border-radius: 8px; padding: 30px; background-color: white; text-align: center; transition: transform 0.3s; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <i class="fas fa-project-diagram fa-4x mb-3" style="color: #4b8ef1;"></i>
+      <h3 style="color: #4b8ef1;">30</h3>
+      <h5>Active Projects</h5>
+      <p>Spanning AI, environmental science, and biomedical research, driving innovation across disciplines.</p>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="statistic-card" style="border: 2px solid #4b8ef1; border-radius: 8px; padding: 30px; background-color: white; text-align: center; transition: transform 0.3s; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <i class="fas fa-check-circle fa-4x mb-3" style="color: #4b8ef1;"></i>
+      <h3 style="color: #4b8ef1;">85%</h3>
+      <h5>Success Rate</h5>
+      <p>Our projects exceed industry standards, with 85% meeting objectives on time and within scope.</p>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="statistic-card" style="border: 2px solid #4b8ef1; border-radius: 8px; padding: 30px; background-color: white; text-align: center; transition: transform 0.3s; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <i class="fas fa-dollar-sign fa-4x mb-3" style="color: #4b8ef1;"></i>
+      <h3 style="color: #4b8ef1;">$5M</h3>
+      <h5>Funding Secured</h5>
+      <p>Grants and partnerships fueling cutting-edge research and real-world solutions.</p>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+<footer id="contact">
+<div class="container">
+<div class="row">
+  <div class="col-lg-3">
+    <div class="footer-widget">
+      <h4>Contact Us</h4>
+      <p>ENSIT Beb Alioua, Tunis</p>
+      <p><a href="#">123456789</a></p>
+      <p><a href="/cdn-cgi/l/email-protection#47756274626675646f646269736275476269746e7329756972297369"><span class="__cf_email__" data-cfemail="abd9ced8cecad9c8c3c8cec5dfced9ebcec5d8c2df85d9c5de85dfc5">[email&#160;protected]</span></a></p>
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <div class="footer-widget">
+      <h4>About Us</h4>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Testimonials</a></li>
+        <li><a href="#">Pricing</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <div class="footer-widget">
+      <h4>Useful Links</h4>
+      <ul>
+        <li><a href="#">Research</a></li>
+        <li><a href="#">Projects</a></li>
+        <li><a href="#">Publications</a></li>
+        <li><a href="#">Events</a></li>
+        <li><a href="#">News</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <div class="footer-widget">
+      <h4>About Our Center</h4>
+      <div class="logo">
+        <img src="assets/images/white-logo.png" alt="">
+      </div>
+      <p>ENSIT Research Center is dedicated to advancing knowledge and innovation through interdisciplinary research and collaboration.</p>
+    </div>
+  </div>
+  <div class="col-lg-12">
+    <div class="copyright-text">
+      <p>Copyright © 2023 ENSIT Research Center. All Rights Reserved.</p>
+    </div>
+  </div>
+</div>
+</div>
+</footer>
+
+<!-- Contact Form Overlay -->
+<div id="form-overlay" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+<div id="contact-form-container" style="background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+<span class="modal_close" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 20px;">&times;</span>
+<form id="contact-form">
+  <h2 style="margin-top: 0; color: #4b8ef1; text-align: center;">Contact Us</h2>
+  <div style="margin-bottom: 15px;">
+    <label for="name" style="display: block; margin-bottom: 5px; font-weight: 500;">Name:</label>
+    <input type="text" id="name" name="name" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+  </div>
+
+  <div style="margin-bottom: 15px;">
+    <label for="email" style="display: block; margin-bottom: 5px; font-weight: 500;">Email:</label>
+    <input type="email" id="email" name="email" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+  </div>
+
+  <div style="margin-bottom: 20px;">
+    <label for="message" style="display: block; margin-bottom: 5px; font-weight: 500;">Message:</label>
+    <textarea id="message" name="message" rows="5" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; resize: vertical;"></textarea>
+  </div>
+
+  <div style="display: flex; justify-content: space-between;">
+    <button type="button" id="cancel-contact-btn" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+    <button type="submit" style="padding: 10px 20px; background-color: #4b8ef1; color: white; border: none; border-radius: 4px; cursor: pointer;">Send Message</button>
+  </div>
+</form>
+</div>
+</div>
+
+<!-- Scripts -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/owl-carousel.js"></script>
+<script src="assets/js/animation.js"></script>
+<script src="assets/js/imagesloaded.js"></script>
+<script src="assets/js/popup.js"></script>
+<script src="scripts_fixed.js"></script>
+<script src="assets/js/custom.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const cards = document.querySelectorAll('#staff-carousel .staff-card');
+  const dots = document.querySelectorAll('#staff-dots .dot');
+  let currentIndex = 0;
+  const totalCards = cards.length;
+
+  function updateCarousel() {
+    cards.forEach((card, index) => {
+      card.style.opacity = '0.6';
+      card.style.transform = 'scale(0.8)';
+      card.classList.remove('active');
+      dots[index].classList.remove('active');
+    });
+
+    const centerIndex = currentIndex;
+    const leftIndex = (currentIndex - 1 + totalCards) % totalCards;
+    const rightIndex = (currentIndex + 1) % totalCards;
+
+    cards[leftIndex].style.opacity = '0.6';
+    cards[leftIndex].style.transform = 'scale(0.8)';
+    cards[leftIndex].style.order = 0;
+
+    cards[centerIndex].style.opacity = '1';
+    cards[centerIndex].style.transform = 'scale(1)';
+    cards[centerIndex].classList.add('active');
+    cards[centerIndex].style.order = 1;
+    dots[centerIndex].classList.add('active');
+
+    cards[rightIndex].style.opacity = '0.6';
+    cards[rightIndex].style.transform = 'scale(0.8)';
+    cards[rightIndex].style.order = 2;
+
+    for (let i = 0; i < totalCards; i++) {
+
+<script>
+// Contact Form Handling
+document.addEventListener('DOMContentLoaded', function() {
+const contactFormOverlay = document.getElementById('form-overlay');
+const cancelContactBtn = document.getElementById('cancel-contact-btn');
+const closeBtn = document.querySelector('#contact-form-container .modal_close');
+const contactButtons = document.querySelectorAll('.contact-btn');
+
+// Show contact form when contact button is clicked
+contactButtons.forEach(button => {
+  button.addEventListener('click', function(e) {
+    e.preventDefault();
+    contactFormOverlay.style.display = 'block';
+  });
+});
+
+// Hide contact form
+function hideContactForm() {
+  contactFormOverlay.style.display = 'none';
+}
+
+// Add event listeners for closing the form
+if (cancelContactBtn) {
+  cancelContactBtn.addEventListener('click', hideContactForm);
+}
+
+if (closeBtn) {
+  closeBtn.addEventListener('click', hideContactForm);
+}
+
+// Handle form submission
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+  contactForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Here you would typically send the form data to your server
+    alert('Thank you for your message! We will get back to you soon.');
+    hideContactForm();
+    contactForm.reset();
+  });
+}
+
+// Close form when clicking outside
+contactFormOverlay.addEventListener('click', function(e) {
+  if (e.target === contactFormOverlay) {
+    hideContactForm();
+  }
+});
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c493f0924bfcf',t:'MTc0NTIzMjI2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c605edd01afbc',t:'MTc0NTIzMzIxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

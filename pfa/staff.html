@@ -72,14 +72,17 @@
   <main style="padding-top: 150px;">
     <h1>Our Staff</h1>
     <div class="container mt-4">
-      <div class="mb-3" style="max-width: 300px;">
-        <div class="input-group">
-          <span class="input-group-text" id="search-icon"><i class="fas fa-search"></i></span>
-          <input type="text" id="searchInput" class="form-control" placeholder="Search researcher by name..." aria-label="Search" aria-describedby="search-icon" />
+
+      <div class="mb-3">
+        <label for="researcher-input" class="form-label">Researcher:</label>
+        <div class="input-group" style="max-width: 300px;">
+          <span class="input-group-text"><i class="fas fa-user"></i></span>
+          <input type="text" id="researcher-input" name="researcher" placeholder="Enter researcher name" class="form-control" />
         </div>
       </div>
-      <div class="row" id="staffContainer">
-        <div class="col-lg-4 mb-4 staff-card">
+      <div class="row" id="staff-container">
+        <div class="col-lg-4 mb-4">
+
           <div class="card mb-3" style="max-width: 100%;">
             <div class="row g-0">
               <div class="col-md-4">
@@ -129,7 +132,7 @@
         </div>
       </div>
       <div class="text-center mt-3">
-        <button type="button" class="btn btn-secondary">See More...</button>
+        <button type="button" id="staff-more-btn" class="btn btn-secondary">See More...</button>
       </div>
     </div>
   </main>
