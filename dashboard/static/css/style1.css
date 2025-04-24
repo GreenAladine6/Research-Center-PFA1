@@ -1121,10 +1121,11 @@ header nav a {
     color: white;
 }
 
-.btn-delete {
+.btn-delete , .btn-cancel{
     background-color: #dc3545;
     color: white;
 }
+
 
 .category {
     font-size: 14px;

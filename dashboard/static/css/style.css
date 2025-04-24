@@ -11,20 +11,20 @@ File: style.css
 :root {
   --bs-body-bg: #fff;
   --bs-body-bg-rgb: 255, 255, 255;
-  --pc-heading-color: #d0d3d6;
+  --pc-heading-color: #343a40;
   --pc-active-background: #e9ecef;
   --pc-sidebar-background: #fff;
-  --pc-sidebar-color: #c6c4c4;
+  --pc-sidebar-color: #141414;
   --pc-sidebar-color-rgb: 20, 20, 20;
   --pc-sidebar-active-color: var(--bs-primary);
   --pc-sidebar-shadow: 1px 0 0 0px rgb(240 240 240);
-  --pc-sidebar-caption-color: #d0d3d6;
+  --pc-sidebar-caption-color: #495057;
   --pc-header-background: #fff;
   --pc-header-color: #141414;
   --pc-header-shadow: 0 1px 0 0px rgb(240 240 240);
   --pc-card-box-shadow: none;
   --pc-header-submenu-background: #ffffff;
-  --pc-header-submenu-color: #d0d3d6;
+  --pc-header-submenu-color: #6c757d;
 }
 
 [data-pc-theme_contrast=true] {
@@ -3087,6 +3087,10 @@ textarea.form-control-lg {
 }
 
 .btn-success {
+  margin-right : 20px;
+  border-radius : 5px;
+  margin-right : 20px;
+  border-radius : 5px;
   --bs-btn-color: #ffffff;
   --bs-btn-bg: #52c41a;
   --bs-btn-border-color: #52c41a;
@@ -3955,7 +3959,7 @@ textarea.form-control-lg {
 .navbar {
   --bs-navbar-padding-x: 0;
   --bs-navbar-padding-y: calc(1rem / 2);
-  --bs-navbar-color: #c6c4c4;
+  --bs-navbar-color: rgba(0, 0, 0, 0.55);
   --bs-navbar-hover-color: rgba(0, 0, 0, 0.7);
   --bs-navbar-disabled-color: rgba(0, 0, 0, 0.3);
   --bs-navbar-active-color: rgba(0, 0, 0, 0.9);
@@ -5385,7 +5389,7 @@ textarea.form-control-lg {
   box-shadow: var(--bs-btn-close-focus-shadow);
   opacity: var(--bs-btn-close-focus-opacity);
 }
-.btn-close:disabled, .btn-close.disabled {
+.btn-close:disabled, .btn-close.disabled,.btn-cancel:disabled,.btn-cancel.disabled {
   pointer-events: none;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -15031,9 +15035,7 @@ strong {
 
 .material-icons-two-tone {
   background-color: #212529;
-  -webkit-text-fill-color: transparent;
   vertical-align: text-bottom;
-  -webkit-background-clip: text;
 }
 .material-icons-two-tone.text-white {
   background-color: #fff;
@@ -22209,20 +22211,17 @@ select.form-control[data-multiselectsplitter-firstselect-selector], select.form-
 ==========================  **/
 /* Add this to your style.css or style-preset.css file */
 :root {
-  /* Primary Color - Soft Teal */
-  --primary-color: #5F9EA0;
-  --primary-light: #8FB9BA;
-  --primary-dark: #3D6D6F;
-  --primary-text: #FFFFFF;
-  
- /* Secondary Color - Warm White */
---secondary-color: #FDF6E3;       /* Base warm white (soft ivory) */
---secondary-light: #FFFDF7;       /* Lighter warm white */
---secondary-dark: #E6DDC6;        /* Slightly darker warm white */
---secondary-text: #333333;        /* Dark gray for readability */
+/* Primary Color - Soft Teal */
+--primary-color: #3FA2C0;
+--primary-light: #72C3DC;
+--primary-dark: #2C7D96;
+--primary-text: #FFFFFF;
 
+--secondary-color: #3FA2C0;       /* Un peu plus foncé que #56B4D3 */
+--secondary-light: #72C3DC;       /* Plus doux mais moins clair que #8FD4EB */
+--secondary-dark: #2C7D96;        /* Plus sombre que #3A90AA */
+--secondary-text: #FFFFFF;
 
-  
   /* Background Colors */
   --bg-light: #F5F7FA;
   --bg-dark: #2D3748;
@@ -22320,3 +22319,31 @@ body {
   background-color: var(--secondary-dark);
   color: var(--text-light);
 }
+.btn-cancel {
+  margin-right : 20px;
+  border-radius : 5px;
+  border-color: #ffff;
+  width:100px;
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: #52c41a;
+  --bs-btn-border-color: #52c41a;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #46a716;
+  --bs-btn-hover-border-color: #429d15;
+  --bs-btn-focus-shadow-rgb: 108, 205, 60;
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: #429d15;
+  --bs-btn-active-border-color: #ffff;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-bg: #52c41a;
+  box-sizing: border-box;
+  font-size: 14px;
+  transition: box-shadow 0.3s ease;
+}
+
+.btn-cancel:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  filter: brightness(90%);
+}
+
+

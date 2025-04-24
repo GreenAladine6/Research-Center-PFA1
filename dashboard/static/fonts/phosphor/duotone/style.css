@@ -10,7 +10,7 @@
 
 .ph-duotone {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: "Phosphor-Duotone" !important;
+  font-family: "Phosphor-Duotone" ;
   speak: never;
   font-style: normal;
   font-weight: normal;
