@@ -1,7 +1,9 @@
 {% extends "dashboard.html" %}
+
 {% block head %} 
     <title>Dashboard | Events</title>
     <link href="{{ url_for('dashboard.static', filename='css/style1.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/flatpickr.min.css') }}">
     <style>
         .modal {
             display: none;
@@ -57,5 +59,603 @@
         .status-0 { background-color: #ffcccc; color: #cc0000; } /* Not Started */
         .status-1 { background-color: #fff2cc; color: #e69138; } /* In Progress */
         .status-2 { background-color: #d9ead3; color: #38761d; } /* Completed */
+        .btn-cancel {
+            margin-right: 10px;
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-cancel:hover {
+            background-color: #e0e0e0;
+        }
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .d-flex {
+            display: flex;
+        }
+        .justify-content-between {
+            justify-content: space-between;
+        }
+        .justify-content-end {
+            justify-content: flex-end;
+        }
+        .align-items-center {
+            align-items: center;
+        }
+        .mb-0 {
+            margin-bottom: 0;
+        }
+        .mb-3 {
+            margin-bottom: 15px;
+        }
+        .mb-4 {
+            margin-bottom: 20px;
+        }
+        .mt-2 {
+            margin-top: 10px;
+        }
+        .mt-4 {
+            margin-top: 20px;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+        .col-md-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #e7f3fe;
+            border: 1px solid #b3d7ff;
+            color: #004085;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+        .btn-primary {
+            background-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+        .btn-action {
+            padding: 6px 12px;
+            font-size: 14px;
+            margin-left: 5px;
+        }
     </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Events Management</h1>
+        <button id="openAddModal" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Event
+        </button>
+    </div>
+    
+    <!-- Add Event Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Add New Event</h2>
+                <button id="closeAddModal" class="btn-close" aria-label="Close"></button>
+            </div>
+            
+            <form id="addEventForm" method="POST" action="/events/create" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name_event" class="form-label">Event Name</label>
+                    <input type="text" class="form-control" id="name_event" name="name_event" required>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="id_manager" class="form-label">Manager</label>
+                        <select class="form-control" id="id_manager" name="id_manager" required>
+                            <option value="">Select Manager</option>
+                            {% for researcher in researchers %}
+                                <option value="{{ researcher.id_researcher }}">{{ researcher.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="date_event" class="form-label">Event Date</label>
+                        <input type="text" class="form-control datepicker" id="date_event" name="date_event" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="state" class="form-label">Status</label>
+                    <select class="form-control" id="state" name="state" required>
+                        <option value="0">Not Started</option>
+                        <option value="1">In Progress</option>
+                        <option value="2">Completed</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image" class="form-label">Event Image</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    <small class="text-muted">Recommended size: 800x450px (JPG, PNG, SVG)</small>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="button" id="cancelAddModal" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="addButtonText">Create Event</span>
+                        <div class="spinner" id="addSpinner" role="status" aria-hidden="true"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Event Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Update Event</h2>
+                <button id="closeUpdateModal" class="btn-close" aria-label="Close"></button>
+            </div>
+            
+            <form id="updateEventForm" method="POST" enctype="multipart/form-data">
+                <input type="hidden" id="updateEventId" name="event_id">
+                
+                <div class="form-group">
+                    <label for="updateName" class="form-label">Event Name</label>
+                    <input type="text" class="form-control" id="updateName" name="name_event" required>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="updateManager" class="form-label">Manager</label>
+                        <select class="form-control" id="updateManager" name="id_manager" required>
+                            {% for researcher in researchers %}
+                                <option value="{{ researcher.id_researcher }}">{{ researcher.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="updateDateEvent" class="form-label">Event Date</label>
+                        <input type="text" class="form-control datepicker" id="updateDateEvent" name="date_event" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateState" class="form-label">Status</label>
+                    <select class="form-control" id="updateState" name="state" required>
+                        <option value="0">Not Started</option>
+                        <option value="1">In Progress</option>
+                        <option value="2">Completed</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateImage" class="form-label">Update Image</label>
+                    <input type="file" class="form-control" id="updateImage" name="image" accept="image/*">
+                    <div class="mt-2" id="currentImageContainer">
+                        <small>Current Image:</small>
+                        <img id="currentImagePreview" src="" class="img-thumbnail mt-1" style="max-height: 80px;">
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="button" id="cancelUpdateModal" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <span id="updateButtonText">Update Event</span>
+                        <div class="spinner" id="updateSpinner" role="status" aria-hidden="true"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Events Grid -->
+    {% if events %}
+    <div class="projects-grid">
+        {% for e in events %}
+        <div class="project-card" data-event-id="{{ e.id }}">
+            <div class="project-image-container">
+                <img src="{{ url_for('static', filename=e.image) if e.image else url_for('static', filename='images/default-event.jpg') }}" 
+                     alt="{{ e.name_event }}" class="project-image">
+            </div>
+            <div class="project-details">
+                <h3 class="project-title">{{ e.name_event }}</h3>
+                
+                <div class="project-meta">
+                    <span class="status-badge status-{{ e.state }}">
+                        {% if e.state == 0 %}Not Started
+                        {% elif e.state == 1 %}In Progress
+                        {% else %}Completed
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="project-dates">
+                    <i class="far fa-calendar-alt me-1"></i>
+                    {{ e.date_event.strftime('%b %d, %Y') if e.date_event else 'N/A' }}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="project-manager">
+                        Manager: {{ e.manager.full_name if e.manager else 'N/A' }}
+                    </div>
+                    
+                    <div class="card-actions">
+                        <button class="btn-action btn-update" 
+                            data-event-id="{{ e.id }}"
+                            data-name="{{ e.name_event }}"
+                            data-manager="{{ e.id_manager }}"
+                            data-date-event="{{ e.date_event.strftime('%Y-%m-%d') if e.date_event else '' }}"
+                            data-state="{{ e.state }}"
+                            data-image="{{ url_for('static', filename=e.image) if e.image else '' }}">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </button>
+                        <button class="btn-action btn-delete" data-event-id="{{ e.id }}">
+                            <i class="fas fa-trash me-1"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">
+        <i class="fas fa-info-circle me-2"></i>No events found. Create your first event using the button above.
+    </div>
+    {% endif %}
+</div>
+
+<!-- JavaScript -->
+<script src="{{ url_for('dashboard.static', filename='js/flatpickr.min.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Log initialization
+    console.log('Event management script initialized');
+
+    // Initialize Flatpickr
+    try {
+        flatpickr('.datepicker', {
+            dateFormat: 'Y-m-d',
+            allowInput: true
+        });
+        console.log('Flatpickr initialized');
+    } catch (e) {
+        console.error('Flatpickr initialization failed:', e);
+    }
+
+    // Modal elements
+    const addModal = document.getElementById('addModal');
+    const updateModal = document.getElementById('updateModal');
+    const addForm = document.getElementById('addEventForm');
+    const updateForm = document.getElementById('updateEventForm');
+    const addSpinner = document.getElementById('addSpinner');
+    const updateSpinner = document.getElementById('updateSpinner');
+    const addButtonText = document.getElementById('addButtonText');
+    const updateButtonText = document.getElementById('updateButtonText');
+
+    // Check modal elements
+    if (!addModal || !updateModal || !addForm || !updateForm || !addSpinner || !updateSpinner || !addButtonText || !updateButtonText) {
+        console.error('One or more modal/form elements not found:', {
+            addModal: !!addModal,
+            updateModal: !!updateModal,
+            addForm: !!addForm,
+            updateForm: !!updateForm,
+            addSpinner: !!addSpinner,
+            updateSpinner: !!updateSpinner,
+            addButtonText: !!addButtonText,
+            updateButtonText: !!updateButtonText
+        });
+        return;
+    }
+
+    // Centralized modal toggle function
+    function toggleModal(modal, show) {
+        modal.style.display = show ? 'block' : 'none';
+        document.body.style.overflow = show ? 'hidden' : 'auto';
+        console.log(`Toggled modal ${modal.id} to ${show ? 'visible' : 'hidden'}`);
+    }
+
+    // Event listeners for modal buttons
+    const openAddModal = document.getElementById('openAddModal');
+    const closeAddModal = document.getElementById('closeAddModal');
+    const cancelAddModal = document.getElementById('cancelAddModal');
+    const closeUpdateModal = document.getElementById('closeUpdateModal');
+    const cancelUpdateModal = document.getElementById('cancelUpdateModal');
+
+    if (openAddModal) {
+        openAddModal.addEventListener('click', () => {
+            console.log('Add Event button clicked');
+            toggleModal(addModal, true);
+        });
+    } else {
+        console.error('Open Add Modal button not found');
+    }
+
+    if (closeAddModal) {
+        closeAddModal.addEventListener('click', () => {
+            console.log('Close Add Modal button clicked');
+            toggleModal(addModal, false);
+        });
+    } else {
+        console.error('Close Add Modal button not found');
+    }
+
+    if (cancelAddModal) {
+        cancelAddModal.addEventListener('click', () => {
+            console.log('Cancel Add Modal button clicked');
+            toggleModal(addModal, false);
+        });
+    } else {
+        console.error('Cancel Add Modal button not found');
+    }
+
+    if (closeUpdateModal) {
+        closeUpdateModal.addEventListener('click', () => {
+            console.log('Close Update Modal button clicked');
+            toggleModal(updateModal, false);
+        });
+    } else {
+        console.error('Close Update Modal button not found');
+    }
+
+    if (cancelUpdateModal) {
+        cancelUpdateModal.addEventListener('click', () => {
+            console.log('Cancel Update Modal button clicked');
+            toggleModal(updateModal, false);
+        });
+    } else {
+        console.error('Cancel Update Modal button not found');
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target === addModal) {
+            console.log('Clicked outside Add Modal');
+            toggleModal(addModal, false);
+        }
+        if (e.target === updateModal) {
+            console.log('Clicked outside Update Modal');
+            toggleModal(updateModal, false);
+        }
+    });
+
+    // Image validation
+    function validateImageInput(input) {
+        if (!input) {
+            console.error('Image input element not found');
+            return;
+        }
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
+
+        input.addEventListener('change', function(e) {
+            console.log('Image input changed');
+            const file = e.target.files[0];
+            if (file) {
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Only JPG, PNG, or SVG files are allowed');
+                    e.target.value = '';
+                } else if (file.size > maxSize) {
+                    alert('File size must be less than 5MB');
+                    e.target.value = '';
+                }
+            }
+        });
+    }
+
+    validateImageInput(document.getElementById('image'));
+    validateImageInput(document.getElementById('updateImage'));
+
+    // Form validation
+    function validateForm({ dateEventId }) {
+        const dateEventInput = document.getElementById(dateEventId);
+        if (!dateEventInput) {
+            console.error('Date input element not found:', dateEventId);
+            alert('Form configuration error. Please contact support.');
+            return false;
+        }
+
+        const dateEvent = new Date(dateEventInput.value);
+        if (isNaN(dateEvent)) {
+            alert('Please enter a valid event date');
+            return false;
+        }
+        return true;
+    }
+
+    // Add event form submission
+    addForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        console.log('Add event form submitted');
+
+        if (!validateForm({ dateEventId: 'date_event' })) return;
+
+        const formData = new FormData(this);
+        addButtonText.textContent = 'Creating...';
+        addSpinner.style.display = 'inline-block';
+
+        try {
+            const response = await fetch(addForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || `HTTP error ${response.status}`);
+            if (data.success) {
+                console.log('Event created successfully');
+                toggleModal(addModal, false);
+                window.location.reload();
+            } else {
+                throw new Error(data.error || 'Failed to create event');
+            }
+        } catch (error) {
+            console.error('Error creating event:', error);
+            alert(`Error creating event: ${error.message}`);
+        } finally {
+            addButtonText.textContent = 'Create Event';
+            addSpinner.style.display = 'none';
+        }
+    });
+
+    // Update event button handlers
+    const updateButtons = document.querySelectorAll('.btn-update');
+    if (updateButtons.length === 0) {
+        console.warn('No update buttons found');
+    }
+    updateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            console.log('Update button clicked for event ID:', this.getAttribute('data-event-id'));
+
+            const eventId = this.getAttribute('data-event-id');
+            const currentImage = this.getAttribute('data-image');
+
+            const updateEventId = document.getElementById('updateEventId');
+            const updateName = document.getElementById('updateName');
+            const updateManager = document.getElementById('updateManager');
+            const updateDateEvent = document.getElementById('updateDateEvent');
+            const updateState = document.getElementById('updateState');
+            const currentImagePreview = document.getElementById('currentImagePreview');
+            const currentImageContainer = document.getElementById('currentImageContainer');
+
+            if (!updateEventId || !updateName || !updateManager || !updateDateEvent || !updateState) {
+                console.error('Update form elements not found');
+                alert('Form configuration error. Please contact support.');
+                return;
+            }
+
+            updateEventId.value = eventId;
+            updateName.value = this.getAttribute('data-name');
+            updateManager.value = this.getAttribute('data-manager');
+            updateDateEvent.value = this.getAttribute('data-date-event');
+            updateState.value = this.getAttribute('data-state');
+
+            if (currentImage) {
+                currentImagePreview.src = currentImage;
+                currentImageContainer.style.display = 'block';
+            } else {
+                currentImageContainer.style.display = 'none';
+            }
+
+            toggleModal(updateModal, true);
+        });
+    });
+
+    // Update event form submission
+    updateForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        console.log('Update event form submitted');
+
+        if (!validateForm({ dateEventId: 'updateDateEvent' })) return;
+
+        const formData = new FormData(this);
+        const eventId = document.getElementById('updateEventId').value;
+        updateButtonText.textContent = 'Updating...';
+        updateSpinner.style.display = 'inline-block';
+
+        try {
+            const response = await fetch(`/api/event/${eventId}`, {
+                method: 'PUT',
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || `HTTP error ${response.status}`);
+            if (data.success) {
+                console.log('Event updated successfully');
+                toggleModal(updateModal, false);
+                window.location.reload();
+            } else {
+                throw new Error(data.error || 'Failed to update event');
+            }
+        } catch (error) {
+            console.error('Error updating event:', error);
+            alert(`Error updating event: ${error.message}`);
+        } finally {
+            updateButtonText.textContent = 'Update Event';
+            updateSpinner.style.display = 'none';
+        }
+    });
+
+    // Delete event handler with event delegation
+    const projectsGrid = document.querySelector('.projects-grid');
+    if (projectsGrid) {
+        projectsGrid.addEventListener('click', async function(e) {
+            const deleteButton = e.target.closest('.btn-delete');
+            if (deleteButton) {
+                const eventId = deleteButton.dataset.eventId;
+                console.log('Delete button clicked for event ID:', eventId);
+
+                if (confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+                    try {
+                        const response = await fetch(`/api/event/${eventId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                            }
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.error || `HTTP error ${response.status}`);
+                        if (data.success) {
+                            console.log('Event deleted successfully');
+                            window.location.reload();
+                        } else {
+                            throw new Error(data.error || 'Failed to delete event');
+                        }
+                    } catch (error) {
+                        console.error('Error deleting event:', error);
+                        alert(`Error deleting event: ${error.message}`);
+                    }
+                }
+            }
+        });
+    } else {
+        console.error('Events grid not found');
+    }
+});
+</script>
 {% endblock %}

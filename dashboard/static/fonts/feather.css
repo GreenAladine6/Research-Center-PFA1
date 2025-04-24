@@ -9,8 +9,7 @@
 
 .feather {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'feather' !important;
-  speak: none;
+  font-family: 'feather';
   font-style: normal;
   font-weight: normal;
   font-variant: normal;

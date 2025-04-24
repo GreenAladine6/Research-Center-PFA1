@@ -1,4 +1,4 @@
- /* Modal Styles */
+/* Modal Styles */
  .modal {
     display: none;
     position: fixed;
@@ -190,7 +190,7 @@
     .projects-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .modal-content {
         width: 95%;
         margin: 10% auto;

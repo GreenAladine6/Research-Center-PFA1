@@ -4,6 +4,7 @@
     <title>Dashboard | Projects</title>
     <link href="{{ url_for('dashboard.static', filename='css/style1.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/project-style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/flatpickr.min.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -20,19 +21,19 @@
         <div class="modal-content">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="mb-0">Add New Project</h2>
-                <button id="closeAddModal" class="btn-close"></button>
+                <button id="closeAddModal" class="btn-close" aria-label="Close"></button>
             </div>
             
             <form id="addProjectForm" method="POST" action="{{ url_for('projects.create_project') }}" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="name_project" class="form-label">Project Name</label>
-                    <input type="text" class="form-control" id="name_project" name="name_project" required>
+                    <input type="text" class="form-control" id="name_project" name="name_project" >
                 </div>
                 
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="id_manager" class="form-label">Manager</label>
-                        <select class="form-control" id="id_manager" name="id_manager" required>
+                        <select class="form-control" id="id_manager" name="id_manager" >
                             <option value="">Select Manager</option>
                             {% for researcher in researchers %}
                                 <option value="{{ researcher.id_researcher }}">{{ researcher.full_name }}</option>
@@ -41,24 +42,24 @@
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="budget" class="form-label">Budget ($)</label>
-                        <input type="number" step="0.01" class="form-control" id="budget" name="budget" required>
+                        <input type="number" step="0.01" class="form-control" id="budget" name="budget" >
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="date_begin" class="form-label">Start Date</label>
-                        <input type="text" class="form-control datepicker" id="date_begin" name="date_begin" required>
+                        <input type="text" class="form-control datepicker" id="date_begin" name="date_begin" >
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="date_end" class="form-label">End Date</label>
-                        <input type="text" class="form-control datepicker" id="date_end" name="date_end" required>
+                        <input type="text" class="form-control datepicker" id="date_end" name="date_end" >
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="state" class="form-label">Status</label>
-                    <select class="form-control" id="state" name="state" required>
+                    <select class="form-control" id="state" name="state" >
                         <option value="0">Not Started</option>
                         <option value="1">Canceled</option>
                         <option value="2">In Progress</option>
@@ -73,10 +74,10 @@
                 </div>
                 
                 <div class="d-flex justify-content-end mt-4">
-                    <button type="button" id="cancelAddModal" class="btn-cancel" onclick=closeModal("addModal")>Cancel</button>
+                    <button type="button" id="cancelAddModal" class="btn-cancel">Cancel</button>
                     <button type="submit" class="btn btn-primary">
                         <span id="addButtonText">Create Project</span>
-                        <div class="spinner" id="addSpinner"></div>
+                        <div class="spinner" id="addSpinner" role="status" aria-hidden="true"></div>
                     </button>
                 </div>
             </form>
@@ -88,7 +89,7 @@
         <div class="modal-content">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="mb-0">Update Project</h2>
-                <button id="closeUpdateModal" class="btn-close" onclick=closeModal("updateModal")></button>
+                <button id="closeUpdateModal" class="btn-close" aria-label="Close"></button>
             </div>
             
             <form id="updateProjectForm" method="POST" enctype="multipart/form-data">
@@ -96,13 +97,13 @@
                 
                 <div class="form-group">
                     <label for="updateName" class="form-label">Project Name</label>
-                    <input type="text" class="form-control" id="updateName" name="name_project" required>
+                    <input type="text" class="form-control" id="updateName" name="name_project" >
                 </div>
                 
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="updateManager" class="form-label">Manager</label>
-                        <select class="form-control" id="updateManager" name="id_manager" required>
+                        <select class="form-control" id="updateManager" name="id_manager" >
                             {% for researcher in researchers %}
                                 <option value="{{ researcher.id_researcher }}">{{ researcher.full_name }}</option>
                             {% endfor %}
@@ -110,24 +111,24 @@
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="updateBudget" class="form-label">Budget ($)</label>
-                        <input type="number" step="0.01" class="form-control" id="updateBudget" name="budget" required>
+                        <input type="number" step="0.01" class="form-control" id="updateBudget" name="budget" >
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="updateDateBegin" class="form-label">Start Date</label>
-                        <input type="text" class="form-control datepicker" id="updateDateBegin" name="date_begin" required>
+                        <input type="text" class="form-control datepicker" id="updateDateBegin" name="date_begin" >
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="updateDateEnd" class="form-label">End Date</label>
-                        <input type="text" class="form-control datepicker" id="updateDateEnd" name="date_end" required>
+                        <input type="text" class="form-control datepicker" id="updateDateEnd" name="date_end" >
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="updateState" class="form-label">Status</label>
-                    <select class="form-control" id="updateState" name="state" required>
+                    <select class="form-control" id="updateState" name="state" >
                         <option value="0">Not Started</option>
                         <option value="1">Canceled</option>
                         <option value="2">In Progress</option>
@@ -145,10 +146,10 @@
                 </div>
                 
                 <div class="d-flex justify-content-end mt-4">
-                    <button type="button" id="cancelUpdateModal" class="btn-cancel" onclick=closeModal("updateModal")>Cancel</button>
+                    <button type="button" id="cancelUpdateModal" class="btn-cancel">Cancel</button>
                     <button type="submit" class="btn btn-success">
                         <span id="updateButtonText">Update Project</span>
-                        <div class="spinner" id="updateSpinner"></div>
+                        <div class="spinner" id="updateSpinner" role="status" aria-hidden="true"></div>
                     </button>
                 </div>
             </form>
@@ -156,256 +157,486 @@
     </div>
 
     <!-- Projects Grid -->
-    {% if projects %}
-    <div class="projects-grid">
-        {% for p in projects %}
-        <div class="project-card" data-project-id="{{ p.id }}">
+    <div id="projectsGrid" class="projects-grid">
+        <!-- Project cards will be dynamically inserted here -->
+    </div>
+    <div id="noProjectsMessage" class="alert alert-info mt-4" style="display:none;">
+        <i class="fas fa-info-circle me-2"></i>No projects found. Create your first project using the button above.
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="{{ url_for('dashboard.static', filename='js/flatpickr.min.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Log initialization
+    console.log('Project management script initialized');
+
+    // Initialize Flatpickr
+    try {
+        flatpickr('.datepicker', {
+            dateFormat: 'Y-m-d',
+            allowInput: true
+        });
+        console.log('Flatpickr initialized');
+    } catch (e) {
+        console.error('Flatpickr initialization failed:', e);
+    }
+
+    // Modal elements
+    const addModal = document.getElementById('addModal');
+    const updateModal = document.getElementById('updateModal');
+    const addForm = document.getElementById('addProjectForm');
+    const updateForm = document.getElementById('updateProjectForm');
+    const addSpinner = document.getElementById('addSpinner');
+    const updateSpinner = document.getElementById('updateSpinner');
+    const addButtonText = document.getElementById('addButtonText');
+    const updateButtonText = document.getElementById('updateButtonText');
+
+    // Check modal elements
+    if (!addModal || !updateModal || !addForm || !updateForm || !addSpinner || !updateSpinner || !addButtonText || !updateButtonText) {
+        console.error('One or more modal/form elements not found:', {
+            addModal: !!addModal,
+            updateModal: !!updateModal,
+            addForm: !!addForm,
+            updateForm: !!updateForm,
+            addSpinner: !!addSpinner,
+            updateSpinner: !!updateSpinner,
+            addButtonText: !!addButtonText,
+            updateButtonText: !!updateButtonText
+        });
+        return;
+    }
+
+    // Centralized modal toggle function
+    function toggleModal(modal, show) {
+        modal.style.display = show ? 'block' : 'none';
+        document.body.style.overflow = show ? 'hidden' : 'auto';
+        console.log(`Toggled modal ${modal.id} to ${show ? 'visible' : 'hidden'}`);
+    }
+
+    // Event listeners for modal buttons
+    const openAddModal = document.getElementById('openAddModal');
+    const closeAddModal = document.getElementById('closeAddModal');
+    const cancelAddModal = document.getElementById('cancelAddModal');
+    const closeUpdateModal = document.getElementById('closeUpdateModal');
+    const cancelUpdateModal = document.getElementById('cancelUpdateModal');
+
+    if (openAddModal) {
+        openAddModal.addEventListener('click', () => {
+            console.log('Add Project button clicked');
+            toggleModal(addModal, true);
+        });
+    } else {
+        console.error('Open Add Modal button not found');
+    }
+
+    if (closeAddModal) {
+        closeAddModal.addEventListener('click', () => {
+            console.log('Close Add Modal button clicked');
+            toggleModal(addModal, false);
+        });
+    } else {
+        console.error('Close Add Modal button not found');
+    }
+
+    if (cancelAddModal) {
+        cancelAddModal.addEventListener('click', () => {
+            console.log('Cancel Add Modal button clicked');
+            toggleModal(addModal, false);
+        });
+    } else {
+        console.error('Cancel Add Modal button not found');
+    }
+
+    if (closeUpdateModal) {
+        closeUpdateModal.addEventListener('click', () => {
+            console.log('Close Update Modal button clicked');
+            toggleModal(updateModal, false);
+        });
+    } else {
+        console.error('Close Update Modal button not found');
+    }
+
+    if (cancelUpdateModal) {
+        cancelUpdateModal.addEventListener('click', () => {
+            console.log('Cancel Update Modal button clicked');
+            toggleModal(updateModal, false);
+        });
+    } else {
+        console.error('Cancel Update Modal button not found');
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target === addModal) {
+            console.log('Clicked outside Add Modal');
+            toggleModal(addModal, false);
+        }
+        if (e.target === updateModal) {
+            console.log('Clicked outside Update Modal');
+            toggleModal(updateModal, false);
+        }
+    });
+
+    // Image validation
+    function validateImageInput(input) {
+        if (!input) {
+            console.error('Image input element not found');
+            return;
+        }
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
+
+        input.addEventListener('change', function(e) {
+            console.log('Image input changed');
+            const file = e.target.files[0];
+            if (file) {
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Only JPG, PNG, or SVG files are allowed');
+                    e.target.value = '';
+                } else if (file.size > maxSize) {
+                    alert('File size must be less than 5MB');
+                    e.target.value = '';
+                }
+            }
+        });
+    }
+
+    validateImageInput(document.getElementById('image'));
+    validateImageInput(document.getElementById('updateImage'));
+
+    // Form validation
+    function validateForm({ dateBeginId, dateEndId, budgetId }) {
+        const dateBeginInput = document.getElementById(dateBeginId);
+        const dateEndInput = document.getElementById(dateEndId);
+        const budgetInput = document.getElementById(budgetId);
+
+        if (!dateBeginInput || !dateEndInput || !budgetInput) {
+            console.error('Form input elements not found:', { dateBeginId, dateEndId, budgetId });
+            alert('Form configuration error. Please contact support.');
+            return false;
+        }
+
+        const dateBegin = new Date(dateBeginInput.value);
+        const dateEnd = new Date(dateEndInput.value);
+        const budget = parseFloat(budgetInput.value);
+
+        if (isNaN(dateBegin) || isNaN(dateEnd)) {
+            alert('Please enter valid dates');
+            return false;
+        }
+        if (dateBegin >= dateEnd) {
+            alert('End date must be after start date');
+            return false;
+        }
+        if (isNaN(budget) || budget < 0) {
+            alert('Budget must be a non-negative number');
+            return false;
+        }
+        return true;
+    }
+
+    // Add project form submission
+    addForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        console.log('Add project form submitted');
+
+        if (!validateForm({
+            dateBeginId: 'date_begin',
+            dateEndId: 'date_end',
+            budgetId: 'budget'
+        })) return;
+
+        const formData = new FormData(this);
+        addButtonText.textContent = 'Creating...';
+        addSpinner.style.display = 'inline-block';
+
+        try {
+            const response = await fetch(addForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || `HTTP error ${response.status}`);
+            if (data.success) {
+                console.log('Project created successfully');
+                toggleModal(addModal, false);
+                loadProjects(); // Reload projects after adding
+            } else {
+                throw new Error(data.error || 'Failed to create project');
+            }
+        } catch (error) {
+            console.error('Error creating project:', error);
+            alert(`Error creating project: ${error.message}`);
+        } finally {
+            addButtonText.textContent = 'Create Project';
+            addSpinner.style.display = 'none';
+        }
+    });
+
+    // Update project button handlers
+    const updateButtons = document.querySelectorAll('.btn-update');
+    if (updateButtons.length === 0) {
+        console.warn('No update buttons found');
+    }
+    updateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            console.log('Update button clicked for project ID:', this.getAttribute('data-project-id'));
+
+            const projectId = this.getAttribute('data-project-id');
+            const currentImage = this.getAttribute('data-image');
+
+            const updateProjectId = document.getElementById('updateProjectId');
+            const updateName = document.getElementById('updateName');
+            const updateManager = document.getElementById('updateManager');
+            const updateBudget = document.getElementById('updateBudget');
+            const updateDateBegin = document.getElementById('updateDateBegin');
+            const updateDateEnd = document.getElementById('updateDateEnd');
+            const updateState = document.getElementById('updateState');
+            const currentImagePreview = document.getElementById('currentImagePreview');
+            const currentImageContainer = document.getElementById('currentImageContainer');
+
+            if (!updateProjectId || !updateName || !updateManager || !updateBudget || 
+                !updateDateBegin || !updateDateEnd || !updateState) {
+                console.error('Update form elements not found');
+                alert('Form configuration error. Please contact support.');
+                return;
+            }
+
+            updateProjectId.value = projectId;
+            updateName.value = this.getAttribute('data-name');
+            updateManager.value = this.getAttribute('data-manager');
+            updateBudget.value = this.getAttribute('data-budget');
+            updateDateBegin.value = this.getAttribute('data-date-begin');
+            updateDateEnd.value = this.getAttribute('data-date-end');
+            updateState.value = this.getAttribute('data-state');
+
+            if (currentImage) {
+                currentImagePreview.src = currentImage;
+                currentImageContainer.style.display = 'block';
+            } else {
+                currentImageContainer.style.display = 'none';
+            }
+
+            toggleModal(updateModal, true);
+        });
+    });
+
+    // Update project form submission
+    updateForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        console.log('Update project form submitted');
+
+        if (!validateForm({
+            dateBeginId: 'updateDateBegin',
+            dateEndId: 'updateDateEnd',
+            budgetId: 'updateBudget'
+        })) return;
+
+        const formData = new FormData(this);
+        const projectId = document.getElementById('updateProjectId').value;
+        updateButtonText.textContent = 'Updating...';
+        updateSpinner.style.display = 'inline-block';
+
+        try {
+            const response = await fetch(`/api/project/${projectId}`, {
+                method: 'PUT',
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || `HTTP error ${response.status}`);
+            if (data.success) {
+                console.log('Project updated successfully');
+                toggleModal(updateModal, false);
+                loadProjects(); // Reload projects after updating
+            } else {
+                throw new Error(data.error || 'Failed to create project');
+            }
+        } catch (error) {
+            console.error('Error updating project:', error);
+            alert(`Error updating project: ${error.message}`);
+        } finally {
+            updateButtonText.textContent = 'Update Project';
+            updateSpinner.style.display = 'none';
+        }
+    });
+
+    // Delete project handler with event delegation
+    const projectsGrid = document.getElementById('projectsGrid');
+    if (projectsGrid) {
+        projectsGrid.addEventListener('click', async function(e) {
+            const deleteButton = e.target.closest('.btn-delete');
+            if (deleteButton) {
+                const projectId = deleteButton.dataset.projectId;
+                console.log('Delete button clicked for project ID:', projectId);
+
+                if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                    try {
+                        const response = await fetch(`/api/project/${projectId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                            }
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.error || `HTTP error ${response.status}`);
+                        if (data.success) {
+                            console.log('Project deleted successfully');
+                            loadProjects(); // Reload projects after deleting
+                        } else {
+                            throw new Error(data.error || 'Failed to delete project');
+                        }
+                    } catch (error) {
+                        console.error('Error deleting project:', error);
+                        alert(`Error deleting project: ${error.message}`);
+                    }
+                }
+            }
+        });
+    } else {
+        console.error('Projects grid not found');
+    }
+
+    // Function to create project card HTML
+    function createProjectCard(p) {
+        const stateClasses = ['status-not-started', 'status-canceled', 'status-in-progress', 'status-completed'];
+        const stateTexts = ['Not Started', 'Canceled', 'In Progress', 'Completed'];
+        const stateClass = stateClasses[p.STATUS] || 'status-not-started';
+        const stateText = stateTexts[p.STATUS] || 'Not Started';
+
+        const dateBegin = p.DATE_BEGIN ? new Date(p.DATE_BEGIN).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+        const dateEnd = p.DATE_END ? new Date(p.DATE_END).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+
+        const budget = p.BUDGET ? p.BUDGET.toFixed(2) : '0.00';
+
+        const imageUrl = p.IMAGE ? `{{ url_for('static', filename='') }}${p.IMAGE}` : '{{ url_for('static', filename='images/default-project.jpg') }}';
+
+        return `
+        <div class="project-card" data-project-id="${p.ID_PROJECT}">
             <div class="project-image-container">
-                <img src="{{ url_for('static', filename=p.image) if p.image else url_for('static', filename='images/default-project.jpg') }}" 
-                     alt="{{ p.name_project }}" class="project-image">
+                <img src="${imageUrl}" alt="${p.NAME_PROJECT}" class="project-image">
             </div>
             <div class="project-details">
-                <h3 class="project-title">{{ p.name_project }}</h3>
+                <h3 class="project-title">${p.NAME_PROJECT}</h3>
                 
                 <div class="project-meta">
-                    <span class="status-badge 
-                        {% if p.state == 0 %}status-not-started
-                        {% elif p.state == 1 %}status-canceled
-                        {% elif p.state == 2 %}status-in-progress
-                        {% else %}status-completed
-                        {% endif %}">
-                        {% if p.state == 0 %}Not Started
-                        {% elif p.state == 1 %}Canceled
-                        {% elif p.state == 2 %}In Progress
-                        {% else %}Completed
-                        {% endif %}
+                    <span class="status-badge ${stateClass}">
+                        ${stateText}
                     </span>
                 </div>
                 
                 <div class="project-dates">
                     <i class="far fa-calendar-alt me-1"></i>
-                    {{ p.date_begin.strftime('%b %d, %Y') if p.date_begin else 'N/A' }} - 
-                    {{ p.date_end.strftime('%b %d, %Y') if p.date_end else 'N/A' }}
+                    ${dateBegin} - ${dateEnd}
                 </div>
                 
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="project-budget">
-                        ${{ "{:,.2f}".format(p.budget) if p.budget else '0.00' }}
+                        $${budget}
                     </div>
                     
                     <div class="card-actions">
                         <button class="btn-action btn-update" 
-                            data-project-id="{{ p.id }}"
-                            data-name="{{ p.name_project }}"
-                            data-manager="{{ p.id_manager }}"
-                            data-date-begin="{{ p.date_begin.strftime('%Y-%m-%d') if p.date_begin else '' }}"
-                            data-date-end="{{ p.date_end.strftime('%Y-%m-%d') if p.date_end else '' }}"
-                            data-state="{{ p.state }}" 
-                            data-budget="{{ p.budget }}"
-                            data-image="{{ url_for('static', filename=p.image) if p.image else '' }}">
+                            data-project-id="${p.ID_PROJECT}"
+                            data-name="${p.NAME_PROJECT}"
+                            data-manager="${p.ID_MANAGER}"
+                            data-date-begin="${p.DATE_BEGIN || ''}"
+                            data-date-end="${p.DATE_END || ''}"
+                            data-state="${p.STATUS}" 
+                            data-budget="${p.BUDGET}"
+                            data-image="${imageUrl}">
                             <i class="fas fa-edit me-1"></i>Edit
                         </button>
-                        <button class="btn-action btn-delete" onclick="delete_project({{p.id}})" data-project-id="{{ p.id_project }}">
+                        <button class="btn-action btn-delete" data-project-id="${p.ID_PROJECT}">
                             <i class="fas fa-trash me-1"></i>Delete
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="alert alert-info mt-4">
-        <i class="fas fa-info-circle me-2"></i>No projects found. Create your first project using the button above.
-    </div>
-    {% endif %}
-</div>
+        `;
+    }
 
-<!-- JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
-    // Delete project button handlers
-    function delete_project(id) {
-        const projectId = id;
-        console.log('Project ID:', projectId);
-        
-        if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-            fetch(`/api/project/${projectId}`, { 
-                method: 'DELETE' 
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                } else {
-                    alert(data.error || 'Failed to delete project');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the project');
+    // Function to load projects from API and render cards
+    async function loadProjects() {
+        try {
+            const response = await fetch('/api/project/');
+            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+            const projects = await response.json();
+
+            const projectsGrid = document.getElementById('projectsGrid');
+            const noProjectsMessage = document.getElementById('noProjectsMessage');
+
+            if (projects.length === 0) {
+                projectsGrid.innerHTML = '';
+                noProjectsMessage.style.display = 'block';
+                return;
+            }
+
+            noProjectsMessage.style.display = 'none';
+
+            projectsGrid.innerHTML = projects.map(createProjectCard).join('');
+
+            // Re-attach update button event listeners after rendering
+            const updateButtons = document.querySelectorAll('.btn-update');
+            updateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    console.log('Update button clicked for project ID:', this.getAttribute('data-project-id'));
+
+                    const projectId = this.getAttribute('data-project-id');
+                    const currentImage = this.getAttribute('data-image');
+
+                    const updateProjectId = document.getElementById('updateProjectId');
+                    const updateName = document.getElementById('updateName');
+                    const updateManager = document.getElementById('updateManager');
+                    const updateBudget = document.getElementById('updateBudget');
+                    const updateDateBegin = document.getElementById('updateDateBegin');
+                    const updateDateEnd = document.getElementById('updateDateEnd');
+                    const updateState = document.getElementById('updateState');
+                    const currentImagePreview = document.getElementById('currentImagePreview');
+                    const currentImageContainer = document.getElementById('currentImageContainer');
+
+                    if (!updateProjectId || !updateName || !updateManager || !updateBudget || 
+                        !updateDateBegin || !updateDateEnd || !updateState) {
+                        console.error('Update form elements not found');
+                        alert('Form configuration error. Please contact support.');
+                        return;
+                    }
+
+                    updateProjectId.value = projectId;
+                    updateName.value = this.getAttribute('data-name');
+                    updateManager.value = this.getAttribute('data-manager');
+                    updateBudget.value = this.getAttribute('data-budget');
+                    updateDateBegin.value = this.getAttribute('data-date-begin');
+                    updateDateEnd.value = this.getAttribute('data-date-end');
+                    updateState.value = this.getAttribute('data-state');
+
+                    if (currentImage) {
+                        currentImagePreview.src = currentImage;
+                        currentImageContainer.style.display = 'block';
+                    } else {
+                        currentImageContainer.style.display = 'none';
+                    }
+
+                    toggleModal(updateModal, true);
+                });
             });
+
+        } catch (error) {
+            console.error('Error loading projects:', error);
+            alert(`Error loading projects: ${error.message}`);
         }
     }
 
-    function closeModal(modal){
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize date pickers
-        flatpickr('.datepicker', {
-            dateFormat: "Y-m-d",
-            allowInput: true
-        });
-
-        // Modal elements
-        const addModal = document.getElementById('addModal');
-        const openAddModal = document.getElementById('openAddModal');
-        const closeAddModal = document.getElementById('closeAddModal');
-        const cancelAddModal = document.getElementById('cancelAddModal');
-        const cancelUpdateModal = document.getElementById('cancelUpdateModal');
-        const addForm = document.getElementById('addProjectForm');
-        const addSpinner = document.getElementById('addSpinner');
-
-        const updateModal = document.getElementById('updateModal');
-        const closeUpdateModal = document.getElementById('closeUpdateModal');
-        const updateForm = document.getElementById('updateProjectForm');
-        const updateSpinner = document.getElementById('updateSpinner');
-
-        // Modal toggle functions
-        function openModal(modal) {
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal(modal) {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Event listeners for modals
-        openAddModal.addEventListener('click', () => openModal(addModal));
-        closeAddModal.addEventListener('click', () => closeModal(addModal));
-        cancelAddModal.addEventListener('click', () => closeModal(addModal));
-        cancelUpdateModal.addEventListener('click', () => closeModal(updateModal));
-        closeUpdateModal.addEventListener('click', () => closeModal(updateModal));
-
-        // Close modals when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target === addModal) closeModal(addModal);
-            if (e.target === updateModal) closeModal(updateModal);
-        });
-
-        // Update project button handlers
-        document.querySelectorAll('.btn-update').forEach(button => {
-            button.addEventListener('click', function() {
-                const projectId = this.getAttribute('data-project-id');
-                const currentImage = this.getAttribute('data-image');
-                
-                document.getElementById('updateProjectId').value = projectId;
-                document.getElementById('updateName').value = this.getAttribute('data-name');
-                document.getElementById('updateManager').value = this.getAttribute('data-manager');
-                document.getElementById('updateBudget').value = this.getAttribute('data-budget');
-                document.getElementById('updateDateBegin').value = this.getAttribute('data-date-begin');
-                document.getElementById('updateDateEnd').value = this.getAttribute('data-date-end');
-                document.getElementById('updateState').value = this.getAttribute('data-state');
-                
-                // Show current image if exists
-                const currentImagePreview = document.getElementById('currentImagePreview');
-                const currentImageContainer = document.getElementById('currentImageContainer');
-                
-                if (currentImage) {
-                    currentImagePreview.src = currentImage;
-                    currentImageContainer.style.display = 'block';
-                } else {
-                    currentImageContainer.style.display = 'none';
-                }
-                
-                openModal(updateModal);
-            });
-        });
-
-        // Form submission handlers
-        addForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const addButtonText = document.getElementById('addButtonText');
-            
-            addButtonText.textContent = 'Creating...';
-            addSpinner.style.display = 'inline-block';
-            
-            fetch("{{ url_for('projects.create_project') }}", {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    closeModal(addModal);
-                    window.location.reload();
-                } else {
-                    alert(data.error || 'Failed to create project');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while creating the project');
-            })
-            .finally(() => {
-                addButtonText.textContent = 'Create Project';
-                addSpinner.style.display = 'none';
-            });
-        });
-
-        updateForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const projectId = document.getElementById('updateProjectId').value;
-            const updateButtonText = document.getElementById('updateButtonText');
-            
-            updateButtonText.textContent = 'Updating...';
-            updateSpinner.style.display = 'inline-block';
-            
-            fetch(`/api/project/${projectId}`, {
-                method: 'PUT',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    closeModal(updateModal);
-                    window.location.reload();
-                } else {
-                    alert(data.error || 'Failed to update project');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the project');
-            })
-            .finally(() => {
-                updateButtonText.textContent = 'Update Project';
-                updateSpinner.style.display = 'none';
-            });
-        });
-
-        
-
-        document.querySelectorAll('.btn-delete').forEach(button => {
-            button.addEventListener('click', );
-        });
-    });
-    
+    // Initial load of projects
+    loadProjects();
+});
 </script>
 {% endblock %}
