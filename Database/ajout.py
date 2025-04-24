@@ -205,10 +205,10 @@ def populate_sample_data(db: Database):
     
     if db.db_type == "sqlite":
         for grade in grades:
-            db.execute_query("INSERT INTO GRADE (NAME_GRA) VALUES (?)", (grade,))
+            db.execute_query("INSERT INTO GRADE (NAME_GRADE) VALUES (?)", (grade,))
     else:
         for grade in grades:
-            db.insert_query(table="GRADE", record={"NAME_GRA": grade})
+            db.insert_query(table="GRADE", record={"NAME_GRADE": grade})
     
     # Add laboratories
     labs = [
@@ -230,23 +230,23 @@ def populate_sample_data(db: Database):
     
     # Add researchers (10 researchers)
     researchers = [
-        {"FULL_NAME": "Dr. Sarah Miller", "NUM_TEL": 5551001, "EMAIL_REAS": "s.miller@univ.edu", "ID_GRADE": 6},
-        {"FULL_NAME": "Prof. David Kim", "NUM_TEL": 5551002, "EMAIL_REAS": "d.kim@univ.edu", "ID_GRADE": 7},
-        {"FULL_NAME": "Dr. Emily Zhang", "NUM_TEL": 5551003, "EMAIL_REAS": "e.zhang@univ.edu", "ID_GRADE": 5},
-        {"FULL_NAME": "Dr. Michael Brown", "NUM_TEL": 5551004, "EMAIL_REAS": "m.brown@univ.edu", "ID_GRADE": 8},
-        {"FULL_NAME": "Dr. Jessica Lee", "NUM_TEL": 5551005, "EMAIL_REAS": "j.lee@univ.edu", "ID_GRADE": 9},
-        {"FULL_NAME": "Dr. Thomas Wilson", "NUM_TEL": 5551006, "EMAIL_REAS": "t.wilson@univ.edu", "ID_GRADE": 10},
-        {"FULL_NAME": "Lisa Park", "NUM_TEL": 5551007, "EMAIL_REAS": "l.park@univ.edu", "ID_GRADE": 2},
-        {"FULL_NAME": "Daniel Chen", "NUM_TEL": 5551008, "EMAIL_REAS": "d.chen@univ.edu", "ID_GRADE": 3},
-        {"FULL_NAME": "Sophia Martinez", "NUM_TEL": 5551009, "EMAIL_REAS": "s.martinez@univ.edu", "ID_GRADE": 4},
-        {"FULL_NAME": "Ryan Johnson", "NUM_TEL": 5551010, "EMAIL_REAS": "r.johnson@univ.edu", "ID_GRADE": 1}
+        {"FULL_NAME": "Dr. Sarah Miller", "NUM_TEL": 5551001, "EMAIL": "s.miller@univ.edu", "ID_GRADE": 6},
+        {"FULL_NAME": "Prof. David Kim", "NUM_TEL": 5551002, "EMAIL": "d.kim@univ.edu", "ID_GRADE": 7},
+        {"FULL_NAME": "Dr. Emily Zhang", "NUM_TEL": 5551003, "EMAIL": "e.zhang@univ.edu", "ID_GRADE": 5},
+        {"FULL_NAME": "Dr. Michael Brown", "NUM_TEL": 5551004, "EMAIL": "m.brown@univ.edu", "ID_GRADE": 8},
+        {"FULL_NAME": "Dr. Jessica Lee", "NUM_TEL": 5551005, "EMAIL": "j.lee@univ.edu", "ID_GRADE": 9},
+        {"FULL_NAME": "Dr. Thomas Wilson", "NUM_TEL": 5551006, "EMAIL": "t.wilson@univ.edu", "ID_GRADE": 10},
+        {"FULL_NAME": "Lisa Park", "NUM_TEL": 5551007, "EMAIL": "l.park@univ.edu", "ID_GRADE": 2},
+        {"FULL_NAME": "Daniel Chen", "NUM_TEL": 5551008, "EMAIL": "d.chen@univ.edu", "ID_GRADE": 3},
+        {"FULL_NAME": "Sophia Martinez", "NUM_TEL": 5551009, "EMAIL": "s.martinez@univ.edu", "ID_GRADE": 4},
+        {"FULL_NAME": "Ryan Johnson", "NUM_TEL": 5551010, "EMAIL": "r.johnson@univ.edu", "ID_GRADE": 1}
     ]
     
     if db.db_type == "sqlite":
         for researcher in researchers:
             db.execute_query(
-                "INSERT INTO RESEARCHER (FULL_NAME, NUM_TEL, EMAIL_REAS, ID_GRADE) VALUES (?, ?, ?, ?)",
-                (researcher["FULL_NAME"], researcher["NUM_TEL"], researcher["EMAIL_REAS"], researcher["ID_GRADE"])
+                "INSERT INTO RESEARCHER (FULL_NAME, NUM_TEL, EMAIL, ID_GRADE) VALUES (?, ?, ?, ?)",
+                (researcher["FULL_NAME"], researcher["NUM_TEL"], researcher["EMAIL"], researcher["ID_GRADE"])
             )
     else:
         for researcher in researchers:
@@ -369,8 +369,8 @@ def test_database(db_type="sqlite"):
     # Display grades
     grades = db.select_query("SELECT * FROM GRADE") if db_type == "sqlite" else db.select_query(table="GRADE")
     print(f"\nGrades ({len(grades)} entries):")
-    for grade in grades:
-        print(f"ID: {grade['ID_GRADE'] if db_type == 'sqlite' else grade['id']}, Name: {grade['NAME_GRA']}")
+    # for grade in grades:
+        # print(f"ID: {grade['ID_GRADE'] if db_type == 'sqlite' else grade['id']}, Name: {grade['NAME_GRADE']}")
     
     # Display researchers
     researchers = db.select_query("SELECT * FROM RESEARCHER") if db_type == "sqlite" else db.select_query(table="RESEARCHER")
@@ -388,7 +388,7 @@ def test_database(db_type="sqlite"):
     events = db.select_query("SELECT * FROM EVENT") if db_type == "sqlite" else db.select_query(table="EVENT")
     print(f"\nEvents ({len(events)} entries):")
     for event in events:
-        print(f"ID: {event['ID_EVEN'] if db_type == 'sqlite' else event['id']}, Type: {event['TYPE_EV']}, Date: {event['DATE_BEG']}")
+        print(f"ID: {event['ID_EVENT'] if db_type == 'sqlite' else event['id']}, Type: {event['TYPE_EV']}, Date: {event['DATE_BEG']}")
     
     db.close()
     print(f"\n{db_type.upper()} database test completed")

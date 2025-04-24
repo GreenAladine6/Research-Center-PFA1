@@ -222,7 +222,7 @@ class Database:
         self.execute_query('''
         CREATE TABLE GRADE (
             ID_GRADE INTEGER PRIMARY KEY,
-            NAME_GRA TEXT
+            NAME_GRADE TEXT
         )
         ''')
 
@@ -231,7 +231,8 @@ class Database:
         CREATE TABLE LABORATORY (
             LABO_ID INTEGER PRIMARY KEY,
             NAME_LAB TEXT,
-            DIRECTOR TEXT
+            DIRECTOR TEXT,
+            foreign key (DIRECTOR) references RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
         )
         ''')
 
@@ -242,8 +243,8 @@ class Database:
             ID_GRADE INTEGER NOT NULL,
             FULL_NAME TEXT NOT NULL,
             NUM_TEL INTEGER NOT NULL,
-            EMAIL_REAS TEXT,
-            FOREIGN KEY (ID_GRADE) REFERENCES GRADE(ID_GRADE)
+            EMAIL TEXT,
+            FOREIGN KEY (ID_GRADE) REFERENCES GRADE(ID_GRADE) ON DELETE CASCADE
         )
         ''')
 
@@ -256,16 +257,17 @@ class Database:
             BUDGET REAL,
             DATE_BEGIN TEXT,
             DATE__END TEXT,
-            STATE TEXT
+            STATE TEXT,
+            foreign key (ID_MANGER) references RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
         )
         ''')
 
     def _create_partner_table(self):
         self.execute_query('''
         CREATE TABLE PARTNER (
-            PARTNER_ID INTEGER PRIMARY KEY,
-            NAME_PAR TEXT,
-            EMAIL_PAR TEXT NOT NULL,
+            ID_PARTNER INTEGER PRIMARY KEY,
+            NAME_PARTNER TEXT,
+            EMAIL_PARTNER TEXT NOT NULL,
             PHONE INTEGER NOT NULL,
             ADRESS TEXT NOT NULL,
             CREATION_DATE TEXT NOT NULL,
@@ -279,9 +281,10 @@ class Database:
         self.execute_query('''
         CREATE TABLE EQUIPEMENT (
             ID_EQUIPEMENT INTEGER PRIMARY KEY,
-            NAME_EQ TEXT,
+            NAME_EQUIPEMENT TEXT,
             PURCHASE_DATE TEXT,
-            LABORATOIRE_ID INTEGER
+            LABORATOIRE_ID INTEGER,
+            FOREIGN KEY (LABORATOIRE_ID) REFERENCES LABORATORY(LABO_ID) ON DELETE CASCADE
         )
         ''')
 
@@ -296,14 +299,15 @@ class Database:
     def _create_event_table(self):
         self.execute_query('''
         CREATE TABLE EVENT (
-            ID_EVEN INTEGER PRIMARY KEY,
+            ID_EVENT INTEGER PRIMARY KEY,
             TYPE_EV TEXT NOT NULL,
             DATE_BEG TEXT NOT NULL,
             HEURE TEXT NOT NULL,
             LIEU TEXT NOT NULL,
             DATEND TEXT,
             ID_ORGANISOR INTEGER,
-            FOREIGN KEY (TYPE_EV) REFERENCES TYPE_EV(TYPE_EV)
+            FOREIGN KEY (TYPE_EV) REFERENCES TYPE_EV(TYPE_EV),
+            FOREIGN KEY (ID_ORGANISOR) REFERENCES RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
         )
         ''')
 
@@ -333,10 +337,10 @@ class Database:
     def _create_collaborate_table(self):
         self.execute_query('''
         CREATE TABLE COLLABORATE (
-            PARTNER_ID INTEGER NOT NULL,
+            ID_PARTNER INTEGER NOT NULL,
             ID_PROJECT INTEGER NOT NULL,
-            PRIMARY KEY (PARTNER_ID, ID_PROJECT),
-            FOREIGN KEY (PARTNER_ID) REFERENCES PARTNER(PARTNER_ID),
+            PRIMARY KEY (ID_PARTNER, ID_PROJECT),
+            FOREIGN KEY (ID_PARTNER) REFERENCES PARTNER(ID_PARTNER),
             FOREIGN KEY (ID_PROJECT) REFERENCES PROJECT(ID_PROJECT)
         )
         ''')
@@ -344,10 +348,10 @@ class Database:
     def _create_participate_table(self):
         self.execute_query('''
         CREATE TABLE PARTICIPATE (
-            ID_EVEN INTEGER NOT NULL,
+            ID_EVENT INTEGER NOT NULL,
             ID_RESEARCHER INTEGER NOT NULL,
-            PRIMARY KEY (ID_EVEN, ID_RESEARCHER),
-            FOREIGN KEY (ID_EVEN) REFERENCES EVENT(ID_EVEN),
+            PRIMARY KEY (ID_EVENT, ID_RESEARCHER),
+            FOREIGN KEY (ID_EVENT) REFERENCES EVENT(ID_EVENT),
             FOREIGN KEY (ID_RESEARCHER) REFERENCES RESEARCHER(ID_RESEARCHER)
         )
         ''')
@@ -392,12 +396,12 @@ def test_database(db_type="sqlite"):
     db.create_tables()
     
     # Test data
-    grade_data = {"NAME_GRA": "Senior Researcher"} if db_type == "json" else None
+    grade_data = {"NAME_GRADE": "Senior Researcher"} if db_type == "json" else None
     lab_data = {"NAME_LAB": "BioTech Lab", "DIRECTOR": "Dr. Smith"} if db_type == "json" else None
     
     # Insert test data
     if db_type == "sqlite":
-        db.execute_query("INSERT INTO GRADE (NAME_GRA) VALUES (?)", ("Senior Researcher",))
+        db.execute_query("INSERT INTO GRADE (NAME_GRADE) VALUES (?)", ("Senior Researcher",))
         db.execute_query("INSERT INTO LABORATORY (NAME_LAB, DIRECTOR) VALUES (?, ?)", 
                         ("BioTech Lab", "Dr. Smith"))
     else:
