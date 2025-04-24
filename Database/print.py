@@ -1,6 +1,6 @@
 import sqlite3
 
-def get_all_tables_and_columns(db_path='Database/data.db'):
+def get_all_tables_and_columns(db_path='./Database/data.db'):
     # Connect to the database
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -41,7 +41,10 @@ def get_all_tables_and_columns(db_path='Database/data.db'):
     finally:
         conn.close()
 
-def print_database_schema(schema):
+def print_database_schema(schema,db_path='./Database/data.db'):
+    # Connect to the database
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
     if not schema:
         print("No schema information available")
         return
@@ -49,6 +52,17 @@ def print_database_schema(schema):
     for table_name, columns in schema.items():
         print(f"\nTable: {table_name}")
         print("-" * (len(table_name) + 8))
+        cursor.execute(f"SELECT * FROM {table_name};")
+       
+        # Fetch all rows from the table
+        items = cursor.fetchall()
+        print(f"Number of rows: {len(items)}")
+        print(f"Number of columns: {len(columns)}")
+        print(f"{'Column Name':<20} {'Data Type':<15} {'Constraints'}")
+        print("-" * 50)
+        for item in items:
+            print(item)
+        print("-" * 50)
         for col in columns:
             constraints = []
             if col['not_null']:
@@ -60,6 +74,7 @@ def print_database_schema(schema):
                 
             constraints_str = " ".join(constraints)
             print(f"{col['name']:20} {col['type']:15} {constraints_str}")
+
 
 if __name__ == '__main__':
     schema = get_all_tables_and_columns()

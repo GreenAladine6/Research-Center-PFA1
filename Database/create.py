@@ -94,7 +94,7 @@ class Database:
         self.db_type = db_type.lower()
         
         if self.db_type == "sqlite":
-            self.conn = connect(kwargs.get("db_path", "Database/data.db"))
+            self.conn = connect(kwargs.get("db_path", "./Database/data.db"))
             self.cursor = self.conn.cursor()
         elif self.db_type == "json":
             self.conn = JSONDatabase(kwargs.get("json_path", "Database/data.json"))
