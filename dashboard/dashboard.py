@@ -32,7 +32,8 @@ def projects():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
         projects = db.select_query("PROJECT")
-        return render_template('projects.dashboard.html', title='Projects', projects=projects)
+        researchers = db.select_query("RESEARCHER")
+        return render_template('projects.dashboard.html', title='Projects', projects=projects, researchers=researchers)
     return redirect('/dashboard/login')
 
 

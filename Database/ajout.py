@@ -260,7 +260,7 @@ def populate_sample_data(db: Database):
             "DATE_BEGIN": "2023-01-15",
             "DATE_END": "2025-12-31",
             "STATE": "Active",
-            "ID_MANGER": 6  # Dr. Thomas Wilson as manager
+            "ID_MANAGER": 6  # Dr. Thomas Wilson as manager
         },
         {
             "NAME_PROJECT": "Quantum Algorithm Development",
@@ -268,7 +268,7 @@ def populate_sample_data(db: Database):
             "DATE_BEGIN": "2023-03-01",
             "DATE_END": "2024-06-30",
             "STATE": "Active",
-            "ID_MANGER": 2  # Prof. David Kim as manager
+            "ID_MANAGER": 2  # Prof. David Kim as manager
         },
         {
             "NAME_PROJECT": "Climate Change Impact Study",
@@ -276,7 +276,7 @@ def populate_sample_data(db: Database):
             "DATE_BEGIN": "2022-09-01",
             "DATE_END": "2023-08-31",
             "STATE": "Completed",
-            "ID_MANGER": 1  # Dr. Sarah Miller as manager
+            "ID_MANAGER": 1  # Dr. Sarah Miller as manager
         },
         {
             "NAME_PROJECT": "Neural Network Optimization",
@@ -284,17 +284,17 @@ def populate_sample_data(db: Database):
             "DATE_BEGIN": "2023-05-10",
             "DATE_END": "2024-11-30",
             "STATE": "Active",
-            "ID_MANGER": 5  # Dr. Jessica Lee as manager
+            "ID_MANAGER": 5  # Dr. Jessica Lee as manager
         }
     ]
     
     if db.db_type == "sqlite":
         for project in projects:
             db.execute_query(
-                """INSERT INTO PROJECT (NAME_PROJECT, BUDGET, DATE_BEGIN, DATE_END, STATE, ID_MANGER)
+                """INSERT INTO PROJECT (NAME_PROJECT, BUDGET, DATE_BEGIN, DATE_END, STATE, ID_MANAGER)
                 VALUES (?, ?, ?, ?, ?, ?)""",
                 (project["NAME_PROJECT"], project["BUDGET"], project["DATE_BEGIN"],
-                 project["DATE_END"], project["STATE"], project["ID_MANGER"])
+                 project["DATE_END"], project["STATE"], project["ID_MANAGER"])
             )
     else:
         for project in projects:

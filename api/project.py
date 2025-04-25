@@ -75,7 +75,7 @@ def create_project():
             "BUDGET": float(request.form['budget']),
             "DATE_BEGIN": request.form['date_begin'],
             "DATE_END": request.form['date_end'],
-            "STATUS": request.form['state'],
+            "STATE": request.form['state'],
             "IMAGE": f"images/uploads/{filename}"  # relative path
         }
         
@@ -151,17 +151,17 @@ def update_project(project_id):
     
     # Prepare update data
     update_data = {}
-    if 'name_project' in request.form:
+    if 'name_project' in request.form and request.form['name_project'].strip():
         update_data["NAME_PROJECT"] = request.form['name_project']
-    if 'id_manager' in request.form:
+    if 'id_manager' in request.form and request.form['id_manager'].strip():
         update_data["ID_MANAGER"] = int(request.form['id_manager'])
-    if 'state' in request.form:
-        update_data["STATUS"] = request.form['state']
-    if 'budget' in request.form:
+        if 'state' in request.form and request.form['state'].strip():
+            update_data["STATE"] = request.form['state']
+    if 'budget' in request.form and request.form['budget'].strip():
         update_data["BUDGET"] = float(request.form['budget'])
-    if 'date_begin' in request.form:
+    if 'date_begin' in request.form and request.form['date_begin'].strip():
         update_data["DATE_BEGIN"] = request.form['date_begin']
-    if 'date_end' in request.form:
+    if 'date_end' in request.form and request.form['date_end'].strip():
         update_data["DATE_END"] = request.form['date_end']
     
     # Handle file upload if present

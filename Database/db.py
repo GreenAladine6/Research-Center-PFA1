@@ -204,8 +204,11 @@ if __name__ == "__main__":
     
 
     # Get a specific item
-    projects = db.get_item("project", 1)
+    projects = db.get_item("PROJECT", 1)
     print("research item:", projects)
+
+    researchers = db.get_item("RESEARCHER", 1)
+    print("researcher item:", researchers)
     
 
 

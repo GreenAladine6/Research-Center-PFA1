@@ -252,13 +252,13 @@ class Database:
         self.execute_query('''
         CREATE TABLE PROJECT (
             ID_PROJECT INTEGER PRIMARY KEY,
-            ID_MANGER INTEGER,
+            ID_MANAGER INTEGER,
             NAME_PROJECT TEXT,
             BUDGET REAL,
             DATE_BEGIN TEXT,
             DATE_END TEXT,
             STATE TEXT,
-            foreign key (ID_MANGER) references RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
+            foreign key (ID_MANAGER) references RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
         )
         ''')
 
