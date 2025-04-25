@@ -92,7 +92,7 @@
                 <button id="closeUpdateModal" class="btn-close"></button>
             </div>
             
-            <form id="updateProjectForm" method="POST" enctype="multipart/form-data">
+            <form id="updateProjectForm" method="PUT" enctype="multipart/form-data">
                 <input type="hidden" id="updateProjectId" name="project_id">
                 
                 <div class="form-group">
@@ -376,11 +376,13 @@ data-image="{{ url_for('static', filename=data_image_path) if data_image_path el
             
             updateButtonText.textContent = 'Updating...';
             updateSpinner.style.display = 'inline-block';
-            
+            console.log('Form data:', formData);
             fetch(`/api/project/${projectId}`, {
                 method: 'PUT',
                 body: formData
+                
             })
+    
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
@@ -405,9 +407,6 @@ data-image="{{ url_for('static', filename=data_image_path) if data_image_path el
 
         
 
-        document.querySelectorAll('.btn-delete').forEach(button => {
-            button.addEventListener('click', );
-        });
     });
 </script>
 {% endblock %}

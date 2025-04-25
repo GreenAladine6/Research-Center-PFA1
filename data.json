@@ -8,7 +8,7 @@
             "STATE": "Active",
             "ID_MANAGER": 6,
             "id": 1,
-            "IMAGE": "images/uploads/0ed73181-9e22-4c34-9ab6-bff88b6782dc_Screenshot_2025-03-27_022455.png"
+            "IMAGE": "images/uploads/20250425152410_Screenshot_2025-01-04_230320.png"
         },
         {
             "NAME_PROJECT": "Quantum Algorithm Development",
@@ -18,7 +18,7 @@
             "STATE": "Active",
             "ID_MANAGER": 2,
             "id": 2,
-            "IMAGE": "images/uploads/06e13b39-2d01-4296-a9a0-b561a683b977_Screenshot_2025-03-19_175504.png"
+            "IMAGE": "images/uploads/20250425151955_Screenshot_2025-01-22_215231.png"
         },
         {
             "NAME_PROJECT": "Climate Change Impact Study",
@@ -27,8 +27,7 @@
             "DATE_END": "2023-08-31",
             "STATE": "Completed",
             "ID_MANAGER": 1,
-            "id": 3,
-            "IMAGE": "images/uploads/e70cdb87-6dec-47a4-9ad1-591b1c787f45_Screenshot_2025-02-03_095349.png"
+            "id": 3
         },
         {
             "NAME_PROJECT": "Neural Network Optimization",
@@ -37,18 +36,47 @@
             "DATE_END": "2024-11-30",
             "STATE": "Active",
             "ID_MANAGER": 5,
-            "id": 4,
-            "IMAGE": "images/uploads/60e1370d-a975-439c-a080-975991692e2d_Screenshot_2025-01-22_215231.png"
+            "id": 4
         },
         {
-            "NAME_PROJECT": "16-cores",
-            "STATE": "In Progress",
+            "NAME_PROJECT": "Genome Sequencing Initiative",
+            "BUDGET": 1500000.0,
             "DATE_BEGIN": "2023-01-15",
-            "DATE_END": "2025-04-22",
-            "ID_MANAGER": 1,
-            "BUDGET": 5023.0,
-            "IMAGE": "images/uploads/6db26bb6-7e4b-44bc-b004-1e162638ed89_Screenshot_2025-03-27_022455.png",
-            "id": 5
+            "DATE_END": "2025-12-31",
+            "STATE": "Active",
+            "ID_MANAGER": 6,
+            "id": 1,
+            "IMAGE": "images/uploads/20250425151726_Screenshot_2025-01-22_215231.png"
+        },
+        {
+            "NAME_PROJECT": "Quantum Algorithm Development",
+            "BUDGET": 850000.0,
+            "DATE_BEGIN": "2023-03-01",
+            "DATE_END": "2024-06-30",
+            "STATE": "Active",
+            "ID_MANAGER": 2,
+            "id": 2,
+            "IMAGE": "images/uploads/20250425151733_Screenshot_2025-02-23_143323.png"
+        },
+        {
+            "NAME_PROJECT": "Quantum Algorithm Development",
+            "BUDGET": 850000.0,
+            "DATE_BEGIN": "2023-03-01",
+            "DATE_END": "2024-06-30",
+            "STATE": "Active",
+            "ID_MANAGER": 2,
+            "id": 2,
+            "IMAGE": "images/uploads/20250425151955_Screenshot_2025-01-22_215231.png"
+        },
+        {
+            "NAME_PROJECT": "Genome Sequencing Initiative",
+            "BUDGET": 1500000.0,
+            "DATE_BEGIN": "2023-01-15",
+            "DATE_END": "2025-12-31",
+            "STATE": "Active",
+            "ID_MANAGER": 6,
+            "id": 1,
+            "IMAGE": "images/uploads/20250425151726_Screenshot_2025-01-22_215231.png"
         }
     ],
     "EVENT": [
@@ -123,6 +151,42 @@
             "DATEND": "2025-06-26",
             "ID_ORGANISOR": 4,
             "id": 8
+        },
+        {
+            "TYPE_EV": "Conference",
+            "DATE_BEG": "2025-05-25",
+            "HEURE": "09:00:00",
+            "LIEU": "Convention Center, Room A",
+            "DATEND": "2025-05-27",
+            "ID_ORGANISOR": 1,
+            "id": 9
+        },
+        {
+            "TYPE_EV": "Workshop",
+            "DATE_BEG": "2025-06-09",
+            "HEURE": "13:30:00",
+            "LIEU": "Science Building, Room 101",
+            "DATEND": "2025-06-09",
+            "ID_ORGANISOR": 3,
+            "id": 10
+        },
+        {
+            "TYPE_EV": "Seminar",
+            "DATE_BEG": "2025-05-10",
+            "HEURE": "11:00:00",
+            "LIEU": "Main Auditorium",
+            "DATEND": "2025-05-10",
+            "ID_ORGANISOR": 2,
+            "id": 11
+        },
+        {
+            "TYPE_EV": "Symposium",
+            "DATE_BEG": "2025-06-24",
+            "HEURE": "10:00:00",
+            "LIEU": "University Hall",
+            "DATEND": "2025-06-26",
+            "ID_ORGANISOR": 4,
+            "id": 12
         }
     ],
     "RESEARCHER": [
@@ -265,6 +329,76 @@
             "EMAIL": "r.johnson@univ.edu",
             "ID_GRADE": 1,
             "id": 20
+        },
+        {
+            "FULL_NAME": "Dr. Sarah Miller",
+            "NUM_TEL": 5551001,
+            "EMAIL": "s.miller@univ.edu",
+            "ID_GRADE": 6,
+            "id": 21
+        },
+        {
+            "FULL_NAME": "Prof. David Kim",
+            "NUM_TEL": 5551002,
+            "EMAIL": "d.kim@univ.edu",
+            "ID_GRADE": 7,
+            "id": 22
+        },
+        {
+            "FULL_NAME": "Dr. Emily Zhang",
+            "NUM_TEL": 5551003,
+            "EMAIL": "e.zhang@univ.edu",
+            "ID_GRADE": 5,
+            "id": 23
+        },
+        {
+            "FULL_NAME": "Dr. Michael Brown",
+            "NUM_TEL": 5551004,
+            "EMAIL": "m.brown@univ.edu",
+            "ID_GRADE": 8,
+            "id": 24
+        },
+        {
+            "FULL_NAME": "Dr. Jessica Lee",
+            "NUM_TEL": 5551005,
+            "EMAIL": "j.lee@univ.edu",
+            "ID_GRADE": 9,
+            "id": 25
+        },
+        {
+            "FULL_NAME": "Dr. Thomas Wilson",
+            "NUM_TEL": 5551006,
+            "EMAIL": "t.wilson@univ.edu",
+            "ID_GRADE": 10,
+            "id": 26
+        },
+        {
+            "FULL_NAME": "Lisa Park",
+            "NUM_TEL": 5551007,
+            "EMAIL": "l.park@univ.edu",
+            "ID_GRADE": 2,
+            "id": 27
+        },
+        {
+            "FULL_NAME": "Daniel Chen",
+            "NUM_TEL": 5551008,
+            "EMAIL": "d.chen@univ.edu",
+            "ID_GRADE": 3,
+            "id": 28
+        },
+        {
+            "FULL_NAME": "Sophia Martinez",
+            "NUM_TEL": 5551009,
+            "EMAIL": "s.martinez@univ.edu",
+            "ID_GRADE": 4,
+            "id": 29
+        },
+        {
+            "FULL_NAME": "Ryan Johnson",
+            "NUM_TEL": 5551010,
+            "EMAIL": "r.johnson@univ.edu",
+            "ID_GRADE": 1,
+            "id": 30
         }
     ],
     "WORK": [],
@@ -277,126 +411,195 @@
     "PARTNER": [],
     "LABORATORY": [
         {
-            "NAME_LAB": "Bioinformatics Lab",
-            "DIRECTOR": "Dr. Alice Johnson",
+            "NAME_LAB": "BioTech Lab",
+            "DIRECTOR": "Dr. Smith",
             "id": 1
         },
         {
+            "NAME_LAB": "Bioinformatics Lab",
+            "DIRECTOR": "Dr. Alice Johnson",
+            "id": 2
+        },
+        {
             "NAME_LAB": "Neuroscience Research Center",
             "DIRECTOR": "Dr. Robert Chen",
-            "id": 2
+            "id": 3
         },
         {
             "NAME_LAB": "Quantum Computing Lab",
             "DIRECTOR": "Dr. Maria Garcia",
-            "id": 3
+            "id": 4
         },
         {
             "NAME_LAB": "Environmental Science Lab",
             "DIRECTOR": "Dr. James Wilson",
-            "id": 4
+            "id": 5
         },
         {
             "NAME_LAB": "Bioinformatics Lab",
             "DIRECTOR": "Dr. Alice Johnson",
-            "id": 5
+            "id": 6
         },
         {
             "NAME_LAB": "Neuroscience Research Center",
             "DIRECTOR": "Dr. Robert Chen",
-            "id": 6
+            "id": 7
         },
         {
             "NAME_LAB": "Quantum Computing Lab",
             "DIRECTOR": "Dr. Maria Garcia",
-            "id": 7
+            "id": 8
         },
         {
             "NAME_LAB": "Environmental Science Lab",
             "DIRECTOR": "Dr. James Wilson",
-            "id": 8
+            "id": 9
+        },
+        {
+            "NAME_LAB": "Bioinformatics Lab",
+            "DIRECTOR": "Dr. Alice Johnson",
+            "id": 10
+        },
+        {
+            "NAME_LAB": "Neuroscience Research Center",
+            "DIRECTOR": "Dr. Robert Chen",
+            "id": 11
+        },
+        {
+            "NAME_LAB": "Quantum Computing Lab",
+            "DIRECTOR": "Dr. Maria Garcia",
+            "id": 12
+        },
+        {
+            "NAME_LAB": "Environmental Science Lab",
+            "DIRECTOR": "Dr. James Wilson",
+            "id": 13
         }
     ],
     "GRADE": [
         {
-            "NAME_GRADE": "Undergraduate Researcher",
+            "NAME_GRA": "Senior Researcher",
             "id": 1
         },
         {
-            "NAME_GRADE": "Graduate Researcher",
+            "NAME_GRADE": "Undergraduate Researcher",
             "id": 2
         },
         {
-            "NAME_GRADE": "PhD Candidate",
+            "NAME_GRADE": "Graduate Researcher",
             "id": 3
         },
         {
-            "NAME_GRADE": "Postdoctoral Researcher",
+            "NAME_GRADE": "PhD Candidate",
             "id": 4
         },
         {
-            "NAME_GRADE": "Assistant Professor",
+            "NAME_GRADE": "Postdoctoral Researcher",
             "id": 5
         },
         {
-            "NAME_GRADE": "Associate Professor",
+            "NAME_GRADE": "Assistant Professor",
             "id": 6
         },
         {
-            "NAME_GRADE": "Full Professor",
+            "NAME_GRADE": "Associate Professor",
             "id": 7
         },
         {
-            "NAME_GRADE": "Research Scientist",
+            "NAME_GRADE": "Full Professor",
             "id": 8
         },
         {
-            "NAME_GRADE": "Senior Research Scientist",
+            "NAME_GRADE": "Research Scientist",
             "id": 9
         },
         {
-            "NAME_GRADE": "Principal Investigator",
+            "NAME_GRADE": "Senior Research Scientist",
             "id": 10
         },
         {
-            "NAME_GRADE": "Undergraduate Researcher",
+            "NAME_GRADE": "Principal Investigator",
             "id": 11
         },
         {
-            "NAME_GRADE": "Graduate Researcher",
+            "NAME_GRADE": "Undergraduate Researcher",
             "id": 12
         },
         {
-            "NAME_GRADE": "PhD Candidate",
+            "NAME_GRADE": "Graduate Researcher",
             "id": 13
         },
         {
-            "NAME_GRADE": "Postdoctoral Researcher",
+            "NAME_GRADE": "PhD Candidate",
             "id": 14
         },
         {
-            "NAME_GRADE": "Assistant Professor",
+            "NAME_GRADE": "Postdoctoral Researcher",
             "id": 15
         },
         {
-            "NAME_GRADE": "Associate Professor",
+            "NAME_GRADE": "Assistant Professor",
             "id": 16
         },
         {
-            "NAME_GRADE": "Full Professor",
+            "NAME_GRADE": "Associate Professor",
             "id": 17
         },
         {
-            "NAME_GRADE": "Research Scientist",
+            "NAME_GRADE": "Full Professor",
             "id": 18
         },
         {
-            "NAME_GRADE": "Senior Research Scientist",
+            "NAME_GRADE": "Research Scientist",
             "id": 19
         },
         {
-            "NAME_GRADE": "Principal Investigator",
+            "NAME_GRADE": "Senior Research Scientist",
             "id": 20
+        },
+        {
+            "NAME_GRADE": "Principal Investigator",
+            "id": 21
+        },
+        {
+            "NAME_GRADE": "Undergraduate Researcher",
+            "id": 22
+        },
+        {
+            "NAME_GRADE": "Graduate Researcher",
+            "id": 23
+        },
+        {
+            "NAME_GRADE": "PhD Candidate",
+            "id": 24
+        },
+        {
+            "NAME_GRADE": "Postdoctoral Researcher",
+            "id": 25
+        },
+        {
+            "NAME_GRADE": "Assistant Professor",
+            "id": 26
+        },
+        {
+            "NAME_GRADE": "Associate Professor",
+            "id": 27
+        },
+        {
+            "NAME_GRADE": "Full Professor",
+            "id": 28
+        },
+        {
+            "NAME_GRADE": "Research Scientist",
+            "id": 29
+        },
+        {
+            "NAME_GRADE": "Senior Research Scientist",
+            "id": 30
+        },
+        {
+            "NAME_GRADE": "Principal Investigator",
+            "id": 31
         }
     ],
     "TYPE_EV": []

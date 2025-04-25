@@ -4,7 +4,6 @@ from sqlite3 import connect
 from typing import List, Dict, Any, Optional
 from typing import Union
 
-
 class JSONDatabase:
     def __init__(self, filename="Database/data.json"):
         self.filename = filename
@@ -34,37 +33,15 @@ class JSONDatabase:
         return self.data.get(table, [])
     
     def select_query_filter(self, table: str, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        Retrieve records from a table with optional filters.
-        
-        Args:
-            table: Name of the table to query
-            filters: Dictionary of filters to apply (key: column name, value: filter value)
-            
-        Returns:
-            List of matching records
-        """
-        results = self.data.get(table, [])
-        for key, value in filters.items():
-            for item in results:
-                if key in item and item[key] == value:
-                    
-                    results.append(item)
-                    break
+        """Retrieve records from a table with optional filters."""
+        results = []
+        for item in self.data.get(table, []):
+            if all(key in item and item[key] == value for key, value in filters.items()):
+                results.append(item)
         return results
-    
 
     def get_item(self, table: str, id: int) -> Optional[Dict[str, Any]]:
-        """
-        Retrieve a single record from a table filtered by id.
-        
-        Args:
-            table: Name of the table to query
-            id: ID of the record to retrieve
-            
-        Returns:
-            The matching record or None if not found
-        """
+        """Retrieve a single record from a table filtered by id."""
         return next((item for item in self.data.get(table, []) if item.get("id") == id), None)
 
     def insert_query(self, table: str, record: Dict[str, Any]):
@@ -72,25 +49,39 @@ class JSONDatabase:
         record["id"] = len(self.data[table]) + 1  # Auto-increment ID
         self.data[table].append(record)
         self._save_data()
+        return record["id"]
 
-    def update_query(self, table: str, record_id: int, updates: Dict[str, Any]):
+    def update_query(self, table: str, record_id: int, updates: Dict[str, Any]) -> bool:
         """Update a record by ID."""
-        for record in self.data[table]:
+        for i, record in enumerate(self.data[table]):
             if record["id"] == record_id:
-                record.update(updates)
+                # Create updated record by merging existing and new data
+                updated_record = record.copy()
+                for key, value in updates.items():
+                    updated_record[key] = value
+                # Ensure ID remains unchanged
+                updated_record["id"] = record_id
+                # Update timestamp if present
+                if "timestamp" in updated_record:
+                    updated_record["timestamp"] = datetime.now().isoformat()
+                # Replace old record
+                self.data[table][i] = updated_record
                 self._save_data()
                 return True
-        return False  # If record not found
+        return False
 
-    def delete_query(self, table: str, record_id: int):
+    def delete_query(self, table: str, record_id: int) -> bool:
         """Delete a record by ID."""
+        initial_length = len(self.data[table])
         self.data[table] = [r for r in self.data[table] if r["id"] != record_id]
-        self._save_data()
+        if len(self.data[table]) < initial_length:
+            self._save_data()
+            return True
+        return False
 
     def close(self):
         """Close the database (not needed for JSON but kept for compatibility)."""
         pass
-
 
 class Database:
     def __init__(self, db_type: str = "sqlite", **kwargs):
@@ -125,7 +116,9 @@ class Database:
             else:
                 raise ValueError("Query required for SQLite select")
         else:
-            return self.conn.select_query(table, conditions)
+            if conditions:
+                return self.conn.select_query_filter(table, conditions)
+            return self.conn.select_query(table)
 
     def insert_query(self, query: str = None, table: str = None, record: Dict[str, Any] = None) -> int:
         """Insert a new record into the database."""
@@ -187,28 +180,15 @@ class Database:
 
     def _create_sqlite_tables(self):
         """Create all SQLite tables."""
-        # Drop existing tables if they exist
-        self._drop_tables()
+        # Implementation not provided in the original code
+        pass
 
-
-
-
-
-
-
-
-
-# Example Usage
 if __name__ == "__main__":
     db = JSONDatabase()
     
-
     # Get a specific item
     projects = db.get_item("PROJECT", 1)
-    print("research item:", projects)
+    print("project item:", projects)
 
     researchers = db.get_item("RESEARCHER", 1)
     print("researcher item:", researchers)
-    
-
-
