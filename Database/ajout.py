@@ -258,7 +258,7 @@ def populate_sample_data(db: Database):
             "NAME_PROJECT": "Genome Sequencing Initiative",
             "BUDGET": 1500000.00,
             "DATE_BEGIN": "2023-01-15",
-            "DATE__END": "2025-12-31",
+            "DATE_END": "2025-12-31",
             "STATE": "Active",
             "ID_MANGER": 6  # Dr. Thomas Wilson as manager
         },
@@ -266,7 +266,7 @@ def populate_sample_data(db: Database):
             "NAME_PROJECT": "Quantum Algorithm Development",
             "BUDGET": 850000.00,
             "DATE_BEGIN": "2023-03-01",
-            "DATE__END": "2024-06-30",
+            "DATE_END": "2024-06-30",
             "STATE": "Active",
             "ID_MANGER": 2  # Prof. David Kim as manager
         },
@@ -274,7 +274,7 @@ def populate_sample_data(db: Database):
             "NAME_PROJECT": "Climate Change Impact Study",
             "BUDGET": 1200000.00,
             "DATE_BEGIN": "2022-09-01",
-            "DATE__END": "2023-08-31",
+            "DATE_END": "2023-08-31",
             "STATE": "Completed",
             "ID_MANGER": 1  # Dr. Sarah Miller as manager
         },
@@ -282,7 +282,7 @@ def populate_sample_data(db: Database):
             "NAME_PROJECT": "Neural Network Optimization",
             "BUDGET": 950000.00,
             "DATE_BEGIN": "2023-05-10",
-            "DATE__END": "2024-11-30",
+            "DATE_END": "2024-11-30",
             "STATE": "Active",
             "ID_MANGER": 5  # Dr. Jessica Lee as manager
         }
@@ -291,10 +291,10 @@ def populate_sample_data(db: Database):
     if db.db_type == "sqlite":
         for project in projects:
             db.execute_query(
-                """INSERT INTO PROJECT (NAME_PROJECT, BUDGET, DATE_BEGIN, DATE__END, STATE, ID_MANGER)
+                """INSERT INTO PROJECT (NAME_PROJECT, BUDGET, DATE_BEGIN, DATE_END, STATE, ID_MANGER)
                 VALUES (?, ?, ?, ?, ?, ?)""",
                 (project["NAME_PROJECT"], project["BUDGET"], project["DATE_BEGIN"],
-                 project["DATE__END"], project["STATE"], project["ID_MANGER"])
+                 project["DATE_END"], project["STATE"], project["ID_MANGER"])
             )
     else:
         for project in projects:

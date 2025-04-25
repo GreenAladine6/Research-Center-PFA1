@@ -256,7 +256,7 @@ class Database:
             NAME_PROJECT TEXT,
             BUDGET REAL,
             DATE_BEGIN TEXT,
-            DATE__END TEXT,
+            DATE_END TEXT,
             STATE TEXT,
             foreign key (ID_MANGER) references RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
         )

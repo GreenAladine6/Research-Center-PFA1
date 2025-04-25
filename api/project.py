@@ -107,7 +107,7 @@ def get_projects():
 def get_project(project_id):
     items = []
     db = JSONDatabase()
-    items = db.select_query_filter("PROJECT", {"ID_PROJECT": int(project_id)})
+    items = db.select_query("PROJECT", {"ID_PROJECT": project_id})
     if project_id:
         return db.get_item("PROJECT", int(project_id))
     return items
