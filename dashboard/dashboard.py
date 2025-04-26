@@ -41,8 +41,10 @@ def projects():
 def events():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
-        events = db.select_query("events")
-        return render_template('events.dashboard.html', title='Events', events=events)
+        events = db.select_query("EVENT")
+        researchers = db.select_query("RESEARCHER")
+        ev_types = db.select_query("TYPE_EV")
+        return render_template('events.dashboard.html', title='Events', events=events , researchers=researchers , ev_types=ev_types)
     return redirect('/dashboard/login')
 
 

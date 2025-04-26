@@ -88,7 +88,7 @@ class Database:
         self.db_type = db_type.lower()
         
         if self.db_type == "sqlite":
-            self.conn = connect(kwargs.get("db_path", "data.db"))
+            self.conn = connect(kwargs.get("db_path", "Database/data.db"))
             self.cursor = self.conn.cursor()
         elif self.db_type == "json":
             self.conn = JSONDatabase(kwargs.get("json_path", "Database/data.json"))
@@ -182,6 +182,12 @@ class Database:
         """Create all SQLite tables."""
         # Implementation not provided in the original code
         pass
+    def close(self):
+        """Close the database connection."""
+        if self.db_type == "sqlite":
+            self.conn.close()
+        else:
+            pass
 
 if __name__ == "__main__":
     db = JSONDatabase()
@@ -192,3 +198,9 @@ if __name__ == "__main__":
 
     researchers = db.get_item("RESEARCHER", 1)
     print("researcher item:", researchers)
+
+    events = db.get_item("EVENT", 1)
+    print("event item:", events)
+
+    ev_types = db.get_item("TYPE_EV", 1)
+    print("event type item:", ev_types)

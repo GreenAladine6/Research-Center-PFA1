@@ -300,14 +300,22 @@ class Database:
         self.execute_query('''
         CREATE TABLE EVENT (
             ID_EVENT INTEGER PRIMARY KEY,
+            NAME_EVENT TEXT NOT NULL,
             TYPE_EV TEXT NOT NULL,
             DATE_BEG TEXT NOT NULL,
-            HEURE TEXT NOT NULL,
-            LIEU TEXT NOT NULL,
+            HOUR TEXT NOT NULL,
+            PLACE TEXT NOT NULL,
             DATEND TEXT,
             ID_ORGANISOR INTEGER,
             FOREIGN KEY (TYPE_EV) REFERENCES TYPE_EV(TYPE_EV),
             FOREIGN KEY (ID_ORGANISOR) REFERENCES RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
+        )
+        ''')
+    def _create_grade_table(self):
+        self.execute_query('''
+        CREATE TABLE GRADE (
+            ID_GRADE INTEGER PRIMARY KEY,
+            NAME_GRADE TEXT
         )
         ''')
 

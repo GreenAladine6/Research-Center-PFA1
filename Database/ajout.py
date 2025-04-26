@@ -1,403 +1,390 @@
-from sqlite3 import connect
-import json
+import random
+import string
+import os
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Union
+from sqlite3 import OperationalError
+from db import Database, JSONDatabase  # Adjust import based on your project structure
 
-# [Previous class definitions for JSONDatabase and Database remain exactly the same...]
-class JSONDatabase:
-    def __init__(self, filename="Database/data.json"):
-        self.filename = filename
-        self._load_data()
+def populate_large_data(db: Database):
+    """Populate the database with a large amount of sample data for all tables."""
+    print("\nPopulating database with large sample data...")
 
-    def _load_data(self):
-        """Load database from JSON file."""
-        try:
-            with open(self.filename, "r", encoding="utf-8") as file:
-                self.data = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            # Initialize with all required tables
-            self.data = {
-                "PROJECT": [], "EVENT": [], "RESEARCHER": [], "WORK": [], 
-                "RESERVE": [], "PARTICIPATE": [], "COLLABORATE": [], 
-                "ASSIGN": [], "PUBLICATION": [], "EQUIPEMENT": [], 
-                "PARTNER": [], "LABORATORY": [], "GRADE": [], "TYPE_EV": []
-            }
-            self._save_data()
+    # Helper functions
+    def random_string(length: int) -> str:
+        return ''.join(random.choices(string.ascii_letters, k=length))
 
-    def _save_data(self):
-        """Save database to JSON file."""
-        with open(self.filename, "w", encoding="utf-8") as file:
-            json.dump(self.data, file, indent=4)
+    def random_email(name: str) -> str:
+        domains = ["univ.edu", "research.org", "science.net", "academy.edu"]
+        return f"{name.lower().replace(' ', '.')}{random.randint(1, 999)}@{random.choice(domains)}"
 
-    def select_query(self, table: str, conditions: Dict[str, Any] = None) -> List[Dict[str, Any]]:
-        """Retrieve records from a table with optional conditions."""
-        if table not in self.data:
-            return []
-        
-        if not conditions:
-            return self.data[table]
-        
-        results = []
-        for record in self.data[table]:
-            match = True
-            for key, value in conditions.items():
-                if record.get(key) != value:
-                    match = False
-                    break
-            if match:
-                results.append(record)
-        return results
+    def random_date(start_year: int = 2020, end_year: int = 2026) -> str:
+        start_date = datetime(start_year, 1, 1)
+        end_date = datetime(end_year, 12, 31)
+        delta = end_date - start_date
+        random_days = random.randint(0, delta.days)
+        return (start_date + timedelta(days=random_days)).strftime("%Y-%m-%d")
 
-    def insert_query(self, table: str, record: Dict[str, Any]):
-        """Insert a new record into a table."""
-        if table not in self.data:
-            self.data[table] = []
-        
-        # Auto-increment ID if not provided
-        if "id" not in record:
-            max_id = max([r.get("id", 0) for r in self.data[table]] or [0])
-            record["id"] = max_id + 1
-        
-        self.data[table].append(record)
-        self._save_data()
-        return record["id"]
+    def random_time() -> str:
+        hours = random.randint(8, 18)
+        minutes = random.choice([0, 15, 30, 45])
+        return f"{hours:02d}:{minutes:02d}"
 
-    def update_query(self, table: str, record_id: int, updates: Dict[str, Any]):
-        """Update a record by ID."""
-        if table not in self.data:
-            return False
-            
-        for record in self.data[table]:
-            if record.get("id") == record_id:
-                record.update(updates)
-                self._save_data()
-                return True
-        return False
+    def random_phone() -> int:
+        return random.randint(1000000000, 9999999999)
 
-    def delete_query(self, table: str, record_id: int):
-        """Delete a record by ID."""
-        if table not in self.data:
-            return False
-            
-        original_length = len(self.data[table])
-        self.data[table] = [r for r in self.data[table] if r.get("id") != record_id]
-        if len(self.data[table]) < original_length:
-            self._save_data()
-            return True
-        return False
-
-    def close(self):
-        """For compatibility with Database interface."""
-        pass
-
-class Database:
-    def __init__(self, db_type: str = "sqlite", **kwargs):
-        self.db_type = db_type.lower()
-        
-        if self.db_type == "sqlite":
-            self.conn = connect(kwargs.get("db_path", "./Database/data.db"))
-            self.cursor = self.conn.cursor()
-        elif self.db_type == "json":
-            self.conn = JSONDatabase(kwargs.get("json_path", "Database/data.json"))
-        else:
-            raise ValueError(f"Unsupported database type: {db_type}")
-    def close(self):
-        """Close the database connection."""
-        if self.db_type == "sqlite":
-            self.conn.close()
-        else:
-            pass  # JSON database doesn't need explicit closing
-
-    def execute_query(self, query: str, params: tuple = None):
-        """Execute a query (SQLite only)."""
-        if self.db_type != "sqlite":
-            raise NotImplementedError("execute_query is only available for SQLite databases")
-            
-        if params:
-            self.cursor.execute(query, params)
-        else:
-            self.cursor.execute(query)
-        self.conn.commit()
-
-    def select_query(self, query: str = None, table: str = None, conditions: Dict[str, Any] = None) -> List[Union[Dict[str, Any], tuple]]:
-        """Retrieve records from the database."""
-        if self.db_type == "sqlite":
-            if query:
-                self.cursor.execute(query)
-                columns = [desc[0] for desc in self.cursor.description]
-                return [dict(zip(columns, row)) for row in self.cursor.fetchall()]
-            else:
-                raise ValueError("Query required for SQLite select")
-        else:
-            return self.conn.select_query(table, conditions)
-
-    def insert_query(self, query: str = None, table: str = None, record: Dict[str, Any] = None) -> int:
-        """Insert a new record into the database."""
-        if self.db_type == "sqlite":
-            if not query:
-                raise ValueError("Query required for SQLite insert")
-            self.cursor.execute(query)
-            self.conn.commit()
-            return self.cursor.lastrowid
-        else:
-            if not table or not record:
-                raise ValueError("Table and record required for JSON insert")
-            return self.conn.insert_query(table, record)
-
-    def update_query(self, query: str = None, table: str = None, record_id: int = None, updates: Dict[str, Any] = None) -> bool:
-        """Update a record in the database."""
-        if self.db_type == "sqlite":
-            if not query:
-                raise ValueError("Query required for SQLite update")
-            self.cursor.execute(query)
-            self.conn.commit()
-            return self.cursor.rowcount > 0
-        else:
-            if not table or record_id is None or not updates:
-                raise ValueError("Table, record_id and updates required for JSON update")
-            return self.conn.update_query(table, record_id, updates)
-
-    def delete_query(self, query: str = None, table: str = None, record_id: int = None) -> bool:
-        """Delete a record from the database."""
-        if self.db_type == "sqlite":
-            if not query:
-                raise ValueError("Query required for SQLite delete")
-            self.cursor.execute(query)
-            self.conn.commit()
-            return self.cursor.rowcount > 0
-        else:
-            if not table or record_id is None:
-                raise ValueError("Table and record_id required for JSON delete")
-            return self.conn.delete_query(table, record_id)
-
-    def create_table(self, query: str = None, table_name: str = None):
-        """Create a table in the database."""
-        if self.db_type == "sqlite":
-            if not query:
-                raise ValueError("Query required for SQLite table creation")
-            self.cursor.execute(query)
-            self.conn.commit()
-        else:
-            # For JSON, tables are automatically created when first used
-            pass
-
-    
-
-    
-        
-def populate_sample_data(db: Database):
-    """Populate the database with sample data."""
-    print("\nPopulating database with sample data...")
-    
-    # Add researcher grades
+    # 1. Add Grades (20 grades)
     grades = [
-        "Undergraduate Researcher",
-        "Graduate Researcher",
-        "PhD Candidate",
-        "Postdoctoral Researcher",
-        "Assistant Professor",
-        "Associate Professor",
-        "Full Professor",
-        "Research Scientist",
-        "Senior Research Scientist",
-        "Principal Investigator"
+        "Undergraduate Researcher", "Graduate Researcher", "PhD Candidate",
+        "Postdoctoral Researcher", "Assistant Professor", "Associate Professor",
+        "Full Professor", "Research Scientist", "Senior Research Scientist",
+        "Principal Investigator", "Lab Technician", "Research Assistant",
+        "Visiting Scholar", "Adjunct Professor", "Research Fellow",
+        "Senior Research Fellow", "Lab Manager", "Data Scientist",
+        "Bioinformatician", "Project Coordinator"
     ]
-    
-    if db.db_type == "sqlite":
-        for grade in grades:
+    grade_ids = []
+    for grade in grades:
+        if db.db_type == "sqlite":
             db.execute_query("INSERT INTO GRADE (NAME_GRADE) VALUES (?)", (grade,))
-    else:
-        for grade in grades:
-            db.insert_query(table="GRADE", record={"NAME_GRADE": grade})
-    
-    # Add laboratories
-    labs = [
-        {"NAME_LAB": "Bioinformatics Lab", "DIRECTOR": "Dr. Alice Johnson"},
-        {"NAME_LAB": "Neuroscience Research Center", "DIRECTOR": "Dr. Robert Chen"},
-        {"NAME_LAB": "Quantum Computing Lab", "DIRECTOR": "Dr. Maria Garcia"},
-        {"NAME_LAB": "Environmental Science Lab", "DIRECTOR": "Dr. James Wilson"}
+            db.cursor.execute("SELECT last_insert_rowid()")
+            grade_ids.append(db.cursor.fetchone()[0])
+        else:
+            grade_id = db.insert_query(table="GRADE", record={"NAME_GRADE": grade})
+            grade_ids.append(grade_id)
+
+    # 2. Add Event Types (50 types)
+    event_types = [
+        "Conference", "Workshop", "Seminar", "Symposium", "Webinar",
+        "Lecture Series", "Panel Discussion", "Hackathon", "Networking Event",
+        "Poster Session", "Roundtable", "Training Session", "Guest Lecture",
+        "Research Forum", "Industry Meetup", "Career Fair", "Science Fair",
+        "Data Science Bootcamp", "AI Summit", "Biotech Expo", "Quantum Computing Workshop",
+        "Environmental Summit", "Neuroscience Colloquium", "Robotics Demo",
+        "Innovation Showcase", "Startup Pitch", "Tech Talk", "Policy Forum",
+        "Ethics in Science Seminar", "Open House", "Lab Tour", "Research Showcase",
+        "Collaborative Workshop", "Funding Pitch", "Grant Writing Seminar",
+        "Peer Review Session", "Journal Club", "Tech Transfer Workshop",
+        "Citizen Science Event", "Public Lecture", "STEM Outreach",
+        "Diversity in Science Panel", "Climate Action Forum", "Bioethics Roundtable",
+        "AI Ethics Seminar", "Quantum Tech Summit", "Genomics Workshop",
+        "Neurotech Demo", "Sustainable Tech Forum", "Research Retreat"
     ]
-    
-    if db.db_type == "sqlite":
-        for lab in labs:
-            db.execute_query(
-                "INSERT INTO LABORATORY (NAME_LAB, DIRECTOR) VALUES (?, ?)",
-                (lab["NAME_LAB"], lab["DIRECTOR"])
-            )
-    else:
-        for lab in labs:
-            db.insert_query(table="LABORATORY", record=lab)
-    
-    # Add researchers (10 researchers)
-    researchers = [
-        {"FULL_NAME": "Dr. Sarah Miller", "NUM_TEL": 5551001, "EMAIL": "s.miller@univ.edu", "ID_GRADE": 6},
-        {"FULL_NAME": "Prof. David Kim", "NUM_TEL": 5551002, "EMAIL": "d.kim@univ.edu", "ID_GRADE": 7},
-        {"FULL_NAME": "Dr. Emily Zhang", "NUM_TEL": 5551003, "EMAIL": "e.zhang@univ.edu", "ID_GRADE": 5},
-        {"FULL_NAME": "Dr. Michael Brown", "NUM_TEL": 5551004, "EMAIL": "m.brown@univ.edu", "ID_GRADE": 8},
-        {"FULL_NAME": "Dr. Jessica Lee", "NUM_TEL": 5551005, "EMAIL": "j.lee@univ.edu", "ID_GRADE": 9},
-        {"FULL_NAME": "Dr. Thomas Wilson", "NUM_TEL": 5551006, "EMAIL": "t.wilson@univ.edu", "ID_GRADE": 10},
-        {"FULL_NAME": "Lisa Park", "NUM_TEL": 5551007, "EMAIL": "l.park@univ.edu", "ID_GRADE": 2},
-        {"FULL_NAME": "Daniel Chen", "NUM_TEL": 5551008, "EMAIL": "d.chen@univ.edu", "ID_GRADE": 3},
-        {"FULL_NAME": "Sophia Martinez", "NUM_TEL": 5551009, "EMAIL": "s.martinez@univ.edu", "ID_GRADE": 4},
-        {"FULL_NAME": "Ryan Johnson", "NUM_TEL": 5551010, "EMAIL": "r.johnson@univ.edu", "ID_GRADE": 1}
-    ]
-    
-    if db.db_type == "sqlite":
-        for researcher in researchers:
+    for event_type in event_types:
+        if db.db_type == "sqlite":
+            db.execute_query("INSERT INTO TYPE_EV (TYPE_EV, DESCRIPTION) VALUES (?, ?)",
+                            (event_type, f"Description for {event_type}"))
+        else:
+            db.insert_query(table="TYPE_EV", record={"TYPE_EV": event_type, "DESCRIPTION": f"Description for {event_type}"})
+
+    # 3. Add Researchers (500 researchers)
+    researcher_ids = []
+    first_names = ["James", "Emma", "Liam", "Olivia", "Noah", "Ava", "William", "Sophia", "Michael", "Isabella"]
+    last_names = ["Smith", "Johnson", "Brown", "Taylor", "Wilson", "Davis", "Clark", "Harris", "Lewis", "Walker"]
+    for i in range(500):
+        full_name = f"{random.choice(first_names)} {random.choice(last_names)}"
+        researcher = {
+            "FULL_NAME": full_name,
+            "NUM_TEL": random_phone(),
+            "EMAIL": random_email(full_name),
+            "ID_GRADE": random.choice(grade_ids)
+        }
+        if db.db_type == "sqlite":
             db.execute_query(
                 "INSERT INTO RESEARCHER (FULL_NAME, NUM_TEL, EMAIL, ID_GRADE) VALUES (?, ?, ?, ?)",
                 (researcher["FULL_NAME"], researcher["NUM_TEL"], researcher["EMAIL"], researcher["ID_GRADE"])
             )
-    else:
-        for researcher in researchers:
-            db.insert_query(table="RESEARCHER", record=researcher)
-    
-    # Add projects (4 projects)
-    projects = [
-        {
-            "NAME_PROJECT": "Genome Sequencing Initiative",
-            "BUDGET": 1500000.00,
-            "DATE_BEGIN": "2023-01-15",
-            "DATE_END": "2025-12-31",
-            "STATE": "Active",
-            "ID_MANAGER": 6  # Dr. Thomas Wilson as manager
-        },
-        {
-            "NAME_PROJECT": "Quantum Algorithm Development",
-            "BUDGET": 850000.00,
-            "DATE_BEGIN": "2023-03-01",
-            "DATE_END": "2024-06-30",
-            "STATE": "Active",
-            "ID_MANAGER": 2  # Prof. David Kim as manager
-        },
-        {
-            "NAME_PROJECT": "Climate Change Impact Study",
-            "BUDGET": 1200000.00,
-            "DATE_BEGIN": "2022-09-01",
-            "DATE_END": "2023-08-31",
-            "STATE": "Completed",
-            "ID_MANAGER": 1  # Dr. Sarah Miller as manager
-        },
-        {
-            "NAME_PROJECT": "Neural Network Optimization",
-            "BUDGET": 950000.00,
-            "DATE_BEGIN": "2023-05-10",
-            "DATE_END": "2024-11-30",
-            "STATE": "Active",
-            "ID_MANAGER": 5  # Dr. Jessica Lee as manager
-        }
+            db.cursor.execute("SELECT last_insert_rowid()")
+            researcher_ids.append(db.cursor.fetchone()[0])
+        else:
+            researcher_id = db.insert_query(table="RESEARCHER", record=researcher)
+            researcher_ids.append(researcher_id)
+
+    # 4. Add Laboratories (50 labs)
+    lab_names = [
+        "Bioinformatics", "Neuroscience", "Quantum Computing", "Environmental Science",
+        "Robotics", "Genomics", "AI Research", "Materials Science", "Biophysics",
+        "Data Science", "Climate Research", "Nanotechnology", "Biomedical Engineering",
+        "Astrophysics", "Chemical Engineering", "Cybersecurity", "Synthetic Biology",
+        "Energy Systems", "Photonics", "Computational Biology"
     ]
-    
-    if db.db_type == "sqlite":
-        for project in projects:
+    lab_ids = []
+    for i in range(50):
+        lab = {
+            "NAME_LAB": f"{lab_names[i % len(lab_names)]} Lab {i + 1}",
+            "DIRECTOR": random.choice(researcher_ids)
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                "INSERT INTO LABORATORY (NAME_LAB, DIRECTOR) VALUES (?, ?)",
+                (lab["NAME_LAB"], lab["DIRECTOR"])
+            )
+            db.cursor.execute("SELECT last_insert_rowid()")
+            lab_ids.append(db.cursor.fetchone()[0])
+        else:
+            lab_id = db.insert_query(table="LABORATORY", record=lab)
+            lab_ids.append(lab_id)
+
+    # 5. Add Projects (200 projects)
+    project_names = [
+        "Genome Sequencing", "Quantum Algorithm", "Climate Impact", "Neural Network",
+        "AI for Healthcare", "Sustainable Energy", "Nanotech Development", "Bioinformatics Pipeline",
+        "Robotics Automation", "Data Privacy", "Cancer Research", "Materials Discovery"
+    ]
+    project_ids = []
+    for i in range(200):
+        start_date = random_date(2020, 2024)
+        end_date = (datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=random.randint(180, 1095))).strftime("%Y-%m-%d")
+        project = {
+            "NAME_PROJECT": f"{project_names[i % len(project_names)]} Project {i + 1}",
+            "BUDGET": round(random.uniform(100000, 5000000), 2),
+            "DATE_BEGIN": start_date,
+            "DATE_END": end_date,
+            "STATE": random.choice(["Not Started", "In Progress", "Completed", "Canceled"]),
+            "ID_MANAGER": random.choice(researcher_ids)
+        }
+        if db.db_type == "sqlite":
             db.execute_query(
                 """INSERT INTO PROJECT (NAME_PROJECT, BUDGET, DATE_BEGIN, DATE_END, STATE, ID_MANAGER)
                 VALUES (?, ?, ?, ?, ?, ?)""",
                 (project["NAME_PROJECT"], project["BUDGET"], project["DATE_BEGIN"],
                  project["DATE_END"], project["STATE"], project["ID_MANAGER"])
             )
-    else:
-        for project in projects:
-            db.insert_query(table="PROJECT", record=project)
-    
-    # Add event types
-   
-    # Add events (4 events)
-    today = datetime.now()
-    events = [
-        {
-            "TYPE_EV": "Conference",
-            "DATE_BEG": (today + timedelta(days=30)).strftime("%Y-%m-%d"),
-            "HEURE": "09:00:00",
-            "LIEU": "Convention Center, Room A",
-            "DATEND": (today + timedelta(days=32)).strftime("%Y-%m-%d"),
-            "ID_ORGANISOR": 1
-        },
-        {
-            "TYPE_EV": "Workshop",
-            "DATE_BEG": (today + timedelta(days=45)).strftime("%Y-%m-%d"),
-            "HEURE": "13:30:00",
-            "LIEU": "Science Building, Room 101",
-            "DATEND": (today + timedelta(days=45)).strftime("%Y-%m-%d"),
-            "ID_ORGANISOR": 3
-        },
-        {
-            "TYPE_EV": "Seminar",
-            "DATE_BEG": (today + timedelta(days=15)).strftime("%Y-%m-%d"),
-            "HEURE": "11:00:00",
-            "LIEU": "Main Auditorium",
-            "DATEND": (today + timedelta(days=15)).strftime("%Y-%m-%d"),
-            "ID_ORGANISOR": 2
-        },
-        {
-            "TYPE_EV": "Symposium",
-            "DATE_BEG": (today + timedelta(days=60)).strftime("%Y-%m-%d"),
-            "HEURE": "10:00:00",
-            "LIEU": "University Hall",
-            "DATEND": (today + timedelta(days=62)).strftime("%Y-%m-%d"),
-            "ID_ORGANISOR": 4
-        }
-    ]
-    
-    if db.db_type == "sqlite":
-        for event in events:
-            db.execute_query(
-                """INSERT INTO EVENT (TYPE_EV, DATE_BEG, HEURE, LIEU, DATEND, ID_ORGANISOR)
-                VALUES (?, ?, ?, ?, ?, ?)""",
-                (event["TYPE_EV"], event["DATE_BEG"], event["HEURE"],
-                 event["LIEU"], event["DATEND"], event["ID_ORGANISOR"])
-            )
-    else:
-        for event in events:
-            db.insert_query(table="EVENT", record=event)
-    
-    print("Sample data populated successfully!")
+            db.cursor.execute("SELECT last_insert_rowid()")
+            project_ids.append(db.cursor.fetchone()[0])
+        else:
+            project_id = db.insert_query(table="PROJECT", record=project)
+            project_ids.append(project_id)
 
-def test_database(db_type="sqlite"):
-    print(f"\nTesting {db_type.upper()} database...")
-    
-    # Initialize database
-    db = Database(db_type=db_type)
-    
-    
-    # Populate with sample data
-    populate_sample_data(db)
-    
-    # Query and display some data
-    print("\nSample data verification:")
-    
-    # Display grades
-    grades = db.select_query("SELECT * FROM GRADE") if db_type == "sqlite" else db.select_query(table="GRADE")
-    print(f"\nGrades ({len(grades)} entries):")
-    # for grade in grades:
-        # print(f"ID: {grade['ID_GRADE'] if db_type == 'sqlite' else grade['id']}, Name: {grade['NAME_GRADE']}")
-    
-    # Display researchers
-    researchers = db.select_query("SELECT * FROM RESEARCHER") if db_type == "sqlite" else db.select_query(table="RESEARCHER")
-    print(f"\nResearchers ({len(researchers)} entries):")
-    for researcher in researchers:
-        print(f"ID: {researcher['ID_RESEARCHER'] if db_type == 'sqlite' else researcher['id']}, Name: {researcher['FULL_NAME']}, Grade: {researcher['ID_GRADE']}")
-    
-    # Display projects
-    projects = db.select_query("SELECT * FROM PROJECT") if db_type == "sqlite" else db.select_query(table="PROJECT")
-    print(f"\nProjects ({len(projects)} entries):")
-    for project in projects:
-        print(f"ID: {project['ID_PROJECT'] if db_type == 'sqlite' else project['id']}, Name: {project['NAME_PROJECT']}, STATE: {project['STATE']}, BUDGET: {project['BUDGET']}")
-    
-    # Display events
-    events = db.select_query("SELECT * FROM EVENT") if db_type == "sqlite" else db.select_query(table="EVENT")
-    print(f"\nEvents ({len(events)} entries):")
-    for event in events:
-        print(f"ID: {event['ID_EVENT'] if db_type == 'sqlite' else event['id']}, Type: {event['TYPE_EV']}, Date: {event['DATE_BEG']}")
-    
-    db.close()
-    print(f"\n{db_type.upper()} database test completed")
+    # 6. Add Partners (100 partners)
+    partner_types = ["Industry", "Academic", "Government", "Non-Profit"]
+    partner_ids = []
+    for i in range(100):
+        partner_name = f"{random_string(5)} {random_string(7)} Organization"
+        partner = {
+            "NAME_PARTNER": partner_name,
+            "EMAIL_PARTNER": random_email(partner_name),
+            "PHONE": random_phone(),
+            "ADRESS": f"{random.randint(100, 999)} {random_string(8)} St, City {i + 1}",
+            "CREATION_DATE": random_date(2000, 2020),
+            "WEBSITE": f"https://www.{partner_name.lower().replace(' ', '')}.org",
+            "NOTES": f"Notes for partner {i + 1}",
+            "AMOUNT": round(random.uniform(50000, 1000000), 2)
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                """INSERT INTO PARTNER (NAME_PARTNER, EMAIL_PARTNER, PHONE, ADRESS, CREATION_DATE, WEBSITE, NOTES, AMOUNT)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (partner["NAME_PARTNER"], partner["EMAIL_PARTNER"], partner["PHONE"], partner["ADRESS"],
+                 partner["CREATION_DATE"], partner["WEBSITE"], partner["NOTES"], partner["AMOUNT"])
+            )
+            db.cursor.execute("SELECT last_insert_rowid()")
+            partner_ids.append(db.cursor.fetchone()[0])
+        else:
+            partner_id = db.insert_query(table="PARTNER", record=partner)
+            partner_ids.append(partner_id)
+
+    # 7. Add Equipment (300 pieces)
+    equipment_names = [
+        "Microscope", "Spectrometer", "Centrifuge", "PCR Machine", "HPLC System",
+        "Mass Spectrometer", "Quantum Computer", "3D Printer", "Laser Cutter",
+        "EEG Machine", "MRI Scanner", "Flow Cytometer"
+    ]
+    equipment_ids = []
+    for i in range(300):
+        equipment = {
+            "NAME_EQUIPEMENT": f"{equipment_names[i % len(equipment_names)]} {i + 1}",
+            "PURCHASE_DATE": random_date(2015, 2024),
+            "LABORATOIRE_ID": random.choice(lab_ids)
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                "INSERT INTO EQUIPEMENT (NAME_EQUIPEMENT, PURCHASE_DATE, LABORATOIRE_ID) VALUES (?, ?, ?)",
+                (equipment["NAME_EQUIPEMENT"], equipment["PURCHASE_DATE"], equipment["LABORATOIRE_ID"])
+            )
+            db.cursor.execute("SELECT last_insert_rowid()")
+            equipment_ids.append(db.cursor.fetchone()[0])
+        else:
+            equipment_id = db.insert_query(table="EQUIPEMENT", record=equipment)
+            equipment_ids.append(equipment_id)
+
+    # 8. Add Events (300 events)
+    event_names = [
+        "Research Conference", "Machine Learning Workshop", "AI Seminar", "Research Symposium",
+        "Quantum Computing Forum", "Bioinformatics Summit", "Climate Science Webinar",
+        "Robotics Showcase", "Data Science Bootcamp", "Neuroscience Colloquium"
+    ]
+    places = [
+        "Convention Center", "Science Building", "Main Auditorium", "University Hall",
+        "Tech Park", "Innovation Hub", "Research Complex", "Lecture Hall"
+    ]
+    event_ids = []
+    for i in range(300):
+        start_date = random_date(2023, 2026)
+        duration = random.randint(1, 5)
+        end_date = (datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=duration)).strftime("%Y-%m-%d")
+        event = {
+            "NAME_EVENT": f"{event_names[i % len(event_names)]} {i + 1}",
+            "TYPE_EV": random.choice(event_types),
+            "DATE_BEGIN": start_date,
+            "HOUR": random_time(),
+            "PLACE": f"{places[i % len(places)]}, Room {random.randint(1, 10)}",
+            "DATE_END": end_date,
+            "ID_ORGANISOR": random.choice(researcher_ids)
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                """INSERT INTO EVENT (NAME_EVENT, TYPE_EV, DATE_BEG, HOUR, PLACE, DATEND, ID_ORGANISOR)
+                VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (event["NAME_EVENT"], event["TYPE_EV"], event["DATE_BEGIN"], event["HOUR"],
+                 event["PLACE"], event["DATE_END"], event["ID_ORGANISOR"])
+            )
+            db.cursor.execute("SELECT last_insert_rowid()")
+            event_ids.append(db.cursor.fetchone()[0])
+        else:
+            event_id = db.insert_query(table="EVENT", record=event)
+            event_ids.append(event_id)
+
+    # 9. Add Publications (500 publications)
+    publication_titles = [
+        "Advances in", "Breakthroughs in", "New Insights into", "Exploring",
+        "Innovations in", "Future of", "Applications of", "Challenges in"
+    ]
+    publication_ids = []
+    for i in range(500):
+        publication = {
+            "TITLE": f"{publication_titles[i % len(publication_titles)]} {random.choice(project_names)} {i + 1}",
+            "DATE_PUB": random_date(2020, 2025),
+            "LIEN": f"https://journal.org/publication/{i + 1}",
+            "ID_RESEARCHER": random.choice(researcher_ids)
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                "INSERT INTO PUBLICATION (TITLE, DATE_PUB, LIEN, ID_RESEARCHER) VALUES (?, ?, ?, ?)",
+                (publication["TITLE"], publication["DATE_PUB"], publication["LIEN"], publication["ID_RESEARCHER"])
+            )
+            db.cursor.execute("SELECT last_insert_rowid()")
+            publication_ids.append(db.cursor.fetchone()[0])
+        else:
+            publication_id = db.insert_query(table="PUBLICATION", record=publication)
+            publication_ids.append(publication_id)
+
+    # 10. Add Junction Tables
+    # ASSIGN: Laboratories assigned to Projects (700 records)
+    for i in range(700):
+        assign = {
+            "LABO_ID": random.choice(lab_ids),
+            "ID_PROJECT": random.choice(project_ids)
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                "INSERT OR IGNORE INTO ASSIGN (LABO_ID, ID_PROJECT) VALUES (?, ?)",
+                (assign["LABO_ID"], assign["ID_PROJECT"])
+            )
+        else:
+            existing = db.select_query(table="ASSIGN", conditions=assign)
+            if not existing:
+                db.insert_query(table="ASSIGN", record=assign)
+
+    # COLLABORATE: Projects collaborating with Partners (600 records)
+    for i in range(600):
+        collaborate = {
+            "ID_PARTNER": random.choice(partner_ids),
+            "ID_PROJECT": random.choice(project_ids)
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                "INSERT OR IGNORE INTO COLLABORATE (ID_PARTNER, ID_PROJECT) VALUES (?, ?)",
+                (collaborate["ID_PARTNER"], collaborate["ID_PROJECT"])
+            )
+        else:
+            existing = db.select_query(table="COLLABORATE", conditions=collaborate)
+            if not existing:
+                db.insert_query(table="COLLABORATE", record=collaborate)
+
+    # PARTICIPATE: Researchers participating in Events (1200 records)
+    for i in range(1200):
+        participate = {
+            "ID_EVENT": random.choice(event_ids),
+            "ID_RESEARCHER": random.choice(researcher_ids)
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                "INSERT OR IGNORE INTO PARTICIPATE (ID_EVENT, ID_RESEARCHER) VALUES (?, ?)",
+                (participate["ID_EVENT"], participate["ID_RESEARCHER"])
+            )
+        else:
+            existing = db.select_query(table="PARTICIPATE", conditions=participate)
+            if not existing:
+                db.insert_query(table="PARTICIPATE", record=participate)
+
+    # RESERVE: Equipment reserved for Projects (800 records)
+    for i in range(800):
+        start_date = random_date(2023, 2025)
+        end_date = (datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=random.randint(7, 90))).strftime("%Y-%m-%d")
+        reserve = {
+            "ID_PROJECT": random.choice(project_ids),
+            "ID_EQUIPEMENT": random.choice(equipment_ids),
+            "ID_RESERVATION": i + 1,
+            "START_DATE": start_date,
+            "END_DATE": end_date
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                """INSERT OR IGNORE INTO RESERVE (ID_PROJECT, ID_EQUIPEMENT, ID_RESERVATION, START_DATE, END_DATE)
+                VALUES (?, ?, ?, ?, ?)""",
+                (reserve["ID_PROJECT"], reserve["ID_EQUIPEMENT"], reserve["ID_RESERVATION"],
+                 reserve["START_DATE"], reserve["END_DATE"])
+            )
+        else:
+            existing = db.select_query(table="RESERVE", conditions={
+                "ID_PROJECT": reserve["ID_PROJECT"],
+                "ID_EQUIPEMENT": reserve["ID_EQUIPEMENT"]
+            })
+            if not existing:
+                db.insert_query(table="RESERVE", record=reserve)
+
+    # WORK: Researchers working on Projects (1000 records)
+    for i in range(1000):
+        work = {
+            "ID_PROJECT": random.choice(project_ids),
+            "ID_RESEARCHER": random.choice(researcher_ids)
+        }
+        if db.db_type == "sqlite":
+            db.execute_query(
+                "INSERT OR IGNORE INTO WORK (ID_PROJECT, ID_RESEARCHER) VALUES (?, ?)",
+                (work["ID_PROJECT"], work["ID_RESEARCHER"])
+            )
+        else:
+            existing = db.select_query(table="WORK", conditions=work)
+            if not existing:
+                db.insert_query(table="WORK", record=work)
+
+    print("Large sample data populated successfully!")
+
+def main():
+    print(f"Starting database population at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    db_dir = "./Database"
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir)
+        print(f"Created directory: {db_dir}")
+
+    db_type = "json"  # Only JSON
+    print(f"\nPopulating {db_type.upper()} database...")
+    try:
+        db = Database(db_type=db_type, db_path="./Database/data.db", json_path="./Database/data.json")
+        print(f"Creating tables for {db_type.upper()} database...")
+        db.create_tables()
+        populate_large_data(db)
+        db.close()
+        print(f"{db_type.upper()} database population completed")
+    except Exception as e:
+        print(f"Error populating {db_type.upper()} database: {e}")
+        raise
+
+    print("\nDatabase population completed successfully!")
 
 if __name__ == "__main__":
-    print(f"Starting database setup at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    
-    # Test both database types
-    test_database("sqlite")
-    test_database("json")
-    
-    print("\nDatabase setup and population completed successfully!")
+    try:
+        main()
+    except Exception as e:
+        print(f"Database population failed: {e}")
