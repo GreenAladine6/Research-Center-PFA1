@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from flask import make_response, render_template, Blueprint, request, jsonify, redirect, send_file
 from flask_jwt_extended import unset_jwt_cookies
-import requests
 from Database.db import JSONDatabase
 from utils.config import Config
 from dotenv import load_dotenv

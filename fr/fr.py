@@ -23,7 +23,7 @@ def index():
     if not request.cookies.get('lang'):
         return response
     db = JSONDatabase()
-    projects = db.select_query("PROJECTS")
+    projects = db.select_query("PROJECT")
     return render_template('index.html', projects=projects[:6], page='')
 
 
@@ -35,8 +35,9 @@ def project():
     if not request.cookies.get('lang'):
         return response
     db = JSONDatabase()
-    projects = db.select_query("PROJECTS")
-    return render_template('project.html', pagetitle='Specialite', page='project', projects=projects)
+    projects = db.select_query("PROJECT")
+    researchers = db.select_query("RESEARCHER")
+    return render_template('project.html', pagetitle='Specialite', page='project', projects=projects , researchers=researchers)
 
 
 @fr_bp.get('/events')  

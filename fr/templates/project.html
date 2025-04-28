@@ -12,13 +12,36 @@
   <title>ENSIT Research Center - Projects</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="{{ url_for('fr.static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
 
   <!-- Additional CSS Files -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/templatemo-chain-app-dev.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/animated.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/owl.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-chain-app-dev.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animated.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}" />
+  <style>
+    .d-none {
+      display: none !important;
+    }
+    .card-img-top {
+      height: 200px; /* Fixed height for images */
+      object-fit: cover; /* Scale image to cover the area */
+      width: 100%; /* Ensure image fills card width */
+    }
+    .card {
+      height: 100%; /* Ensure cards are uniform height */
+      display: flex;
+      flex-direction: column;
+    }
+    .card-body {
+      flex-grow: 1; /* Allow body to expand to fill card */
+    }
+    .card-text-manager {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+  </style>
 </head>
 <body>
   <!-- ***** Preloader Start ***** -->
@@ -42,7 +65,7 @@
           <nav class="main-nav">
             <!-- ***** Logo Start ***** -->
             <a href="{{ url_for('fr.index') }}" class="logo">
-              <img src="{{ url_for('fr.static', filename='images/logo.png') }}" alt="ENSIT Research Center" />
+              <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ENSIT Research Center" />
             </a>
             <!-- ***** Logo End ***** -->
             <!-- ***** Menu Start ***** -->
@@ -66,60 +89,92 @@
   </header>
   <!-- ***** Header Area End ***** -->
 
-  <main style="padding-top: 150px;">
-    <h1 class="text-center">Our Projects</h1>
+  <main style="padding-top: 150px; padding-bottom: 50px;">
+    <h1 class="text-center mb-4">Our Projects</h1>
     <div class="container mt-4">
+      <!-- Search Input -->
       <div class="mb-3">
-        <label for="research-input" class="form-label"><i class="fas fa-flask"></i> Research:</label>
-        <div class="input-group">
-          <span class="input-group-text"><i class="fas fa-flask"></i></span>
-          <input type="text" id="research-input" name="research" placeholder="Enter research topic" class="form-control" style="max-width: 300px;" />
+        <label for="research-input" class="form-label">Search Projects:</label>
+        <div class="input-group" style="max-width: 300px;">
+          <span class="input-group-text" id="project-icon" style="background-color: white; border-right: none;">
+            <i class="fas fa-project-diagram" style="color: #4b8ef1;"></i>
+          </span>
+          <input type="text" id="research-input" name="research" placeholder="Enter research topic" class="form-control" aria-label="Research input" aria-describedby="project-icon" style="border-left: none;" />
         </div>
       </div>
+      <!-- Filter Section -->
+      <div class="mb-3">
+        <label class="form-label">Filter Projects:</label>
+        <div class="row">
+          <!-- Date Begin Filter -->
+          <div class="col-md-3 mb-2">
+            <input type="date" id="filter-date-begin" class="form-control" placeholder="Start Date" />
+          </div>
+          <!-- Date End Filter -->
+          <div class="col-md-3 mb-2">
+            <input type="date" id="filter-date-end" class="form-control" placeholder="End Date" />
+          </div>
+          <!-- State Filter -->
+          <div class="col-md-3 mb-2">
+            <select id="filter-state" class="form-select" number="5s">
+              <option value="">All States</option>
+              {% for state in projects | map(attribute='STATE') | unique | sort %}
+                <option value="{{ state }}">{{ state }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Manager Filter -->
+          <div class="col-md-3 mb-2">
+            <select id="filter-manager" class="form-select">
+              <option value="">All Managers</option>
+              {% set unique_managers = [] %}
+              {% for p in projects %}
+                  {% for manager in researchers %}
+                      {% if manager.id == p.ID_MANAGER and manager.FULL_NAME not in unique_managers %}
+                          {% set _ = unique_managers.append(manager.FULL_NAME) %}
+                          <option value="{{ manager.FULL_NAME }}">{{ manager.FULL_NAME }}</option>
+                      {% endif %}
+                  {% endfor %}
+              {% endfor %}
+          </select>
+          </div>
+        </div>
+      </div>
+      <!-- Project Cards -->
+      {% if projects %}
       <div class="row" id="project-container">
-        <div class="col-md-6 col-lg-3 mb-4">
+        {% for project in projects %}
+        <div class="col-md-6 col-lg-3 mb-4 initial-project {% if loop.index > 16 %}d-none{% endif %}" 
+             data-date-begin="{{ project.DATE_BEGIN }}" 
+             data-date-end="{{ project.DATE_END }}" 
+             data-state="{{ project.STATE }}" 
+             data-manager="{{ project.MANAGER }}">
           <div class="card" style="width: 18rem;">
-            <img src="{{ url_for('fr.static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
+            {% set image_path = project.IMAGE if project.IMAGE else 'images/uploads/projects/default-project.jpg' %}
+            {% set image_path = image_path[7:] if image_path.startswith('static/') else image_path %}
+            <img src="{{ url_for('static', filename=image_path) }}" class="card-img-top" alt="{{ project.NAME_PROJECT }}">
             <div class="card-body">
-              <h5 class="card-title">Project Title 1</h5>
-              <p class="card-text">This is a brief description of the project. It highlights key features and objectives.</p>
-              <a href="{{ url_for('fr.project') }}" class="btn btn-primary">Learn More</a>
+              <h5 class="card-title">{{ project.NAME_PROJECT }}</h5>
+              {% for manager in researchers %} 
+              {% if manager.id == project.ID_MANAGER %}
+              <p class="card-text-manager">Manager: {{ manager.FULL_NAME }}</p>
+              {% endif %}
+              {% endfor %} 
+              <p class="card-text">{{ project.DESCRIPTION|default('This is a brief description of the project.', true) }}</p>
+              <a href="{{ url_for('fr.project' , project_id=project.id) }}" class="btn btn-primary">Learn More</a>
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-          <div class="card" style="width: 18rem;">
-            <img src="{{ url_for('fr.static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
-            <div class="card-body">
-              <h5 class="card-title">Project Title 2</h5>
-              <p class="card-text">This is a brief description of the project. It highlights key features and objectives.</p>
-              <a href="{{ url_for('fr.project') }}" class="btn btn-primary">Learn More</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-          <div class="card" style="width: 18rem;">
-            <img src="{{ url_for('fr.static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
-            <div class="card-body">
-              <h5 class="card-title">Project Title 3</h5>
-              <p class="card-text">This is a brief description of the project. It highlights key features and objectives.</p>
-              <a href="{{ url_for('fr.project') }}" class="btn btn-primary">Learn More</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-          <div class="card" style="width: 18rem;">
-            <img src="{{ url_for('fr.static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
-            <div class="card-body">
-              <h5 class="card-title">Project Title 4</h5>
-              <p class="card-text">This is a brief description of the project. It highlights key features and objectives.</p>
-              <a href="{{ url_for('fr.project') }}" class="btn btn-primary">Learn More</a>
-            </div>
-          </div>
-        </div>
+        {% endfor %}
       </div>
+      {% else %}
+      <div class="alert alert-info mt-4">
+        <iKILLTHEKING class="fas fa-info-circle me-2"></i>No projects found.
+      </div>
+      {% endif %}
+      <!-- More Button -->
       <div class="text-center mt-3">
-        <button type="button" id="project-more-btn" class="btn btn-secondary">More</button>
+        <button type="button" id="project-more-btn" class="btn btn-secondary" {% if projects|length <= 16 %}style="display: none;"{% endif %}>More</button>
       </div>
     </div>
   </main>
@@ -131,7 +186,7 @@
           <div class="footer-widget">
             <h4>Contact Us</h4>
             <p>ENSIT Beb Alioua, Tunis</p>
-            <p><a href="#">123456789</a></p>
+            <p><a href="#">123456789</ cake>
             <p><a href="mailto:ensit@research.center">ensit@research.center</a></p>
           </div>
         </div>
@@ -163,7 +218,7 @@
           <div class="footer-widget">
             <h4>About Our Center</h4>
             <div class="logo">
-              <img src="{{ url_for('fr.static', filename='images/white-logo.png') }}" alt="" />
+              <img src="{{ url_for('static', filename='images/white-logo.png') }}" alt="" />
             </div>
             <p>ENSIT Research Center is dedicated to advancing knowledge and innovation through interdisciplinary research and collaboration.</p>
           </div>
@@ -204,57 +259,145 @@
   </div>
 
   <!-- Scripts -->
-  <script src="{{ url_for('fr.static', filename='js/jquery.min.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/owl-carousel.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/animation.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/imagesloaded.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/popup.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/custom.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/scripts_fixed.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/owl-carousel.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/animation.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/imagesloaded.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
   <script>
-    // Contact Form Handling
     document.addEventListener('DOMContentLoaded', function() {
-      const contactFormOverlay = document.getElementById('form-overlay');
-      const cancelContactBtn = document.getElementById('cancel-contact-btn');
-      const closeBtn = document.querySelector('#contact-form-container .modal_close');
-      const contactButtons = document.querySelectorAll('.contact-btn');
-
-      contactButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-          e.preventDefault();
-          contactFormOverlay.style.display = 'block';
-        });
-      });
-
-      function hideContactForm() {
-        contactFormOverlay.style.display = 'none';
-      }
-
-      if (cancelContactBtn) {
-        cancelContactBtn.addEventListener('click', hideContactForm);
-      }
-
-      if (closeBtn) {
-        closeBtn.addEventListener('click', hideContactForm);
-      }
-
-      const contactForm = document.getElementById('contact-form');
-      if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          alert('Thank you for your message! We will get back to you soon.');
-          hideContactForm();
-          contactForm.reset();
-        });
-      }
-
-      contactFormOverlay.addEventListener('click', function(e) {
-        if (e.target === contactFormOverlay) {
-          hideContactForm();
+    // Filter and Search Functionality
+    const researchInput = document.getElementById('research-input');
+    const filterDateBegin = document.getElementById('filter-date-begin');
+    const filterDateEnd = document.getElementById('filter-date-end');
+    const filterState = document.getElementById('filter-state');
+    const filterManager = document.getElementById('filter-manager');
+  
+    function applyFilters() {
+      const searchText = researchInput.value.toLowerCase().trim();
+      const dateBegin = filterDateBegin.value;
+      const dateEnd = filterDateEnd.value;
+      const state = filterState.value;
+      const manager = filterManager.value;
+  
+      const projectCards = document.querySelectorAll('#project-container .initial-project');
+  
+      projectCards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const cardDateBegin = card.dataset.dateBegin;
+        const cardDateEnd = card.dataset.dateEnd;
+        const cardState = card.dataset.state;
+        const cardManager = card.querySelector('.card-text-manager').textContent.toLowerCase();
+  
+        // Search filter
+        const matchesSearch = !searchText || title.includes(searchText);
+        
+        // Date filters
+        const matchesDateBegin = !dateBegin || cardDateBegin >= dateBegin;
+        const matchesDateEnd = !dateEnd || cardDateEnd <= dateEnd;
+        
+        // State filter
+        const matchesState = !state || cardState === state;
+        
+        // Manager filter
+        const matchesManager = !manager || cardManager.includes(manager.toLowerCase());
+  
+        // Show/hide based on all filters
+        if (matchesSearch && matchesDateBegin && matchesDateEnd && matchesState && matchesManager) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
         }
       });
+    }
+  
+    // Event listeners for filters and search
+    if (researchInput) {
+      researchInput.addEventListener('input', applyFilters);
+    }
+    if (filterDateBegin) {
+      filterDateBegin.addEventListener('change', applyFilters);
+    }
+    if (filterDateEnd) {
+      filterDateEnd.addEventListener('change', applyFilters);
+    }
+    if (filterState) {
+      filterState.addEventListener('change', applyFilters);
+    }
+    if (filterManager) {
+      filterManager.addEventListener('change', applyFilters);
+    }
+  
+// More/Less Button Handler
+const moreBtn = document.getElementById('project-more-btn');
+if (moreBtn) {
+  let isExpanded = false;
+  // Get all projects that are initially hidden (beyond first 16)
+  const allHiddenProjects = Array.from(document.querySelectorAll('#project-container .initial-project.d-none'));
+  
+  moreBtn.addEventListener('click', function() {
+    if (!isExpanded) {
+      // Show all hidden projects
+      allHiddenProjects.forEach(project => {
+        project.classList.remove('d-none');
+      });
+      moreBtn.textContent = 'Less';
+      isExpanded = true;
+    } else {
+      // Hide all projects beyond initial 16
+      allHiddenProjects.forEach(project => {
+        project.classList.add('d-none');
+      });
+      moreBtn.textContent = 'More';
+      isExpanded = false;
+    }
+    
+    applyFilters(); // Reapply filters to ensure consistency
+  });
+} // Contact Form Handling
+    const contactFormOverlay = document.getElementById('form-overlay');
+    const cancelContactBtn = document.getElementById('cancel-contact-btn');
+    const closeBtn = document.querySelector('#contact-form-container .modal_close');
+    const contactButtons = document.querySelectorAll('.contact-btn');
+  
+    contactButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        contactFormOverlay.style.display = 'block';
+      });
     });
-  </script>
+  
+    function hideContactForm() {
+      contactFormOverlay.style.display = 'none';
+    }
+  
+    if (cancelContactBtn) {
+      cancelContactBtn.addEventListener('click', hideContactForm);
+    }
+  
+    if (closeBtn) {
+      closeBtn.addEventListener('click', hideContactForm);
+    }
+  
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Thank you for your message! We will get back to you soon.');
+        hideContactForm();
+        contactForm.reset();
+      });
+    }
+  
+    // Fixed the syntax error here - removed the extra closing parenthesis
+    contactFormOverlay.addEventListener('click', function(e) {
+      if (e.target === contactFormOverlay) {
+        hideContactForm();
+      }
+    });
+  });
+</script>
 </body>
 </html>

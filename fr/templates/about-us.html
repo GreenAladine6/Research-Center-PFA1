@@ -9,16 +9,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet" />
 
-  <title>Chain App Dev - About Us</title>
+  <title>ENSIT Research Center - About Us</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="{{ url_for('fr.static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
 
   <!-- Additional CSS Files -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/templatemo-chain-app-dev.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/animated.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/owl.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-chain-app-dev.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animated.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}" />
 </head>
 <body>
   <!-- ***** Preloader Start ***** -->
@@ -42,7 +42,7 @@
           <nav class="main-nav">
             <!-- ***** Logo Start ***** -->
             <a href="{{ url_for('fr.index') }}" class="logo">
-              <img src="{{ url_for('fr.static', filename='images/logo.png') }}" alt="Chain App Dev" />
+              <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ENSIT Research Center" />
             </a>
             <!-- ***** Logo End ***** -->
             <!-- ***** Menu Start ***** -->
@@ -66,20 +66,21 @@
   </header>
   <!-- ***** Header Area End ***** -->
 
-  <main class="container d-flex flex-column justify-content-center" style="min-height: 100vh;">
-    <p>Welcome to our page</p>
-    <div class="section-heading text-center">
-      <h1>About Our Organization</h1>
-      <p>We are a research organization dedicated to advancing knowledge in our field through innovative projects and collaborations. Our team of experts works tirelessly to push the boundaries of science and technology, fostering an environment of creativity and excellence.</p>
-    </div>
-    <div class="row">
-      <div class="col-lg-6">
-        <h2>Our Mission</h2>
-        <p>Our mission is to conduct cutting-edge research that addresses real-world challenges, promotes sustainable development, and contributes to the betterment of society. We strive to create impactful solutions through interdisciplinary collaboration and innovation.</p>
+  <main style="padding-top: 150px;">
+    <div class="container">
+      <div class="section-heading text-center">
+        <h1>About Our Organization</h1>
+        <p>We are a research organization dedicated to advancing knowledge in our field through innovative projects and collaborations. Our team of experts works tirelessly to push the boundaries of science and technology, fostering an environment of creativity and excellence.</p>
       </div>
-      <div class="col-lg-6">
-        <h2>Our History</h2>
-        <p>Founded over two decades ago, our organization has grown from a small group of passionate researchers to a leading institution recognized globally. Throughout our history, we have achieved numerous milestones, published influential papers, and established partnerships with industry leaders and academic institutions.</p>
+      <div class="row">
+        <div class="col-lg-6">
+          <h2>Our Mission</h2>
+          <p>Our mission is to conduct cutting-edge research that addresses real-world challenges, promotes sustainable development, and contributes to the betterment of society. We strive to create impactful solutions through interdisciplinary collaboration and innovation.</p>
+        </div>
+        <div class="col-lg-6">
+          <h2>Our History</h2>
+          <p>Founded over two decades ago, our organization has grown from a small group of passionate researchers to a leading institution recognized globally. Throughout our history, we have achieved numerous milestones, published influential papers, and established partnerships with industry leaders and academic institutions.</p>
+        </div>
       </div>
     </div>
   </main>
@@ -123,7 +124,7 @@
           <div class="footer-widget">
             <h4>About Our Center</h4>
             <div class="logo">
-              <img src="{{ url_for('fr.static', filename='images/white-logo.png') }}" alt="" />
+              <img src="{{ url_for('static', filename='images/white-logo.png') }}" alt="" />
             </div>
             <p>ENSIT Research Center is dedicated to advancing knowledge and innovation through interdisciplinary research and collaboration.</p>
           </div>
@@ -164,14 +165,14 @@
   </div>
 
   <!-- Scripts -->
-  <script src="{{ url_for('fr.static', filename='js/jquery.min.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/owl-carousel.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/animation.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/imagesloaded.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/popup.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/custom.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/scripts_fixed.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/owl-carousel.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/animation.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/imagesloaded.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/scripts_fixed.js') }}"></script>
   <script>
     // Contact Form Handling
     document.addEventListener('DOMContentLoaded', function() {
@@ -212,8 +213,8 @@
       contactFormOverlay.addEventListener('click', function(e) {
         if (e.target === contactFormOverlay) {
           hideContactForm();
-        });
-      }
+        }
+      });
     });
   </script>
 </body>

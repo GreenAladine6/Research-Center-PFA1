@@ -12,13 +12,56 @@
   <title>ENSIT Research Center - Publications</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="{{ url_for('fr.static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
 
   <!-- Additional CSS Files -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/templatemo-chain-app-dev.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/animated.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/owl.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-chain-app-dev.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animated.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}" />
+  <style>
+    /* Improve card hover effect */
+    .card:hover {
+      box-shadow: 0 8px 16px rgba(75, 142, 241, 0.3);
+      transform: translateY(-5px);
+      transition: all 0.3s ease;
+    }
+
+    /* Modal form improvements */
+    .modal-content {
+      border-radius: 8px;
+    }
+
+    .modal-header {
+      background-color: #4b8ef1;
+      color: white;
+      border-bottom: none;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+
+    .btn-primary {
+      background-color: #4b8ef1;
+      border-color: #4b8ef1;
+    }
+
+    .btn-primary:hover {
+      background-color: #3a6fcc;
+      border-color: #3a6fcc;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+      main h1 {
+        font-size: 1.8rem;
+        text-align: center;
+      }
+    }
+
+    .d-none {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
   <!-- ***** Preloader Start ***** -->
@@ -42,7 +85,7 @@
           <nav class="main-nav">
             <!-- ***** Logo Start ***** -->
             <a href="{{ url_for('fr.index') }}" class="logo">
-              <img src="{{ url_for('fr.static', filename='images/logo.png') }}" alt="ENSIT Research Center" />
+              <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ENSIT Research Center" />
             </a>
             <!-- ***** Logo End ***** -->
             <!-- ***** Menu Start ***** -->
@@ -66,11 +109,21 @@
   </header>
   <!-- ***** Header Area End ***** -->
 
-  <main style="padding-top: 150px;">
-    <h1 class="text-center">Publications</h1>
-    <div id="content-container" class="container mt-4">
-      <div class="row">
-        <div class="col-12 mb-4">
+  <main style="padding-top: 150px; padding-bottom: 50px;">
+    <h1 class="text-center mb-4">Publications</h1>
+    <div class="container mt-4">
+      <div class="mb-3">
+        <label for="publication-input" class="form-label">Search Publications:</label>
+        <div class="input-group" style="max-width: 300px;">
+          <span class="input-group-text" style="background-color: white; border-right: none;">
+            <i class="fas fa-book" style="color: #4b8ef1;"></i>
+          </span>
+          <input type="text" id="publication-input" name="publication" placeholder="Enter publication title" class="form-control" style="border-left: none;" />
+        </div>
+      </div>
+      <div id="content-container" class="row">
+        <!-- Initial 3 publication cards -->
+        <div class="col-12 mb-4 initial-publication">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Publication Title 1</h5>
@@ -79,7 +132,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12 mb-4">
+        <div class="col-12 mb-4 initial-publication">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Publication Title 2</h5>
@@ -88,7 +141,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12 mb-4">
+        <div class="col-12 mb-4 initial-publication">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Publication Title 3</h5>
@@ -97,15 +150,11 @@
             </div>
           </div>
         </div>
-        <div class="col-12 mb-4">
-          <div class="card border-primary">
-            <div class="card-body">
-              <h5 class="card-title">Add Publication</h5>
-              <p class="card-text">Add a new publication to the list.</p>
-              <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPublicationModal">Add New</button>
-            </div>
-          </div>
-        </div>
+      </div>
+      <div class="text-center mt-3">
+        <button type="button" id="publication-more-btn" class="btn btn-secondary">More</button>
+        <button type="button" id="publication-less-btn" class="btn btn-secondary ms-2" disabled>Less</button>
+        <button type="button" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#addPublicationModal">Add New</button>
       </div>
     </div>
   </main>
@@ -181,7 +230,7 @@
           <div class="footer-widget">
             <h4>About Our Center</h4>
             <div class="logo">
-              <img src="{{ url_for('fr.static', filename='images/white-logo.png') }}" alt="" />
+              <img src="{{ url_for('static', filename='images/white-logo.png') }}" alt="" />
             </div>
             <p>ENSIT Research Center is dedicated to advancing knowledge and innovation through interdisciplinary research and collaboration.</p>
           </div>
@@ -222,17 +271,74 @@
   </div>
 
   <!-- Scripts -->
-  <script src="{{ url_for('fr.static', filename='js/jquery.min.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/owl-carousel.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/animation.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/imagesloaded.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/popup.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/custom.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/scripts_fixed.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/owl-carousel.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/animation.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/imagesloaded.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/scripts_fixed.js') }}"></script>
   <script>
-    // Contact Form Handling
     document.addEventListener('DOMContentLoaded', function() {
+      let publicationCounter = 3; // Tracks the number of publication cards added
+
+      // Search functionality
+      const publicationInput = document.getElementById('publication-input');
+      if (publicationInput) {
+        publicationInput.addEventListener('input', function() {
+          const filter = this.value.toLowerCase().trim();
+          const publicationCards = document.querySelectorAll('#content-container .col-12');
+          publicationCards.forEach(card => {
+            const title = card.querySelector('.card-title').textContent.toLowerCase();
+            card.style.display = title.includes(filter) ? '' : 'none';
+          });
+        });
+      }
+
+      // Function to add three new publication cards
+      function addPublicationCards() {
+        for (let i = 0; i < 3; i++) {
+          publicationCounter++;
+          const newPublication = `
+            <div class="col-12 mb-4 added-publication" data-publication-id="${publicationCounter}">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Publication Title ${publicationCounter}</h5>
+                  <p class="card-text">This is a brief description of publication ${publicationCounter}. It highlights key points and findings.</p>
+                  <a href="{{ url_for('fr.publications') }}" class="btn btn-primary">Read More</a>
+                </div>
+              </div>
+            </div>
+          `;
+          document.getElementById('content-container').insertAdjacentHTML('beforeend', newPublication);
+        }
+        document.getElementById('publication-less-btn').disabled = false;
+      }
+
+      // More button handler
+      const moreBtn = document.getElementById('publication-more-btn');
+      if (moreBtn) {
+        moreBtn.addEventListener('click', addPublicationCards);
+      }
+
+      // Less button handler
+      const lessBtn = document.getElementById('publication-less-btn');
+      if (lessBtn) {
+        lessBtn.addEventListener('click', function() {
+          const addedPublications = document.querySelectorAll('.added-publication');
+          const toRemove = Array.from(addedPublications).slice(-3);
+          if (toRemove.length > 0) {
+            toRemove.forEach(publication => publication.remove());
+            publicationCounter -= toRemove.length;
+          }
+          if (document.querySelectorAll('.added-publication').length === 0) {
+            lessBtn.disabled = true;
+          }
+        });
+      }
+
+      // Contact Form Handling
       const contactFormOverlay = document.getElementById('form-overlay');
       const cancelContactBtn = document.getElementById('cancel-contact-btn');
       const closeBtn = document.querySelector('#contact-form-container .modal_close');
@@ -272,6 +378,47 @@
           hideContactForm();
         }
       });
+
+      // Add Publication Form Handling
+      const addPublicationForm = document.getElementById('addPublicationForm');
+      if (addPublicationForm) {
+        addPublicationForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          fetch(this.action, {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              publicationCounter++;
+              const newPublication = `
+                <div class="col-12 mb-4 added-publication" data-publication-id="${publicationCounter}">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">${formData.get('title')}</h5>
+                      <p class="card-text">${formData.get('description')}</p>
+                      ${formData.get('link') ? `<a href="${formData.get('link')}" class="btn btn-primary" target="_blank">Read More</a>` : `<a href="{{ url_for('fr.publications') }}" class="btn btn-primary">Read More</a>`}
+                    </div>
+                  </div>
+                </div>
+              `;
+              document.getElementById('content-container').insertAdjacentHTML('beforeend', newPublication);
+              document.getElementById('publication-less-btn').disabled = false;
+              addPublicationForm.reset();
+              bootstrap.Modal.getInstance(document.getElementById('addPublicationModal')).hide();
+              alert('Publication added successfully!');
+            } else {
+              alert('Error adding publication: ' + (data.message || 'Unknown error'));
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while adding the publication.');
+          });
+        });
+      }
     });
   </script>
 </body>

@@ -12,13 +12,18 @@
   <title>ENSIT Research Center - Staff</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="{{ url_for('fr.static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
 
   <!-- Additional CSS Files -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/templatemo-chain-app-dev.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/animated.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/owl.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-chain-app-dev.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animated.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}" />
+  <style>
+    .d-none {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
   <!-- ***** Preloader Start ***** -->
@@ -42,7 +47,7 @@
           <nav class="main-nav">
             <!-- ***** Logo Start ***** -->
             <a href="{{ url_for('fr.index') }}" class="logo">
-              <img src="{{ url_for('fr.static', filename='images/logo.png') }}" alt="ENSIT Research Center" />
+              <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ENSIT Research Center" />
             </a>
             <!-- ***** Logo End ***** -->
             <!-- ***** Menu Start ***** -->
@@ -66,22 +71,23 @@
   </header>
   <!-- ***** Header Area End ***** -->
 
-  <main style="padding-top: 150px;">
-    <h1 class="text-center">Our Staff</h1>
+  <main style="padding-top: 150px; padding-bottom: 50px;">
+    <h1 class="text-center mb-4">Our Staff</h1>
     <div class="container mt-4">
       <div class="mb-3">
         <label for="researcher-input" class="form-label">Researcher:</label>
         <div class="input-group" style="max-width: 300px;">
-          <span class="input-group-text"><i class="fas fa-user"></i></span>
+          <span class="input-group-text"><i class="fas fa-user" style="color: #4b8ef1;"></i></span>
           <input type="text" id="researcher-input" name="researcher" placeholder="Enter researcher name" class="form-control" />
         </div>
       </div>
       <div class="row" id="staff-container">
-        <div class="col-lg-4 mb-4 staff-card">
+        <!-- Initial 3 staff members -->
+        <div class="col-lg-4 mb-4 initial-staff">
           <div class="card mb-3" style="max-width: 100%;">
             <div class="row g-0">
               <div class="col-md-4">
-                <img src="{{ url_for('fr.static', filename='images/staff-placeholder.png') }}" class="img-fluid rounded-start" alt="Staff Member" />
+                <img src="{{ url_for('static', filename='images/staff-placeholder.png') }}" class="img-fluid rounded-start" alt="Staff Member 1" />
               </div>
               <div class="col-md-8">
                 <div class="card-body">
@@ -93,11 +99,11 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-4 mb-4 staff-card">
+        <div class="col-lg-4 mb-4 initial-staff">
           <div class="card mb-3" style="max-width: 100%;">
             <div class="row g-0">
               <div class="col-md-4">
-                <img src="{{ url_for('fr.static', filename='images/staff-placeholder.png') }}" class="img-fluid rounded-start" alt="Staff Member" />
+                <img src="{{ url_for('static', filename='images/staff-placeholder.png') }}" class="img-fluid rounded-start" alt="Staff Member 2" />
               </div>
               <div class="col-md-8">
                 <div class="card-body">
@@ -109,11 +115,11 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-4 mb-4 staff-card">
+        <div class="col-lg-4 mb-4 initial-staff">
           <div class="card mb-3" style="max-width: 100%;">
             <div class="row g-0">
               <div class="col-md-4">
-                <img src="{{ url_for('fr.static', filename='images/staff-placeholder.png') }}" class="img-fluid rounded-start" alt="Staff Member" />
+                <img src="{{ url_for('static', filename='images/staff-placeholder.png') }}" class="img-fluid rounded-start" alt="Staff Member 3" />
               </div>
               <div class="col-md-8">
                 <div class="card-body">
@@ -128,6 +134,7 @@
       </div>
       <div class="text-center mt-3">
         <button type="button" id="staff-more-btn" class="btn btn-secondary">See More...</button>
+        <button type="button" id="staff-less-btn" class="btn btn-secondary ms-2" disabled>Less</button>
       </div>
     </div>
   </main>
@@ -171,7 +178,7 @@
           <div class="footer-widget">
             <h4>About Our Center</h4>
             <div class="logo">
-              <img src="{{ url_for('fr.static', filename='images/white-logo.png') }}" alt="" />
+              <img src="{{ url_for('static', filename='images/white-logo.png') }}" alt="" />
             </div>
             <p>ENSIT Research Center is dedicated to advancing knowledge and innovation through interdisciplinary research and collaboration.</p>
           </div>
@@ -212,26 +219,77 @@
   </div>
 
   <!-- Scripts -->
-  <script src="{{ url_for('fr.static', filename='js/jquery.min.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/owl-carousel.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/animation.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/imagesloaded.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/popup.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/custom.js') }}"></script>
-  <script src="{{ url_for('fr.static', filename='js/scripts_fixed.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/owl-carousel.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/animation.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/imagesloaded.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/scripts_fixed.js') }}"></script>
   <script>
-    // Search Functionality
     document.addEventListener('DOMContentLoaded', function() {
+      let staffCounter = 3; // Tracks the number of staff cards added
+
+      // Search functionality
       const researcherInput = document.getElementById('researcher-input');
       if (researcherInput) {
         researcherInput.addEventListener('input', function() {
-          const filter = this.value.toLowerCase();
-          const staffCards = document.querySelectorAll('.staff-card');
+          const filter = this.value.toLowerCase().trim();
+          const staffCards = document.querySelectorAll('#staff-container .col-lg-4');
           staffCards.forEach(card => {
             const name = card.querySelector('.card-title').textContent.toLowerCase();
             card.style.display = name.includes(filter) ? '' : 'none';
           });
+        });
+      }
+
+      // Function to add three new staff cards
+      function addStaffCards() {
+        for (let i = 0; i < 3; i++) {
+          staffCounter++;
+          const newStaff = `
+            <div class="col-lg-4 mb-4 added-staff" data-staff-id="${staffCounter}">
+              <div class="card mb-3" style="max-width: 100%;">
+                <div class="row g-0">
+                  <div class="col-md-4">
+                    <img src="{{ url_for('static', filename='images/staff-placeholder.png') }}" class="img-fluid rounded-start" alt="Staff Member ${staffCounter}" />
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body">
+                      <h5 class="card-title">Staff Member Name ${staffCounter}</h5>
+                      <p class="card-text"><small class="text-muted">Position / Role</small></p>
+                      <p class="card-text">Brief description or bio of staff member ${staffCounter} goes here. Highlight their expertise and contributions.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          document.getElementById('staff-container').insertAdjacentHTML('beforeend', newStaff);
+        }
+        document.getElementById('staff-less-btn').disabled = false;
+      }
+
+      // More button handler
+      const moreBtn = document.getElementById('staff-more-btn');
+      if (moreBtn) {
+        moreBtn.addEventListener('click', addStaffCards);
+      }
+
+      // Less button handler
+      const lessBtn = document.getElementById('staff-less-btn');
+      if (lessBtn) {
+        lessBtn.addEventListener('click', function() {
+          const addedStaff = document.querySelectorAll('.added-staff');
+          const toRemove = Array.from(addedStaff).slice(-3);
+          if (toRemove.length > 0) {
+            toRemove.forEach(staff => staff.remove());
+            staffCounter -= toRemove.length;
+          }
+          if (document.querySelectorAll('.added-staff').length === 0) {
+            lessBtn.disabled = true;
+          }
         });
       }
 

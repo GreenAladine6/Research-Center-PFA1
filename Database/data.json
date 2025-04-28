@@ -25,9 +25,10 @@
             "BUDGET": 4574549.28,
             "DATE_BEGIN": "2023-07-26",
             "DATE_END": "2024-03-21",
-            "STATE": "Not Started",
+            "STATE": "Canceled",
             "ID_MANAGER": 396,
-            "id": 3
+            "id": 3,
+            "IMAGE": "images/uploads/projects/543b71a4-2d8d-4fbb-947b-3b03f0eed92a_a1caceb1-9f0c-4e10-8091-06cd445f3103.jpeg"
         },
         {
             "NAME_PROJECT": "Neural Network Project 4",
