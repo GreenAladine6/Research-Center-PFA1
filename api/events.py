@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 from Database.db import JSONDatabase
 
 events_bp = Blueprint('events', __name__)
-UPLOAD_FOLDER = os.path.join("static", "images", "uploads","events")
+UPLOAD_FOLDER = os.path.join("fr/static", "images", "uploads","events")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'svg'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
@@ -125,7 +125,7 @@ def handle_image_upload(
 def remove_old_image(old_image_path: Optional[str], new_image_path: Optional[str]):
     """Remove old image if it exists and is different from the new image."""
     if old_image_path and new_image_path and old_image_path != new_image_path:
-        old_file_path = os.path.join("static", old_image_path)
+        old_file_path = os.path.join("fr/static", old_image_path)
         if os.path.exists(old_file_path):
             try:
                 os.remove(old_file_path)
@@ -318,7 +318,7 @@ def delete_event(event_id: int):
         
         # Delete associated image
         if "IMAGE" in event:
-            image_path = os.path.join("static", event["IMAGE"])
+            image_path = os.path.join("fr/static", event["IMAGE"])
             if os.path.exists(image_path):
                 try:
                     os.remove(image_path)
