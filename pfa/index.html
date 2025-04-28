@@ -27,7 +27,7 @@
           }
 
           // Convert filtered JSON back to CSV
-          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
           csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
           return csv;
       } catch (e) {
@@ -61,10 +61,344 @@
 <link rel="stylesheet" href="assets/css/animated.css">
 <link rel="stylesheet" href="assets/css/owl.css">
 
-<!-- Custom CSS for Statistics Hover Effect -->
+<style>
+.project-card:nth-child(1) {
+  animation-duration: 3s !important;
+}
+.project-card:nth-child(2) {
+  animation-duration: 3s !important;
+}
+.project-card:nth-child(3) {
+  animation-duration: 3s !important;
+}
+.staff-card {
+  animation-duration: 3s !important;
+}
+</style>
+
+<!-- Custom CSS for Statistics, Animations, and Dots -->
 <style>
 .statistic-card:hover {
   transform: scale(1.05);
+}
+
+/* Projects Circular Carousel */
+.projects-carousel {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  perspective: 1000px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.project-card {
+  position: absolute;
+  width: 240px;
+  height: 280px;
+  background: linear-gradient(135deg, #ffffff, #e8f0fe);
+  border: 2px solid #4b8ef1; /* Visible border */
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 15px;
+  will-change: transform, opacity;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s;
+}
+
+.projects-carousel:hover .project-card {
+  animation-play-state: paused;
+}
+
+.project-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  z-index: 20;
+}
+
+/* New classes for project carousel states */
+.project-card.active {
+  z-index: 20;
+  transform: rotateY(0deg) translateZ(240px) scale(1.1);
+  opacity: 1;
+  animation-play-state: paused !important;
+}
+
+.project-card.next {
+  z-index: 10;
+  transform: rotateY(120deg) translateZ(240px) scale(0.8);
+  opacity: 0.7;
+  animation-play-state: paused !important;
+}
+
+.project-card.prev {
+  z-index: 10;
+  transform: rotateY(240deg) translateZ(240px) scale(0.8);
+  opacity: 0.7;
+  animation-play-state: paused !important;
+}
+
+.project-card.hidden {
+  z-index: 0;
+  opacity: 0;
+  animation-play-state: paused !important;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Staff Card Sliding Animation */
+.staff-carousel {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.staff-card {
+  position: absolute;
+  width: 340px;
+  height: 400px;
+  background: linear-gradient(135deg, #ffffff, #e8f0fe);
+  border: 3px solid #4b8ef1; /* Thicker, visible border */
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  will-change: transform, opacity;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s;
+  animation: slideStaff 6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.staff-carousel:hover .staff-card {
+  animation-play-state: paused;
+}
+
+.staff-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideStaff {
+  0% {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+  33.33% {
+    transform: translateX(0) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Dots Styling */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin: 0 5px;
+  transition: background-color 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+
+.dot.active {
+  background-color: #4b8ef1;
+  transform: scale(1.4);
+}
+
+.projects-carousel .dot:nth-child(1) {
+  animation: dotActive1 12s infinite;
+}
+.projects-carousel .dot:nth-child(2) {
+  animation: dotActive2 12s infinite;
+}
+.projects-carousel .dot:nth-child(3) {
+  animation: dotActive3 12s infinite;
+}
+
+.staff-carousel .dot {
+  animation: dotActiveStaff 6s infinite;
+}
+
+@keyframes dotActive1 {
+  0%, 25% {
+    background-color: #4b8ef1;
+    transform: scale(1.4);
+  }
+  25.01%, 100% {
+    background-color: #ccc;
+    transform: scale(1);
+  }
+}
+
+@keyframes dotActive2 {
+  0%, 33.32% {
+    background-color: #ccc;
+    transform: scale(1);
+  }
+  33.33%, 58.33% {
+    background-color: #4b8ef1;
+    transform: scale(1.4);
+  }
+  58.34%, 100% {
+    background-color: #ccc;
+    transform: scale(1);
+  }
+}
+
+@keyframes dotActive3 {
+  0%, 91.65% {
+    background-color: #ccc;
+    transform: scale(1);
+  }
+  91.66%, 100% {
+    background-color: #4b8ef1;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes dotActiveStaff {
+  0%, 16.66% {
+    background-color: #ccc;
+    transform: scale(1);
+  }
+  16.67%, 66.67% {
+    background-color: #4b8ef1;
+    transform: scale(1.4);
+  }
+  66.68%, 100% {
+    background-color: #ccc;
+    transform: scale(1);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .projects-carousel {
+    height: 350px;
+  }
+  .project-card {
+    width: 200px;
+    height: 240px;
+  }
+  @keyframes circularOrbit1 {
+    0%, 25% {
+      transform: rotateY(0deg) translateZ(200px) scale(1.05);
+      opacity: 1;
+      z-index: 10;
+    }
+    33.33% {
+      transform: rotateY(-120deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+    58.33%, 83.33% {
+      transform: rotateY(-120deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+    91.66% {
+      transform: rotateY(-240deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+    100% {
+      transform: rotateY(-360deg) translateZ(200px) scale(1.05);
+      opacity: 1;
+      z-index: 10;
+    }
+  }
+  @keyframes circularOrbit2 {
+    0%, 25% {
+      transform: rotateY(120deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+    33.33% {
+      transform: rotateY(0deg) translateZ(200px) scale(1.05);
+      opacity: 1;
+      z-index: 10;
+    }
+    58.33%, 83.33% {
+      transform: rotateY(0deg) translateZ(200px) scale(1.05);
+      opacity: 1;
+      z-index: 10;
+    }
+    91.66% {
+      transform: rotateY(-120deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+    100% {
+      transform: rotateY(-240deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+  }
+  @keyframes circularOrbit3 {
+    0%, 25% {
+      transform: rotateY(240deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+    33.33% {
+      transform: rotateY(120deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+    58.33%, 83.33% {
+      transform: rotateY(120deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+    91.66% {
+      transform: rotateY(0deg) translateZ(200px) scale(1.05);
+      opacity: 1;
+      z-index: 10;
+    }
+    100% {
+      transform: rotateY(-120deg) translateZ(200px) scale(0.7);
+      opacity: 0.7;
+      z-index: 5;
+    }
+  }
+  .staff-carousel {
+    height: 350px;
+  }
+  .staff-card {
+    width: 280px;
+    height: 320px;
+    border: 2px solid #4b8ef1; /* Slightly thinner border for smaller screens */
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+  }
+  .carousel-dots {
+    margin-top: 15px;
+  }
 }
 </style>
 </head>
@@ -103,7 +437,6 @@
         <li class="scroll-to-section"><a href="staff.html">Staff</a></li>
         <li class="scroll-to-section"><a href="pubs.html">Publications</a></li>
         <li class="scroll-to-section"><a href="about-us.html">About Us</a></li>
-        <li class="scroll-to-section"><a href="#contact" class="contact-btn">Contact</a></li>
       </ul>        
       <a class='menu-trigger'>
           <span>Menu</span>
@@ -115,91 +448,6 @@
 </div>
 </header>
 <!-- ***** Header Area End ***** -->
-
-<div id="modal" class="popupContainer" style="display:none;">
-<div class="popupHeader">
-  <span class="header_title">Login</span>
-  <span class="modal_close"><i class="fa fa-times"></i></span>
-</div>
-
-<section class="popupBody">
-  <!-- Social Login -->
-  <div class="social_login">
-      <div class="">
-          <a href="#" class="social_box fb">
-              <span class="icon"><i class="fab fa-facebook"></i></span>
-              <span class="icon_title">Connect with Facebook</span>
-          </a>
-
-          <a href="#" class="social_box google">
-              <span class="icon"><i class="fab fa-google-plus"></i></span>
-              <span class="icon_title">Connect with Google</span>
-          </a>
-      </div>
-
-      <div class="centeredText">
-          <span>Or use your Email address</span>
-      </div>
-
-      <div class="action_btns">
-          <div class="one_half"><a href="#" id="login_form" class="btn">Login</a></div>
-          <div class="one_half last"><a href="#" id="register_form" class="btn">Sign up</a></div>
-      </div>
-  </div>
-
-  <!-- Username & Password Login form -->
-  <div class="user_login">
-      <form>
-          <label>Email / Username</label>
-          <input type="text" />
-          <br />
-
-          <label>Password</label>
-          <input type="password" />
-          <br />
-
-          <div class="checkbox">
-              <input id="remember" type="checkbox" />
-              <label for="remember">Remember me on this computer</label>
-          </div>
-
-          <div class="action_btns">
-              <div class="one_half"><a href="#" class="btn back_btn"><i class="fa fa-angle-double-left"></i> Back</a></div>
-              <div class="one_half last"><a href="#" class="btn btn_red">Login</a></div>
-          </div>
-      </form>
-
-      <a href="#" class="forgot_password">Forgot password?</a>
-  </div>
-
-  <!-- Register Form -->
-  <div class="user_register">
-      <form>
-          <label>Full Name</label>
-          <input type="text" />
-          <br />
-
-          <label>Email Address</label>
-          <input type="email" />
-          <br />
-
-          <label>Password</label>
-          <input type="password" />
-          <br />
-
-          <div class="checkbox">
-              <input id="send_updates" type="checkbox" />
-              <label for="send_updates">Send me occasional email updates</label>
-          </div>
-
-          <div class="action_btns">
-              <div class="one_half"><a href="#" class="btn back_btn"><i class="fa fa-angle-double-left"></i> Back</a></div>
-              <div class="one_half last"><a href="#" class="btn btn_red">Register</a></div>
-          </div>
-      </form>
-  </div>
-</section>
-</div>
 
 <div class="main-banner wow fadeIn" id="top" data-wow-duration="1s" data-wow-delay="0.5s">
 <div class="container">
@@ -275,7 +523,7 @@
 </div>
 
 <!-- Projects Section -->
-<section id="projects" class="section" style="padding: 60px 0; background-color: #ffffff;">
+<section id="projects" class="section" style="padding: 100px 0; background-color: #ffffff;">
 <div class="container">
 <div class="row">
   <div class="col-lg-12 text-center">
@@ -287,15 +535,30 @@
   </div>
 </div>
 <div class="row justify-content-center">
-  <div class="col-lg-4 col-md-6 mb-4">
-    <div class="card h-100" style="border: 2px solid #4b8ef1; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-      <div class="card-body text-center">
-        <i class="fas fa-project-diagram fa-3x mb-3" style="color: #4b8ef1;"></i>
-        <h5 class="card-title">AI for Sustainable Energy</h5>
-        <p class="card-text">Developing AI-driven solutions to optimize renewable energy systems and reduce carbon footprints.</p>
-        <a href="project.html" class="btn" style="background-color: #4b8ef1; color: white; padding: 10px 20px; border-radius: 4px;">Learn More</a>
-      </div>
+  <div class="projects-carousel">
+    <div class="project-card">
+      <i class="fas fa-project-diagram fa-3x mb-3" style="color: #4b8ef1;"></i>
+      <h5>AI for Sustainable Energy</h5>
+      <p style="font-size: 14px;">Optimizing renewable energy systems with AI.</p>
+      <a href="project.html" class="btn" style="background-color: #4b8ef1; color: white; padding: 8px 16px; border-radius: 4px; font-size: 14px;">Learn More</a>
     </div>
+    <div class="project-card">
+      <i class="fas fa-leaf fa-3x mb-3" style="color: #4b8ef1;"></i>
+      <h5>Climate Resilience</h5>
+      <p style="font-size: 14px;">Building adaptive solutions for climate change.</p>
+      <a href="project.html" class="btn" style="background-color: #4b8ef1; color: white; padding: 8px 16px; border-radius: 4px; font-size: 14px;">Learn More</a>
+    </div>
+    <div class="project-card">
+      <i class="fas fa-heartbeat fa-3x mb-3" style="color: #4b8ef1;"></i>
+      <h5>Biomedical Innovations</h5>
+      <p style="font-size: 14px;">Advancing healthcare through research.</p>
+      <a href="project.html" class="btn" style="background-color: #4b8ef1; color: white; padding: 8px 16px; border-radius: 4px; font-size: 14px;">Learn More</a>
+    </div>
+  </div>
+  <div class="carousel-dots">
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
   </div>
 </div>
 </div>
@@ -341,16 +604,16 @@
   </div>
 </div>
 <div class="row justify-content-center">
-  <div class="col-lg-4 col-md-6 mb-4">
-    <div class="card h-100" style="border: 2px solid #4b8ef1; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-      <div class="card-body text-center">
-        <i class="fas fa-user-tie fa-3x mb-3" style="color: #4b8ef1;"></i>
-        <h5 class="card-title">Dr. Jane Smith</h5>
-        <p class="card-text">Lead Researcher in AI, with over 20 years of experience in machine learning and data science.</p>
-        <a href="staff.html" class="btn" style="background-color: #4b8ef1; color: white; padding: 10px 20px; border-radius: 4px;">Learn More</a>
-      </div>
+  <div class="staff-carousel">
+    <div class="staff-card">
+      <img src="assets/images/staff-placeholder.png" alt="Dr. Jane Smith" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">
+      <h5 class="card-title">Dr. Jane Smith</h5>
+      <p class="card-text">Lead Researcher in AI, with over 20 years of experience in machine learning and data science.</p>
+      <a href="staff.html" class="btn" style="background-color: #4b8ef1; color: white; padding: 10px 20px; border-radius: 4px;">Learn More</a>
     </div>
-    <div class="three-dots" style="text-align: center; font-size: 24px; color: #4b8ef1; margin-top: 8px;">&#8226; &#8226; &#8226;</div>
+  </div>
+  <div class="carousel-dots">
+    <span class="dot"></span>
   </div>
 </div>
 </div>
@@ -397,18 +660,10 @@
 </div>
 </section>
 
-<footer id="contact">
+<footer id="footer">
 <div class="container">
 <div class="row">
-  <div class="col-lg-3">
-    <div class="footer-widget">
-      <h4>Contact Us</h4>
-      <p>ENSIT Beb Alioua, Tunis</p>
-      <p><a href="#">123456789</a></p>
-      <p><a href="/cdn-cgi/l/email-protection#47756274626675646f646269736275476269746e7329756972297369"><span class="__cf_email__" data-cfemail="abd9ced8cecad9c8c3c8cec5dfced9ebcec5d8c2df85d9c5de85dfc5">[email&#160;protected]</span></a></p>
-    </div>
-  </div>
-  <div class="col-lg-3">
+  <div class="col-lg-4">
     <div class="footer-widget">
       <h4>About Us</h4>
       <ul>
@@ -420,7 +675,7 @@
       </ul>
     </div>
   </div>
-  <div class="col-lg-3">
+  <div class="col-lg-4">
     <div class="footer-widget">
       <h4>Useful Links</h4>
       <ul>
@@ -432,7 +687,7 @@
       </ul>
     </div>
   </div>
-  <div class="col-lg-3">
+  <div class="col-lg-4">
     <div class="footer-widget">
       <h4>About Our Center</h4>
       <div class="logo">
@@ -450,35 +705,6 @@
 </div>
 </footer>
 
-<!-- Contact Form Overlay -->
-<div id="form-overlay" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
-<div id="contact-form-container" style="background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-<span class="modal_close" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 20px;">&times;</span>
-<form id="contact-form">
-  <h2 style="margin-top: 0; color: #4b8ef1; text-align: center;">Contact Us</h2>
-  <div style="margin-bottom: 15px;">
-    <label for="name" style="display: block; margin-bottom: 5px; font-weight: 500;">Name:</label>
-    <input type="text" id="name" name="name" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-  </div>
-
-  <div style="margin-bottom: 15px;">
-    <label for="email" style="display: block; margin-bottom: 5px; font-weight: 500;">Email:</label>
-    <input type="email" id="email" name="email" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-  </div>
-
-  <div style="margin-bottom: 20px;">
-    <label for="message" style="display: block; margin-bottom: 5px; font-weight: 500;">Message:</label>
-    <textarea id="message" name="message" rows="5" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; resize: vertical;"></textarea>
-  </div>
-
-  <div style="display: flex; justify-content: space-between;">
-    <button type="button" id="cancel-contact-btn" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
-    <button type="submit" style="padding: 10px 20px; background-color: #4b8ef1; color: white; border: none; border-radius: 4px; cursor: pointer;">Send Message</button>
-  </div>
-</form>
-</div>
-</div>
-
 <!-- Scripts -->
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script src="vendor/jquery/jquery.min.js"></script>
@@ -489,93 +715,72 @@
 <script src="assets/js/popup.js"></script>
 <script src="scripts_fixed.js"></script>
 <script src="assets/js/custom.js"></script>
-
+<script src="assets/js/staff-animation.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const cards = document.querySelectorAll('#staff-carousel .staff-card');
-  const dots = document.querySelectorAll('#staff-dots .dot');
-  let currentIndex = 0;
-  const totalCards = cards.length;
+document.addEventListener('DOMContentLoaded', function () {
+  // Project carousel control
+  const projectCards = document.querySelectorAll('.projects-carousel .project-card');
+  const projectDots = document.querySelectorAll('.projects-carousel + .carousel-dots .dot');
+  let currentProjectIndex = 0;
+  let projectAnimationInterval;
 
-  function updateCarousel() {
-    cards.forEach((card, index) => {
-      card.style.opacity = '0.6';
-      card.style.transform = 'scale(0.8)';
-      card.classList.remove('active');
-      dots[index].classList.remove('active');
+  function showProject(index) {
+    currentProjectIndex = index;
+    projectCards.forEach((card, i) => {
+      card.classList.remove('active', 'next', 'prev', 'hidden');
+      if (i === index) {
+        card.classList.add('active');
+      } else if (i === (index + 1) % projectCards.length) {
+        card.classList.add('next');
+      } else if (i === (index + projectCards.length - 1) % projectCards.length) {
+        card.classList.add('prev');
+      } else {
+        card.classList.add('hidden');
+      }
     });
+    projectDots.forEach((dot, i) => {
+      if (i === index) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
 
-    const centerIndex = currentIndex;
-    const leftIndex = (currentIndex - 1 + totalCards) % totalCards;
-    const rightIndex = (currentIndex + 1) % totalCards;
+  function nextProject() {
+    showProject((currentProjectIndex + 1) % projectCards.length);
+  }
 
-    cards[leftIndex].style.opacity = '0.6';
-    cards[leftIndex].style.transform = 'scale(0.8)';
-    cards[leftIndex].style.order = 0;
-
-    cards[centerIndex].style.opacity = '1';
-    cards[centerIndex].style.transform = 'scale(1)';
-    cards[centerIndex].classList.add('active');
-    cards[centerIndex].style.order = 1;
-    dots[centerIndex].classList.add('active');
-
-    cards[rightIndex].style.opacity = '0.6';
-    cards[rightIndex].style.transform = 'scale(0.8)';
-    cards[rightIndex].style.order = 2;
-
-    for (let i = 0; i < totalCards; i++) {
-
-<script>
-// Contact Form Handling
-document.addEventListener('DOMContentLoaded', function() {
-const contactFormOverlay = document.getElementById('form-overlay');
-const cancelContactBtn = document.getElementById('cancel-contact-btn');
-const closeBtn = document.querySelector('#contact-form-container .modal_close');
-const contactButtons = document.querySelectorAll('.contact-btn');
-
-// Show contact form when contact button is clicked
-contactButtons.forEach(button => {
-  button.addEventListener('click', function(e) {
-    e.preventDefault();
-    contactFormOverlay.style.display = 'block';
+  projectDots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      if (projectAnimationInterval) {
+        clearInterval(projectAnimationInterval);
+      }
+      showProject(index);
+      // Restart the interval after manual selection
+      projectAnimationInterval = setInterval(nextProject, 3000);
+    });
   });
-});
 
-// Hide contact form
-function hideContactForm() {
-  contactFormOverlay.style.display = 'none';
-}
+  // Initialize
+  showProject(0);
+  projectAnimationInterval = setInterval(nextProject, 3000);
 
-// Add event listeners for closing the form
-if (cancelContactBtn) {
-  cancelContactBtn.addEventListener('click', hideContactForm);
-}
-
-if (closeBtn) {
-  closeBtn.addEventListener('click', hideContactForm);
-}
-
-// Handle form submission
-const contactForm = document.getElementById('contact-form');
-if (contactForm) {
-  contactForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    // Here you would typically send the form data to your server
-    alert('Thank you for your message! We will get back to you soon.');
-    hideContactForm();
-    contactForm.reset();
-  });
-}
-
-// Close form when clicking outside
-contactFormOverlay.addEventListener('click', function(e) {
-  if (e.target === contactFormOverlay) {
-    hideContactForm();
+  // Staff carousel control (only one card, so just pause animation on dot click)
+  const staffCard = document.querySelector('.staff-carousel .staff-card');
+  const staffDot = document.querySelector('.staff-carousel + .carousel-dots .dot');
+  if (staffDot && staffCard) {
+    staffDot.addEventListener('click', () => {
+      if (staffCard.style.animationPlayState === 'paused') {
+        staffCard.style.animationPlayState = 'running';
+        staffDot.classList.remove('active');
+      } else {
+        staffCard.style.animationPlayState = 'paused';
+        staffDot.classList.add('active');
+      }
+    });
   }
 });
-});
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c493f0924bfcf',t:'MTc0NTIzMjI2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c605edd01afbc',t:'MTc0NTIzMzIxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
