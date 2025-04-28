@@ -8,16 +8,17 @@
             "STATE": "Not Started",
             "ID_MANAGER": 417,
             "id": 1,
-            "IMAGE": "images/uploads/0da4ca70-46e7-4b90-a94f-c7e979398de6_default-project.jpg"
+            "IMAGE": "images/uploads/projects/ad58ca1e-f56c-4a8a-90ea-0e621c6e0e3d_6a46ec73-cfd3-4235-a54f-b56f69143f46.jpeg"
         },
         {
             "NAME_PROJECT": "Quantum Algorithm Project 2",
             "BUDGET": 2244924.24,
             "DATE_BEGIN": "2020-04-29",
             "DATE_END": "2022-06-27",
-            "STATE": "In Progress",
+            "STATE": "Completed",
             "ID_MANAGER": 107,
-            "id": 2
+            "id": 2,
+            "IMAGE": "images/uploads/projects/40c1ffa7-03b0-46b3-b664-9f696ba13613_81cc6565-c84f-467e-a3ef-a60110c89767.jpeg"
         },
         {
             "NAME_PROJECT": "Climate Impact Project 3",
@@ -1812,7 +1813,7 @@
             "DATE_END": "2023-04-13",
             "ID_ORGANISOR": 115,
             "id": 1,
-            "IMAGE": "images/uploads/18e43989-f52f-4faa-87cb-28793c0324d6_6a46ec73-cfd3-4235-a54f-b56f69143f46.jpeg"
+            "IMAGE": "images/uploads/events/a96932fe-fc16-4b63-8673-13b5b98092a5_interpersonnelle.jpg"
         },
         {
             "NAME_EVENT": "Machine Learning Workshop 2",
@@ -1844,7 +1845,8 @@
             "PLACE": "University Hall, Room 6",
             "DATE_END": "2025-04-19",
             "ID_ORGANISOR": 144,
-            "id": 4
+            "id": 4,
+            "IMAGE": "images/uploads/events/bd3b3768-d874-4b14-8846-8876c495c575_807af272-07c3-49b5-bae3-12688cb4cc24.jpeg"
         },
         {
             "NAME_EVENT": "Quantum Computing Forum 5",

@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 from Database.db import JSONDatabase
 
 projects_bp = Blueprint('projects', __name__)
-UPLOAD_FOLDER = os.path.join("fr/static", "images", "uploads")
+UPLOAD_FOLDER = os.path.join("static", "images", "uploads","projects")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'svg'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
@@ -72,7 +72,7 @@ def handle_image_upload(
 
     Args:
         request: Flask request object containing the file.
-        old_image_path: Path to the old image (e.g., 'images/uploads/oldfile.jpg').
+        old_image_path: Path to the old image (e.g., 'images/uploads/projects/oldfile.jpg').
         update_data: Dictionary to store the new or existing image path.
         upload_folder: Folder where images are stored.
 
@@ -103,7 +103,7 @@ def handle_image_upload(
         base_filename = secure_filename(file.filename)
         filename = f"{uuid.uuid4()}_{base_filename}"
         filepath = os.path.join(upload_folder, filename)
-        image_path = f"images/uploads/{filename}"
+        image_path = f"images/uploads/projects/{filename}"
 
         # Save new file
         os.makedirs(upload_folder, exist_ok=True)

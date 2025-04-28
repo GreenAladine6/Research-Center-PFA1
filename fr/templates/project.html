@@ -12,13 +12,13 @@
   <title>ENSIT Research Center - Projects</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('fr.static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
 
   <!-- Additional CSS Files -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-chain-app-dev.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/animated.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/templatemo-chain-app-dev.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/animated.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/owl.css') }}" />
 </head>
 <body>
   <!-- ***** Preloader Start ***** -->
@@ -42,7 +42,7 @@
           <nav class="main-nav">
             <!-- ***** Logo Start ***** -->
             <a href="{{ url_for('fr.index') }}" class="logo">
-              <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ENSIT Research Center" />
+              <img src="{{ url_for('fr.static', filename='images/logo.png') }}" alt="ENSIT Research Center" />
             </a>
             <!-- ***** Logo End ***** -->
             <!-- ***** Menu Start ***** -->
@@ -79,7 +79,7 @@
       <div class="row" id="project-container">
         <div class="col-md-6 col-lg-3 mb-4">
           <div class="card" style="width: 18rem;">
-            <img src="{{ url_for('static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
+            <img src="{{ url_for('fr.static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
             <div class="card-body">
               <h5 class="card-title">Project Title 1</h5>
               <p class="card-text">This is a brief description of the project. It highlights key features and objectives.</p>
@@ -89,7 +89,7 @@
         </div>
         <div class="col-md-6 col-lg-3 mb-4">
           <div class="card" style="width: 18rem;">
-            <img src="{{ url_for('static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
+            <img src="{{ url_for('fr.static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
             <div class="card-body">
               <h5 class="card-title">Project Title 2</h5>
               <p class="card-text">This is a brief description of the project. It highlights key features and objectives.</p>
@@ -99,7 +99,7 @@
         </div>
         <div class="col-md-6 col-lg-3 mb-4">
           <div class="card" style="width: 18rem;">
-            <img src="{{ url_for('static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
+            <img src="{{ url_for('fr.static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
             <div class="card-body">
               <h5 class="card-title">Project Title 3</h5>
               <p class="card-text">This is a brief description of the project. It highlights key features and objectives.</p>
@@ -109,7 +109,7 @@
         </div>
         <div class="col-md-6 col-lg-3 mb-4">
           <div class="card" style="width: 18rem;">
-            <img src="{{ url_for('static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
+            <img src="{{ url_for('fr.static', filename='images/project-placeholder.png') }}" class="card-img-top" alt="Project Image" />
             <div class="card-body">
               <h5 class="card-title">Project Title 4</h5>
               <p class="card-text">This is a brief description of the project. It highlights key features and objectives.</p>
@@ -163,7 +163,7 @@
           <div class="footer-widget">
             <h4>About Our Center</h4>
             <div class="logo">
-              <img src="{{ url_for('static', filename='images/white-logo.png') }}" alt="" />
+              <img src="{{ url_for('fr.static', filename='images/white-logo.png') }}" alt="" />
             </div>
             <p>ENSIT Research Center is dedicated to advancing knowledge and innovation through interdisciplinary research and collaboration.</p>
           </div>
@@ -204,14 +204,14 @@
   </div>
 
   <!-- Scripts -->
-  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/owl-carousel.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/animation.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/imagesloaded.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/scripts_fixed.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/owl-carousel.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/animation.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/imagesloaded.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/popup.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/custom.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/scripts_fixed.js') }}"></script>
   <script>
     // Contact Form Handling
     document.addEventListener('DOMContentLoaded', function() {

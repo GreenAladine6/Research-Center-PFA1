@@ -5,7 +5,14 @@ from utils.config import Config
 from dotenv import load_dotenv
 import os
 
-fr_bp = Blueprint('fr', __name__, template_folder='templates' , static_folder='static')
+
+load_dotenv()
+# Load environment variables from .env file
+# os.environ['API_URL'] = 'https://api.example.com'  # Example of setting an environment variable
+# os.environ
+
+fr_bp = Blueprint('fr', __name__, url_prefix='/', template_folder='templates', static_folder='static')
+
 
 @fr_bp.route('/')
 @fr_bp.route('/index')

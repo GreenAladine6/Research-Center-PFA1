@@ -42,12 +42,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
   <title>Chain App Dev - App Landing Page HTML5 Template</title>
   <!-- Bootstrap core CSS -->
-  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('fr.static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Additional CSS Files -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-chain-app-dev.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/animated.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}">
+  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/templatemo-chain-app-dev.css') }}">
+  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/animated.css') }}">
+  <link rel="stylesheet" href="{{ url_for('fr.static', filename='css/owl.css') }}">
   <!-- Custom CSS for Statistics Hover Effect -->
   <style>
     .statistic-card:hover {
@@ -76,7 +76,7 @@
           <nav class="main-nav">
             <!-- ***** Logo Start ***** -->
             <a href="{{ url_for('fr.index') }}" class="logo">
-              <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Chain App Dev">
+              <img src="{{ url_for('fr.static', filename='images/logo.png') }}" alt="Chain App Dev">
             </a>
             <!-- ***** Logo End ***** -->
             <!-- ***** Menu Start ***** -->
@@ -186,7 +186,7 @@
             </div>
             <div class="col-lg-6">
               <div class="right-image wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.5s">
-                <img src="{{ url_for('static', filename='images/slider-dec.png') }}" alt="">
+                <img src="{{ url_for('fr.static', filename='images/slider-dec.png') }}" alt="">
               </div>
             </div>
           </div>
@@ -200,7 +200,7 @@
         <div class="col-lg-6 align-self-center">
           <div class="section-heading">
             <h4>About <em>What We Do</em> & Who We Are</h4>
-            <img src="{{ url_for('static', filename='images/heading-line-dec.png') }}" alt="">
+            <img src="{{ url_for('fr.static', filename='images/heading-line-dec.png') }}" alt="">
             <p>At ENSIT Research Center, we are committed to advancing knowledge, driving innovation, and creating impactful solutions through rigorous research and interdisciplinary collaboration. Founded in 2010, our center serves as a hub for scientists, scholars, and industry experts dedicated to addressing some of the most pressing challenges of our time.</p>
           </div>
           <div class="row">
@@ -228,7 +228,7 @@
         </div>
         <div class="col-lg-6">
           <div class="right-image">
-            <img src="{{ url_for('static', filename='images/about-right-dec.png') }}" alt="">
+            <img src="{{ url_for('fr.static', filename='images/about-right-dec.png') }}" alt="">
           </div>
         </div>
       </div>
@@ -241,7 +241,7 @@
         <div class="col-lg-12 text-center">
           <div class="section-heading">
             <h4>Our <em>Projects</em></h4>
-            <img src="{{ url_for('static', filename='images/heading-line-dec.png') }}" alt="">
+            <img src="{{ url_for('fr.static', filename='images/heading-line-dec.png') }}" alt="">
             <p>Discover our innovative projects driving impact across various domains.</p>
           </div>
         </div>
@@ -267,7 +267,7 @@
         <div class="col-lg-12 text-center">
           <div class="section-heading">
             <h4>Upcoming <em>Events</em></h4>
-            <img src="{{ url_for('static', filename='images/heading-line-dec.png') }}" alt="">
+            <img src="{{ url_for('fr.static', filename='images/heading-line-dec.png') }}" alt="">
             <p>Join us for engaging events fostering collaboration and innovation.</p>
           </div>
         </div>
@@ -293,7 +293,7 @@
         <div class="col-lg-12 text-center">
           <div class="section-heading">
             <h4>Our <em>Staff</em></h4>
-            <img src="{{ url_for('static', filename='images/heading-line-dec.png') }}" alt="">
+            <img src="{{ url_for('fr.static', filename='images/heading-line-dec.png') }}" alt="">
             <p>Meet the dedicated team behind our research excellence.</p>
           </div>
         </div>
@@ -320,7 +320,7 @@
         <div class="col-lg-12 text-center">
           <div class="section-heading">
             <h4>Our <em>Project Achievements</em></h4>
-            <img src="{{ url_for('static', filename='images/heading-line-dec.png') }}" alt="">
+            <img src="{{ url_for('fr.static', filename='images/heading-line-dec.png') }}" alt="">
             <p>Highlighting the scale and impact of our research projects.</p>
           </div>
         </div>
@@ -392,7 +392,7 @@
           <div class="footer-widget">
             <h4>About Our Center</h4>
             <div class="logo">
-              <img src="{{ url_for('static', filename='images/white-logo.png') }}" alt="">
+              <img src="{{ url_for('fr.static', filename='images/white-logo.png') }}" alt="">
             </div>
             <p>ENSIT Research Center is dedicated to advancing knowledge and innovation through interdisciplinary research and collaboration.</p>
           </div>
@@ -432,14 +432,14 @@
   </div>
   <!-- Scripts -->
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/owl-carousel.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/animation.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/imagesloaded.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/scripts_fixed.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/owl-carousel.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/animation.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/imagesloaded.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/popup.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/scripts_fixed.js') }}"></script>
+  <script src="{{ url_for('fr.static', filename='js/custom.js') }}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const cards = document.querySelectorAll('#staff-carousel .staff-card');

@@ -163,9 +163,9 @@
         {% for p in projects %}
         <div class="project-card" data-project-id="{{ p.id }}">
             <div class="project-image-container">
-{% set image_path = p.IMAGE.replace('\\', '/') if p.IMAGE else '' %}
+{% set image_path = p.IMAGE if p.IMAGE else '' %}
 {% set image_path = image_path[7:] if image_path.startswith('static/') else image_path %}
-<img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/default-project.jpg') }}" 
+<img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/projects/default-project.jpg') }}" 
      alt="{{ p.NAME_PROJECT }}" class="project-image">
             </div>
             <div class="project-details">
