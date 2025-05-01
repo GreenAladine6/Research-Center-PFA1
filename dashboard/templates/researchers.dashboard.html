@@ -107,31 +107,35 @@
     {% if researchers %}
     <div class="row">
         {% for researcher in researchers %}
+        {% for grade in grades %}
+        
         <div class="col-md-4 mb-4 staff-card" 
              data-researcher-id="{{ researcher.id }}"
              data-name="{{ researcher.FULL_NAME }}"
-             data-position="{{ researcher.POSITION if researcher.POSITION else 'N/A' }}"
+             data-position="{{ grade.NAME_GRADE if grade.NAME_GRADE and grade.id==researcher.ID_GRADE else 'N/A' }}"
              data-bio="{{ researcher.BIO if researcher.BIO else 'No bio available' }}"
-             data-image="{{ url_for('static', filename=researcher.IMAGE.replace('\\', '/')[7:]) if researcher.IMAGE else url_for('static', filename='images/uploads/staff/staff-placeholder.png') }}">
+             data-image="{{ url_for('static', filename=researcher.IMAGE.replace('\\', '/')[7:]) if researcher.IMAGE else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}">
             <div class="card h-100">
+                <div class="researcher-image-container">
                 {% set image_path = researcher.IMAGE.replace('\\', '/') if researcher.IMAGE else '' %}
                 {% set image_path = image_path[7:] if image_path.startswith('static/') else image_path %}
-                <img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/staff-placeholder.png') }}" 
-                     alt="{{ researcher.FULL_NAME }}" class="staff-image">
+                <img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
+                     alt="{{ researcher.FULL_NAME }}" class="researcher-image">
+                </div>
                 <div class="staff-details">
                     <h3 class="staff-title">{{ researcher.FULL_NAME }}</h3>
                     <div class="staff-position">
                         <i class="fas fa-briefcase me-1"></i>
-                        <span>{{ researcher.POSITION if researcher.POSITION else 'N/A' }}</span>
+                        <span>{{ grade.NAME_GRADE if grade.NAME_GRADE and grade.id==researcher.ID_GRADE else 'N/A'  }}</span>
                     </div>
                     <p class="staff-bio">{{ researcher.BIO|default('No bio available.', true)|truncate(100, true) }}</p>
                     <div class="card-actions">
                         <button class="btn-action btn-update" 
                                 data-researcher-id="{{ researcher.id }}"
                                 data-name="{{ researcher.FULL_NAME }}"
-                                data-position="{{ researcher.POSITION if researcher.POSITION else 'N/A' }}"
+                                data-position="{{ grade.NAME_GRADE if grade.NAME_GRADE else 'N/A' }}"
                                 data-bio="{{ researcher.BIO if researcher.BIO else 'No bio available' }}"
-                                data-image="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/staff-placeholder.png') }}">
+                                data-image="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}">
                             <i class="fas fa-edit me-1"></i>Edit
                         </button>
                         <button class="btn-action btn-delete" onclick="delete_researcher({{researcher.id}})" data-researcher-id="{{ researcher.id }}">
@@ -141,6 +145,7 @@
                 </div>
             </div>
         </div>
+        {% endfor %}
         {% endfor %}
     </div>
     {% else %}

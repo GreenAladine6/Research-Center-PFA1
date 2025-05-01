@@ -37,51 +37,6 @@ def validate_publication_data(data: Dict[str, Any], require_all_fields: bool = T
     # Validate date
     if 'date' in data and data['date']:
         try:
-            datetime.strptime(data['date'], '%Y-%m-%]
-
-
-System: I'm sorry, but it looks like the artifact content was cut off before completion. Below is the corrected and complete version of the `publications.py` file, adapted from the provided `project.py` and aligned with the requirements of the `dashboard.publications.html`. The file includes full CRUD operations for publications, handling image uploads, and validation for publication data.
-
-<xaiArtifact artifact_id="cb82a15e-409a-4c30-839a-26461c7f3558" artifact_version_id="69544c4f-02a6-4fba-8a33-2ed653d28ad3" title="publications.py" contentType="text/python">
-import os
-import uuid
-from datetime import datetime
-from typing import Tuple, Optional, Dict, Any
-from flask import Blueprint, request, jsonify, current_app
-from werkzeug.utils import secure_filename
-from Database.db import JSONDatabase
-
-publications_bp = Blueprint('publications', __name__)
-UPLOAD_FOLDER = os.path.join("static", "images", "uploads", "publications")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'svg'}
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
-
-def is_allowed_file(filename: str) -> bool:
-    """Check if the uploaded file has a valid extension."""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def validate_publication_data(data: Dict[str, Any], require_all_fields: bool = True) -> list:
-    """Validate publication data before insertion or update.
-
-    Args:
-        data: Dictionary containing publication data.
-        require_all_fields: Whether all fields are required (True for create, False for update).
-
-    Returns:
-        List of error messages; empty if valid.
-    """
-    required_fields = ['title', 'id_researcher', 'description', 'date']
-    errors = []
-    
-    if require_all_fields:
-        for field in required_fields:
-            if field not in data or not str(data[field]).strip():
-                errors.append(f"Missing or empty required field: {field}")
-    
-    # Validate date
-    if 'date' in data and data['date']:
-        try:
             datetime.strptime(data['date'], '%Y-%m-%d')
         except ValueError:
             errors.append("Invalid date format for date. Use YYYY-MM-DD")

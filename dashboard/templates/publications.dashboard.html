@@ -149,7 +149,7 @@
             <div class="card h-100">
                 <!-- Researcher Profile -->
                 <div class="card-header d-flex align-items-center">
-                    <img src="{{ url_for('static', filename=researcher.IMAGE.replace('\\', '/')[7:]) if researcher.IMAGE else url_for('static', filename='images/avatar-placeholder.png') }}" 
+                    <img src="{{ url_for('static', filename=researcher.IMAGE.replace('\\', '/')[7:]) if researcher.IMAGE else url_for('static', filename='images/satff/avatar-placeholder.png') }}" 
                          alt="{{ researcher.FULL_NAME }}" class="rounded-circle me-3" width="50" height="50">
                     <div>
                         <h6 class="mb-0">{{ researcher.FULL_NAME }}</h6>

@@ -5332,7 +5332,9 @@
             "ID_GRADE": 3,
             "BIO": "Isabella Taylor is a researcher specializing in data science with over 5 years of experience.",
             "PASSWORD": ")%z+kYiySK9`",
-            "id": 2
+            "id": 2,
+            "POSITION": "N/A",
+            "IMAGE": "images/uploads/staff/fc436fd9-4e4c-4e3c-9b99-30479ef18f33_ecoute_et_immersion.jpeg"
         },
         {
             "FULL_NAME": "Isabella Walker",

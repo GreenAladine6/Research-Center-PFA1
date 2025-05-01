@@ -1,0 +1,218 @@
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 25px;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+/* Spinner Animation */
+.spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,0.1);
+    border-left-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Project Cards */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.project-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.researcher-image-container {
+    height: 140px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+}
+
+.researcher-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    border-radius: 8px;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.04);
+}
+
+.project-card:hover .project-image {
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.project-details {
+    padding: 15px;
+}
+
+.project-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+}
+
+.project-meta {
+    display: flex;
+    justify-content: space-around;
+    text-size-adjust: 3rem;
+    text-emphasis: 3rem;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.project-dates {
+    color: #666;
+    font-size: 0.75rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.project-dates .date-values {
+    margin-left: 0;
+    font-weight: 500;
+    color: #444;
+    white-space: nowrap;
+}
+
+.project-budget {
+    font-weight: 600;
+    color: #2c7be5;
+    font-size: 1rem;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+
+}
+
+.status-not-started { background-color: #f0f4f8; color: #5e6e82; }
+.status-in-progress { background-color: #e1f0ff; color: #0061f2; }
+.status-completed { background-color: #e3f9e5; color: #00ac69; }
+.status-canceled { background-color: #fce8e8; color: #e63757; }
+
+/* Action Buttons */
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-update {
+    background-color: #f0f4f8;
+    color: #5e6e82;
+}
+
+.btn-update:hover {
+    background-color: #e1e7ec;
+}
+
+.btn-delete {
+    background-color: #fce8e8;
+    color: #e63757;
+}
+
+.btn-delete:hover {
+    background-color: #f9d7d7;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #3d5170;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d2ddec;
+    border-radius: 4px;
+    font-size: 0.9375rem;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #0061f2;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 97, 242, 0.25);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+}
+

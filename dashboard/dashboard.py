@@ -68,7 +68,8 @@ def researchers():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
         researchers = db.select_query("RESEARCHER")
-        return render_template('researchers.dashboard.html', title='Researchers', researchers=researchers)
+        grades=db.select_query("GRADE")
+        return render_template('researchers.dashboard.html', title='Researchers', researchers=researchers, grades=grades)
     return redirect('/dashboard/login')
 
 
