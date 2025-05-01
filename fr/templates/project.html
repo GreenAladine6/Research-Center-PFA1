@@ -20,6 +20,20 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/animated.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}" />
   <style>
+    .filter-group .btn-secondary {
+      padding: 10px 15px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    
+    .filter-group .btn-secondary:hover {
+      background: #5a6268;
+    }
     .d-none {
       display: none !important;
     }
@@ -456,134 +470,176 @@
   <script src="{{ url_for('static', filename='js/imagesloaded.js') }}"></script>
   <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
   <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
-  <script>
-    // Scripts
-document.addEventListener('DOMContentLoaded', function() {
-  const projectContainer = document.getElementById('project-container');
-  const moreBtn = document.getElementById('project-more-btn');
-  const detailsModal = document.getElementById('detailsModal');
-  const modalClose = document.querySelector('#detailsModal .modal-close');
-  const modalImage = document.getElementById('modal-image');
-  const modalTitle = document.getElementById('modal-title');
-  const modalDescription = document.getElementById('modal-description');
-  const modalManager = document.getElementById('modal-manager');
-  const modalDates = document.getElementById('modal-dates');
-  const modalState = document.getElementById('modal-state');
-  const initialDisplayCount = 16;
-  let isExpanded = false;
 
-  // Filter and Search Functionality
-  const researchInput = document.getElementById('research-input');
-  const filterDateBegin = document.getElementById('filter-date-begin');
-  const filterDateEnd = document.getElementById('filter-date-end');
-  const filterState = document.getElementById('filter-state');
-  const filterManager = document.getElementById('filter-manager');
-
-  function applyFilters() {
-    const searchText = researchInput.value.toLowerCase().trim();
-    const dateBegin = filterDateBegin.value;
-    const dateEnd = filterDateEnd.value;
-    const state = filterState.value;
-    const manager = filterManager.value;
-
-    const projectCards = document.querySelectorAll('.initial-project');
-    let visibleProjects = 0;
-
-    projectCards.forEach((card, index) => {
-      const title = card.querySelector('.card-title').textContent.toLowerCase();
-      const cardDateBegin = card.dataset.dateBegin;
-      const cardDateEnd = card.dataset.dateEnd;
-      const cardState = card.dataset.state;
-      const cardManager = card.dataset.manager.toLowerCase();
-
-      const matchesSearch = !searchText || title.includes(searchText);
-      const matchesDateBegin = !dateBegin || cardDateBegin >= dateBegin;
-      const matchesDateEnd = !dateEnd || cardDateEnd <= dateEnd;
-      const matchesState = !state || cardState === state;
-      const matchesManager = !manager || cardManager.includes(manager.toLowerCase());
-
-      const isVisible = matchesSearch && matchesDateBegin && matchesDateEnd && matchesState && matchesManager;
-      card.classList.toggle('d-none', !isVisible || (!isExpanded && index >= initialDisplayCount));
-      if (isVisible) visibleProjects++;
-    });
-
-    moreBtn.style.display = visibleProjects > initialDisplayCount ? 'block' : 'none';
-    moreBtn.textContent = isExpanded ? 'Less' : 'More';
-  }
-
-  researchInput.addEventListener('input', applyFilters);
-  filterDateBegin.addEventListener('change', applyFilters);
-  filterDateEnd.addEventListener('change', applyFilters);
-  filterState.addEventListener('change', applyFilters);
-  filterManager.addEventListener('change', applyFilters);
-
-  // More/Less Button Handler
-  if (moreBtn) {
-    moreBtn.addEventListener('click', function() {
-      isExpanded = !isExpanded;
-      applyFilters();
-    });
-  }
-
-  // Learn More button and Modal handling
-  const learnMoreButtons = document.querySelectorAll('.learn-more-btn');
-  learnMoreButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      modalImage.src = this.dataset.image;
-      modalTitle.textContent = this.dataset.title;
-      modalDescription.textContent = this.dataset.description;
-      modalManager.textContent = this.dataset.manager;
-      modalDates.textContent = this.dataset.dates;
-      modalState.textContent = this.dataset.state;
-      detailsModal.style.display = 'block';
-    });
-  });
-
-  modalClose.addEventListener('click', function() {
-    detailsModal.style.display = 'none';
-  });
-
-  detailsModal.addEventListener('click', function(e) {
-    if (e.target === detailsModal) {
-      detailsModal.style.display = 'none';
-    }
-  });
-
-  // Contact Form Handling
-  const contactFormOverlay = document.getElementById('form-overlay');
-  const cancelContactBtn = document.getElementById('cancel-contact-btn');
-  const closeBtn = document.querySelector('#form-overlay .modal-close');
-  const contactButtons = document.querySelectorAll('.contact-btn');
-
-  contactButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.preventDefault();
-      contactFormOverlay.style.display = 'block';
-    });
-  });
-
-  function hideContactForm() {
-    contactFormOverlay.style.display = 'none';
-  }
-
-  if (cancelContactBtn) {
-    cancelContactBtn.addEventListener('click', hideContactForm);
-  }
-
-  if (closeBtn) {
-    closeBtn.addEventListener('click', hideContactForm);
-  }
-
-  const contactForm = document.getElementById('contact-form');
-  if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Thank you for your message! We will get back to you soon.');
-      hideContactForm();
-      contactForm.reset();
-    });
-  }
-});
-  </script>
+ // Scripts
+<script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const projectContainer = document.getElementById('project-container');
+        const moreBtn = document.getElementById('project-more-btn');
+        const detailsModal = document.getElementById('detailsModal');
+        const modalClose = document.querySelector('#detailsModal .modal-close');
+        const modalImage = document.getElementById('modal-image');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDescription = document.getElementById('modal-description');
+        const modalManager = document.getElementById('modal-manager');
+        const modalDates = document.getElementById('modal-dates');
+        const modalState = document.getElementById('modal-state');
+        const initialDisplayCount = 16;
+        let isExpanded = false;
+        let isFilterActive = false; // Track if any filter is active
+      
+        // Filter and Search Functionality
+        const researchInput = document.getElementById('research-input');
+        const filterDateBegin = document.getElementById('filter-date-begin');
+        const filterDateEnd = document.getElementById('filter-date-end');
+        const filterState = document.getElementById('filter-state');
+        const filterManager = document.getElementById('filter-manager');
+      
+        function checkIfFiltersActive() {
+          return researchInput.value || 
+                 filterDateBegin.value || 
+                 filterDateEnd.value || 
+                 filterState.value || 
+                 filterManager.value;
+        }
+      
+        function applyFilters() {
+          const searchText = researchInput.value.toLowerCase().trim();
+          const dateBegin = filterDateBegin.value;
+          const dateEnd = filterDateEnd.value;
+          const state = filterState.value;
+          const manager = filterManager.value;
+          
+          isFilterActive = checkIfFiltersActive();
+          
+          const projectCards = document.querySelectorAll('.initial-project');
+          let visibleProjects = 0;
+      
+          projectCards.forEach((card, index) => {
+            const title = card.querySelector('.card-title').textContent.toLowerCase();
+            const cardDateBegin = card.dataset.dateBegin;
+            const cardDateEnd = card.dataset.dateEnd;
+            const cardState = card.dataset.state;
+            const cardManager = card.dataset.manager.toLowerCase();
+      
+            const matchesSearch = !searchText || title.includes(searchText);
+            const matchesDateBegin = !dateBegin || cardDateBegin >= dateBegin;
+            const matchesDateEnd = !dateEnd || cardDateEnd <= dateEnd;
+            const matchesState = !state || cardState === state;
+            const matchesManager = !manager || cardManager.includes(manager.toLowerCase());
+      
+            const isVisible = matchesSearch && matchesDateBegin && matchesDateEnd && matchesState && matchesManager;
+            
+            // Show all matching projects when filters are active
+            // Otherwise, respect the initial display limit
+            const shouldShow = isFilterActive ? isVisible : (isVisible && (isExpanded || index < initialDisplayCount));
+            
+            card.classList.toggle('d-none', !shouldShow);
+            if (isVisible) visibleProjects++;
+          });
+      
+          // Only show More button when no filters are active and there are more projects to show
+          moreBtn.style.display = (!isFilterActive && visibleProjects > initialDisplayCount) ? 'block' : 'none';
+          moreBtn.textContent = isExpanded ? 'Less' : 'More';
+        }
+      
+        // Reset filters button (optional)
+        function addResetFiltersButton() {
+          const filterGroup = document.querySelector('.filter-group');
+          const resetBtn = document.createElement('button');
+          resetBtn.textContent = 'Reset Filters';
+          resetBtn.className = 'btn btn-secondary';
+          resetBtn.style.marginLeft = 'auto';
+          resetBtn.style.alignSelf = 'flex-end';
+          resetBtn.addEventListener('click', function() {
+            researchInput.value = '';
+            filterDateBegin.value = '';
+            filterDateEnd.value = '';
+            filterState.value = '';
+            filterManager.value = '';
+            isFilterActive = false;
+            applyFilters();
+          });
+          filterGroup.appendChild(resetBtn);
+        }
+      
+        // Initialize
+        addResetFiltersButton();
+        applyFilters();
+      
+        researchInput.addEventListener('input', applyFilters);
+        filterDateBegin.addEventListener('change', applyFilters);
+        filterDateEnd.addEventListener('change', applyFilters);
+        filterState.addEventListener('change', applyFilters);
+        filterManager.addEventListener('change', applyFilters);
+      
+        // More/Less Button Handler
+        if (moreBtn) {
+          moreBtn.addEventListener('click', function() {
+            isExpanded = !isExpanded;
+            applyFilters();
+          });
+        }
+      
+        // Learn More button and Modal handling
+        const learnMoreButtons = document.querySelectorAll('.learn-more-btn');
+        learnMoreButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            modalImage.src = this.dataset.image;
+            modalTitle.textContent = this.dataset.title;
+            modalDescription.textContent = this.dataset.description;
+            modalManager.textContent = this.dataset.manager;
+            modalDates.textContent = this.dataset.dates;
+            modalState.textContent = this.dataset.state;
+            detailsModal.style.display = 'block';
+          });
+        });
+      
+        modalClose.addEventListener('click', function() {
+          detailsModal.style.display = 'none';
+        });
+      
+        detailsModal.addEventListener('click', function(e) {
+          if (e.target === detailsModal) {
+            detailsModal.style.display = 'none';
+          }
+        });
+      
+        // Contact Form Handling
+        const contactFormOverlay = document.getElementById('form-overlay');
+        const cancelContactBtn = document.getElementById('cancel-contact-btn');
+        const closeBtn = document.querySelector('#form-overlay .modal-close');
+        const contactButtons = document.querySelectorAll('.contact-btn');
+      
+        contactButtons.forEach(button => {
+          button.addEventListener('click', function(e) {
+            e.preventDefault();
+            contactFormOverlay.style.display = 'block';
+          });
+        });
+      
+        function hideContactForm() {
+          contactFormOverlay.style.display = 'none';
+        }
+      
+        if (cancelContactBtn) {
+          cancelContactBtn.addEventListener('click', hideContactForm);
+        }
+      
+        if (closeBtn) {
+          closeBtn.addEventListener('click', hideContactForm);
+        }
+      
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+          contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+            hideContactForm();
+            contactForm.reset();
+          });
+        }
+      });
+</script>
 </body>
 </html>

@@ -32,7 +32,24 @@ def populate_large_data(db: Database):
     def random_phone() -> int:
         return random.randint(1000000000, 9999999999)
 
-    # 1. Add Grades (20 grades)
+    # New helper function for descriptions
+    def random_description(prefix: str = "Overview of") -> str:
+        topics = ["research advancements", "scientific discoveries", "technological innovations",
+                  "collaborative efforts", "experimental methodologies", "data-driven insights"]
+        return f"{prefix} {random.choice(topics)} in {random_string(10)} field."
+
+    # New helper function for biography
+    def random_bio(name: str) -> str:
+        interests = ["machine learning", "genomics", "quantum physics", "climate science",
+                     "neuroscience", "robotics", "data science"]
+        return f"{name} is a researcher specializing in {random.choice(interests)} with over {random.randint(3, 15)} years of experience."
+
+    # New helper function for password
+    def random_password(length: int = 12) -> str:
+        chars = string.ascii_letters + string.digits + string.punctuation
+        return ''.join(random.choices(chars, k=length))
+
+    # 1. Add Grades (20 grades) - Unchanged
     grades = [
         "Undergraduate Researcher", "Graduate Researcher", "PhD Candidate",
         "Postdoctoral Researcher", "Assistant Professor", "Associate Professor",
@@ -52,7 +69,7 @@ def populate_large_data(db: Database):
             grade_id = db.insert_query(table="GRADE", record={"NAME_GRADE": grade})
             grade_ids.append(grade_id)
 
-    # 2. Add Event Types (50 types)
+    # 2. Add Event Types (50 types) - Unchanged
     event_types = [
         "Conference", "Workshop", "Seminar", "Symposium", "Webinar",
         "Lecture Series", "Panel Discussion", "Hackathon", "Networking Event",
@@ -76,7 +93,7 @@ def populate_large_data(db: Database):
         else:
             db.insert_query(table="TYPE_EV", record={"TYPE_EV": event_type, "DESCRIPTION": f"Description for {event_type}"})
 
-    # 3. Add Researchers (500 researchers)
+    # 3. Add Researchers (500 researchers) - Modified to include BIO and PASSWORD
     researcher_ids = []
     first_names = ["James", "Emma", "Liam", "Olivia", "Noah", "Ava", "William", "Sophia", "Michael", "Isabella"]
     last_names = ["Smith", "Johnson", "Brown", "Taylor", "Wilson", "Davis", "Clark", "Harris", "Lewis", "Walker"]
@@ -86,12 +103,16 @@ def populate_large_data(db: Database):
             "FULL_NAME": full_name,
             "NUM_TEL": random_phone(),
             "EMAIL": random_email(full_name),
-            "ID_GRADE": random.choice(grade_ids)
+            "ID_GRADE": random.choice(grade_ids),
+            "BIO": random_bio(full_name),  # New BIO field
+            "PASSWORD": random_password()  # New PASSWORD field
         }
         if db.db_type == "sqlite":
             db.execute_query(
-                "INSERT INTO RESEARCHER (FULL_NAME, NUM_TEL, EMAIL, ID_GRADE) VALUES (?, ?, ?, ?)",
-                (researcher["FULL_NAME"], researcher["NUM_TEL"], researcher["EMAIL"], researcher["ID_GRADE"])
+                """INSERT INTO RESEARCHER (FULL_NAME, NUM_TEL, EMAIL, ID_GRADE, BIO, PASSWORD)
+                VALUES (?, ?, ?, ?, ?, ?)""",
+                (researcher["FULL_NAME"], researcher["NUM_TEL"], researcher["EMAIL"],
+                 researcher["ID_GRADE"], researcher["BIO"], researcher["PASSWORD"])
             )
             db.cursor.execute("SELECT last_insert_rowid()")
             researcher_ids.append(db.cursor.fetchone()[0])
@@ -99,7 +120,7 @@ def populate_large_data(db: Database):
             researcher_id = db.insert_query(table="RESEARCHER", record=researcher)
             researcher_ids.append(researcher_id)
 
-    # 4. Add Laboratories (50 labs)
+    # 4. Add Laboratories (50 labs) - Unchanged
     lab_names = [
         "Bioinformatics", "Neuroscience", "Quantum Computing", "Environmental Science",
         "Robotics", "Genomics", "AI Research", "Materials Science", "Biophysics",
@@ -124,7 +145,7 @@ def populate_large_data(db: Database):
             lab_id = db.insert_query(table="LABORATORY", record=lab)
             lab_ids.append(lab_id)
 
-    # 5. Add Projects (200 projects)
+    # 5. Add Projects (200 projects) - Modified to include DESCRIPTION
     project_names = [
         "Genome Sequencing", "Quantum Algorithm", "Climate Impact", "Neural Network",
         "AI for Healthcare", "Sustainable Energy", "Nanotech Development", "Bioinformatics Pipeline",
@@ -140,14 +161,15 @@ def populate_large_data(db: Database):
             "DATE_BEGIN": start_date,
             "DATE_END": end_date,
             "STATE": random.choice(["Not Started", "In Progress", "Completed", "Canceled"]),
-            "ID_MANAGER": random.choice(researcher_ids)
+            "ID_MANAGER": random.choice(researcher_ids),
+            "DESCRIPTION": random_description("Project overview for")  # New DESCRIPTION field
         }
         if db.db_type == "sqlite":
             db.execute_query(
-                """INSERT INTO PROJECT (NAME_PROJECT, BUDGET, DATE_BEGIN, DATE_END, STATE, ID_MANAGER)
-                VALUES (?, ?, ?, ?, ?, ?)""",
+                """INSERT INTO PROJECT (NAME_PROJECT, BUDGET, DATE_BEGIN, DATE_END, STATE, ID_MANAGER, DESCRIPTION)
+                VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 (project["NAME_PROJECT"], project["BUDGET"], project["DATE_BEGIN"],
-                 project["DATE_END"], project["STATE"], project["ID_MANAGER"])
+                 project["DATE_END"], project["STATE"], project["ID_MANAGER"], project["DESCRIPTION"])
             )
             db.cursor.execute("SELECT last_insert_rowid()")
             project_ids.append(db.cursor.fetchone()[0])
@@ -155,7 +177,7 @@ def populate_large_data(db: Database):
             project_id = db.insert_query(table="PROJECT", record=project)
             project_ids.append(project_id)
 
-    # 6. Add Partners (100 partners)
+    # 6. Add Partners (100 partners) - Unchanged
     partner_types = ["Industry", "Academic", "Government", "Non-Profit"]
     partner_ids = []
     for i in range(100):
@@ -183,7 +205,7 @@ def populate_large_data(db: Database):
             partner_id = db.insert_query(table="PARTNER", record=partner)
             partner_ids.append(partner_id)
 
-    # 7. Add Equipment (300 pieces)
+    # 7. Add Equipment (300 pieces) - Unchanged
     equipment_names = [
         "Microscope", "Spectrometer", "Centrifuge", "PCR Machine", "HPLC System",
         "Mass Spectrometer", "Quantum Computer", "3D Printer", "Laser Cutter",
@@ -207,7 +229,7 @@ def populate_large_data(db: Database):
             equipment_id = db.insert_query(table="EQUIPEMENT", record=equipment)
             equipment_ids.append(equipment_id)
 
-    # 8. Add Events (300 events)
+    # 8. Add Events (300 events) - Modified to include DESCRIPTION
     event_names = [
         "Research Conference", "Machine Learning Workshop", "AI Seminar", "Research Symposium",
         "Quantum Computing Forum", "Bioinformatics Summit", "Climate Science Webinar",
@@ -229,14 +251,15 @@ def populate_large_data(db: Database):
             "HOUR": random_time(),
             "PLACE": f"{places[i % len(places)]}, Room {random.randint(1, 10)}",
             "DATE_END": end_date,
-            "ID_ORGANISOR": random.choice(researcher_ids)
+            "ID_ORGANISOR": random.choice(researcher_ids),
+            "DESCRIPTION": random_description("Event overview for")  # New DESCRIPTION field
         }
         if db.db_type == "sqlite":
             db.execute_query(
-                """INSERT INTO EVENT (NAME_EVENT, TYPE_EV, DATE_BEG, HOUR, PLACE, DATEND, ID_ORGANISOR)
-                VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                """INSERT INTO EVENT (NAME_EVENT, TYPE_EV, DATE_BEG, HOUR, PLACE, DATEND, ID_ORGANISOR, DESCRIPTION)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                 (event["NAME_EVENT"], event["TYPE_EV"], event["DATE_BEGIN"], event["HOUR"],
-                 event["PLACE"], event["DATE_END"], event["ID_ORGANISOR"])
+                 event["PLACE"], event["DATE_END"], event["ID_ORGANISOR"], event["DESCRIPTION"])
             )
             db.cursor.execute("SELECT last_insert_rowid()")
             event_ids.append(db.cursor.fetchone()[0])
@@ -244,7 +267,7 @@ def populate_large_data(db: Database):
             event_id = db.insert_query(table="EVENT", record=event)
             event_ids.append(event_id)
 
-    # 9. Add Publications (500 publications)
+    # 9. Add Publications (500 publications) - Modified to include DESCRIPTION
     publication_titles = [
         "Advances in", "Breakthroughs in", "New Insights into", "Exploring",
         "Innovations in", "Future of", "Applications of", "Challenges in"
@@ -255,12 +278,15 @@ def populate_large_data(db: Database):
             "TITLE": f"{publication_titles[i % len(publication_titles)]} {random.choice(project_names)} {i + 1}",
             "DATE_PUB": random_date(2020, 2025),
             "LIEN": f"https://journal.org/publication/{i + 1}",
-            "ID_RESEARCHER": random.choice(researcher_ids)
+            "ID_RESEARCHER": random.choice(researcher_ids),
+            "DESCRIPTION": random_description("Publication summary for")  # New DESCRIPTION field
         }
         if db.db_type == "sqlite":
             db.execute_query(
-                "INSERT INTO PUBLICATION (TITLE, DATE_PUB, LIEN, ID_RESEARCHER) VALUES (?, ?, ?, ?)",
-                (publication["TITLE"], publication["DATE_PUB"], publication["LIEN"], publication["ID_RESEARCHER"])
+                """INSERT INTO PUBLICATION (TITLE, DATE_PUB, LIEN, ID_RESEARCHER, DESCRIPTION)
+                VALUES (?, ?, ?, ?, ?)""",
+                (publication["TITLE"], publication["DATE_PUB"], publication["LIEN"],
+                 publication["ID_RESEARCHER"], publication["DESCRIPTION"])
             )
             db.cursor.execute("SELECT last_insert_rowid()")
             publication_ids.append(db.cursor.fetchone()[0])
@@ -268,7 +294,7 @@ def populate_large_data(db: Database):
             publication_id = db.insert_query(table="PUBLICATION", record=publication)
             publication_ids.append(publication_id)
 
-    # 10. Add Junction Tables
+    # 10. Add Junction Tables - Unchanged
     # ASSIGN: Laboratories assigned to Projects (700 records)
     for i in range(700):
         assign = {

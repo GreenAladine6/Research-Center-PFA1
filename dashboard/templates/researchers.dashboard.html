@@ -1,61 +1,325 @@
 {% extends "dashboard.html" %}
+
 {% block head %} 
     <title>Dashboard | Researchers</title>
     <link href="{{ url_for('dashboard.static', filename='css/style1.css') }}" rel="stylesheet" />
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            overflow: auto;
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="{{url_for('dashboard.static', filename='css/project-style.css')}}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Researchers Management</h1>
+        <button id="openAddModal" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Researcher
+        </button>
+    </div>
+    
+    <!-- Add Researcher Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Add New Researcher</h2>
+                <button id="closeAddModal" class="btn-close"></button>
+            </div>
+            
+            <form id="addResearcherForm" method="POST" action="{{ url_for('researchers.create_researcher') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="full_name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" >
+                </div>
+                
+                <div class="form-group">
+                    <label for="position" class="form-label">Position</label>
+                    <input type="text" class="form-control" id="position" name="position" >
+                </div>
+                
+                <div class="form-group">
+                    <label for="bio" class="form-label">Bio</label>
+                    <textarea class="form-control" id="bio" name="bio" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image" class="form-label">Researcher Image</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    <small class="text-muted">Recommended size: 800x450px (JPG, PNG, SVG)</small>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="button" id="cancelAddModal" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="addButtonText">Create Researcher</span>
+                        <div class="spinner" id="addSpinner"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Researcher Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Update Researcher</h2>
+                <button id="closeUpdateModal" class="btn-close"></button>
+            </div>
+            
+            <form id="updateResearcherForm" method="PUT" enctype="multipart/form-data">
+                <input type="hidden" id="updateResearcherId" name="researcher_id">
+                
+                <div class="form-group">
+                    <label for="updateName" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="updateName" name="full_name" >
+                </div>
+                
+                <div class="form-group">
+                    <label for="updatePosition" class="form-label">Position</label>
+                    <input type="text" class="form-control" id="updatePosition" name="position" >
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateBio" class="form-label">Bio</label>
+                    <textarea class="form-control" id="updateBio" name="bio" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateImage" class="form-label">Update Image</label>
+                    <input type="file" class="form-control" id="updateImage" name="image" accept="image/*">
+                    <div class="mt-2" id="currentImageContainer">
+                        <small>Current Image:</small>
+                        <img id="currentImagePreview" src="" class="img-thumbnail mt-1" style="max-height: 80px;">
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="button" id="cancelUpdateModal" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <span id="updateButtonText">Update Researcher</span>
+                        <div class="spinner" id="updateSpinner"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Researchers Grid -->
+    {% if researchers %}
+    <div class="row">
+        {% for researcher in researchers %}
+        <div class="col-md-4 mb-4 staff-card" 
+             data-researcher-id="{{ researcher.id }}"
+             data-name="{{ researcher.FULL_NAME }}"
+             data-position="{{ researcher.POSITION if researcher.POSITION else 'N/A' }}"
+             data-bio="{{ researcher.BIO if researcher.BIO else 'No bio available' }}"
+             data-image="{{ url_for('static', filename=researcher.IMAGE.replace('\\', '/')[7:]) if researcher.IMAGE else url_for('static', filename='images/uploads/staff/staff-placeholder.png') }}">
+            <div class="card h-100">
+                {% set image_path = researcher.IMAGE.replace('\\', '/') if researcher.IMAGE else '' %}
+                {% set image_path = image_path[7:] if image_path.startswith('static/') else image_path %}
+                <img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/staff-placeholder.png') }}" 
+                     alt="{{ researcher.FULL_NAME }}" class="staff-image">
+                <div class="staff-details">
+                    <h3 class="staff-title">{{ researcher.FULL_NAME }}</h3>
+                    <div class="staff-position">
+                        <i class="fas fa-briefcase me-1"></i>
+                        <span>{{ researcher.POSITION if researcher.POSITION else 'N/A' }}</span>
+                    </div>
+                    <p class="staff-bio">{{ researcher.BIO|default('No bio available.', true)|truncate(100, true) }}</p>
+                    <div class="card-actions">
+                        <button class="btn-action btn-update" 
+                                data-researcher-id="{{ researcher.id }}"
+                                data-name="{{ researcher.FULL_NAME }}"
+                                data-position="{{ researcher.POSITION if researcher.POSITION else 'N/A' }}"
+                                data-bio="{{ researcher.BIO if researcher.BIO else 'No bio available' }}"
+                                data-image="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/staff-placeholder.png') }}">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </button>
+                        <button class="btn-action btn-delete" onclick="delete_researcher({{researcher.id}})" data-researcher-id="{{ researcher.id }}">
+                            <i class="fas fa-trash me-1"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">
+        <i class="fas fa-info-circle me-2"></i>No researchers found. Create your first researcher using the button above.
+    </div>
+    {% endif %}
+</div>
+
+<!-- JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Delete researcher button handlers
+    function delete_researcher(id) {
+        const researcherId = id;
+        console.log('Researcher ID:', researcherId);
+        
+        if (confirm('Are you sure you want to delete this researcher? This action cannot be undone.')) {
+            fetch(`/api/researcher/${researcherId}`, { 
+                method: 'DELETE' 
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to delete researcher');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the researcher');
+            });
         }
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 20px;
-            width: 70%;
-            max-width: 500px;
-            border-radius: 8px;
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date pickers
+        flatpickr('.datepicker', {
+            dateFormat: "Y-m-d",
+            allowInput: true
+        });
+
+        // Modal elements
+        const addModal = document.getElementById('addModal');
+        const openAddModal = document.getElementById('openAddModal');
+        const closeAddModal = document.getElementById('closeAddModal');
+        const cancelAddModal = document.getElementById('cancelAddModal');
+        const cancelUpdateModal = document.getElementById('cancelUpdateModal');
+        const addForm = document.getElementById('addResearcherForm');
+        const addSpinner = document.getElementById('addSpinner');
+
+        const updateModal = document.getElementById('updateModal');
+        const closeUpdateModal = document.getElementById('closeUpdateModal');
+        const updateForm = document.getElementById('updateResearcherForm');
+        const updateSpinner = document.getElementById('updateSpinner');
+
+        // Modal toggle functions
+        function openModal(modal) {
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
-        .spinner {
-            display: none;
-            width: 25px;
-            height: 25px;
-            border: 4px solid rgba(0,0,0,0.1);
-            border-left-color: #000;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
+
+        function closeModal(modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .project-card {
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .project-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status-0 { background-color: #ffcccc; color: #cc0000; } /* Not Started */
-        .status-1 { background-color: #fff2cc; color: #e69138; } /* In Progress */
-        .status-2 { background-color: #d9ead3; color: #38761d; } /* Completed */
-    </style>
+
+        // Event listeners for modals
+        openAddModal.addEventListener('click', () => openModal(addModal));
+        closeAddModal.addEventListener('click', () => closeModal(addModal));
+        closeUpdateModal.addEventListener('click', () => closeModal(updateModal));
+        cancelAddModal.addEventListener('click', () => closeModal(addModal));
+        cancelUpdateModal.addEventListener('click', () => closeModal(updateModal)); 
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === addModal) closeModal(addModal);
+            if (e.target === updateModal) closeModal(updateModal);
+        });
+
+        // Update researcher button handlers
+        document.querySelectorAll('.btn-update').forEach(button => {
+            button.addEventListener('click', function() {
+                const researcherId = this.getAttribute('data-researcher-id');
+                const currentImage = this.getAttribute('data-image');
+                
+                document.getElementById('updateResearcherId').value = researcherId;
+                document.getElementById('updateName').value = this.getAttribute('data-name');
+                document.getElementById('updatePosition').value = this.getAttribute('data-position');
+                document.getElementById('updateBio').value = this.getAttribute('data-bio');
+                
+                // Show current image if exists
+                const currentImagePreview = document.getElementById('currentImagePreview');
+                const currentImageContainer = document.getElementById('currentImageContainer');
+                
+                if (currentImage) {
+                    currentImagePreview.src = currentImage;
+                    currentImageContainer.style.display = 'block';
+                } else {
+                    currentImageContainer.style.display = 'none';
+                }
+                
+                openModal(updateModal);
+            });
+        });
+
+        // Form submission handlers
+        addForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const addButtonText = document.getElementById('addButtonText');
+            
+            addButtonText.textContent = 'Creating...';
+            addSpinner.style.display = 'inline-block';
+            
+            fetch("{{ url_for('researchers.create_researcher') }}", {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    closeModal(addModal);
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to create researcher');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while creating the researcher');
+            })
+            .finally(() => {
+                addButtonText.textContent = 'Create Researcher';
+                addSpinner.style.display = 'none';
+            });
+        });
+
+        updateForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const researcherId = document.getElementById('updateResearcherId').value;
+            const updateButtonText = document.getElementById('updateButtonText');
+            
+            updateButtonText.textContent = 'Updating...';
+            updateSpinner.style.display = 'inline-block';
+            
+            fetch(`/api/researcher/${researcherId}`, {
+                method: 'PUT',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    closeModal(updateModal);
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to update researcher');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the researcher');
+            })
+            .finally(() => {
+                updateButtonText.textContent = 'Update Researcher';
+                updateSpinner.style.display = 'none';
+            });
+        });
+    });
+</script>
 {% endblock %}

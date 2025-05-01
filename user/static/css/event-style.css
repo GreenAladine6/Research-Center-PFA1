@@ -1,0 +1,221 @@
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 25px;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+/* Spinner Animation */
+.spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,0.1);
+    border-left-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Event Cards */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.event-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.event-image-container {
+    height: 140px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+}
+
+.event-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    border-radius: 8px;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.04);
+}
+
+.event-card:hover .event-image {
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.event-details {
+    padding: 15px;
+}
+
+.event-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+}
+
+.event-meta {
+    display: flex;
+    align-items: center; 
+    justify-content: flex-start; 
+    gap: 8px; 
+    margin-bottom: 6px; 
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.event-meta .user-name {
+    color: #333; 
+    font-weight: 600; 
+}
+
+.event-meta .user-icon {
+    color: #999; 
+    font-size: 0.9rem; 
+}
+
+.event-dates, .event-time, .event-place {
+    color: #666;
+    font-size: 0.75rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.event-dates .date-values, .event-time span, .event-place span {
+    margin-left: 0;
+    font-weight: 500;
+    color: #444;
+    white-space: nowrap;
+}
+
+/* Type Badges */
+.type-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    font-size: 0.75rem;
+}
+
+.type-conference { background-color: #e1f0ff; color: #0061f2; }
+.type-workshop { background-color: #e3f9e5; color: #00ac69; }
+.type-seminar { background-color: #f0f4f8; color: #5e6e82; }
+.type-networking { background-color: #fff3e0; color: #f28c38; }
+.type-other { background-color: #fce8e8; color: #e63757; }
+
+/* Action Buttons */
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: flex-end;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-update {
+    background-color: #f0f4f8;
+    color: #5e6e82;
+}
+
+.btn-update:hover {
+    background-color: #e1e7ec;
+}
+
+.btn-delete {
+    background-color: #fce8e8;
+    color: #e63757;
+}
+
+.btn-delete:hover {
+    background-color: #f9d7d7;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #3d5170;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d2ddec;
+    border-radius: 4px;
+    font-size: 0.9375rem;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #0061f2;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 97, 242, 0.25);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+}

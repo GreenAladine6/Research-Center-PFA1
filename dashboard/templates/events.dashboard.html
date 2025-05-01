@@ -74,6 +74,11 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" maxlength="500" placeholder="Enter event description (optional, max 500 characters)"></textarea>
+                </div>
+                
+                <div class="form-group">
                     <label for="image" class="form-label">Event Image</label>
                     <input type="file" class="form-control" id="image" name="image" accept="image/*">
                     <small class="text-muted">Recommended size: 800x450px (JPG, PNG, SVG)</small>
@@ -119,7 +124,7 @@
                     <div class="col-md-6 form-group">
                         <label for="updateType" class="form-label">Event Type</label>
                         <select class="form-control" id="updateType" name="type_event">
-                            {% for type in ev_types%}
+                            {% for type in ev_types %}
                                 <option value="{{ type.TYPE_EV }}">{{ type.TYPE_EV }}</option>
                             {% endfor %}
                         </select>
@@ -146,6 +151,11 @@
                         <label for="updatePlace" class="form-label">Place</label>
                         <input type="text" class="form-control" id="updatePlace" name="place">
                     </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateDescription" class="form-label">Description</label>
+                    <textarea class="form-control" id="updateDescription" name="description" rows="4" maxlength="500" placeholder="Enter event description (optional, max 500 characters)"></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -200,8 +210,8 @@
                 <div class="event-dates">
                     <i class="far fa-calendar-alt me-1"></i>
                     Date: <span class="date-values">
-                        {{ e.DATE_BEGIN if e.DATE_BEGIN else 'N/A' }} -
-                        {{ e.DATE_END if e.DATE_END else 'N/A' }}
+                        {{ e.DATE_BEG if e.DATE_BEG else 'N/A' }} -
+                        {{ e.DATEND if e.DATEND else 'N/A' }}
                     </span>
                 </div>
                 
@@ -215,17 +225,23 @@
                     Place: <span>{{ e.PLACE if e.PLACE else 'N/A' }}</span>
                 </div>
                 
+                <div class="event-description">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Description: <span>{{ e.DESCRIPTION if e.DESCRIPTION else 'N/A' }}</span>
+                </div>
+                
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="card-actions">
                         <button class="btn-action btn-update" 
                             data-event-id="{{ e.id }}"
                             data-name="{{ e.NAME_EVENT if e.NAME_EVENT else '' }}"
                             data-organiser="{{ e.ID_ORGANISOR if e.ID_ORGANISOR else '' }}"
-                            data-type="{{ e.TYPE_EVENT if e.TYPE_EVENT else '' }}"
-                            data-date-begin="{{ e.DATE_BEGIN if e.DATE_BEGIN else '' }}"
-                            data-date-end="{{ e.DATE_END if e.DATE_END else '' }}"
+                            data-type="{{ e.TYPE_EV if e.TYPE_EV else '' }}"
+                            data-date-begin="{{ e.DATE_BEG if e.DATE_BEG else '' }}"
+                            data-date-end="{{ e.DATEND if e.DATEND else '' }}"
                             data-hour="{{ e.HOUR if e.HOUR else '' }}"
                             data-place="{{ e.PLACE if e.PLACE else '' }}"
+                            data-description="{{ e.DESCRIPTION if e.DESCRIPTION else '' }}"
 {% set data_image_path = e.IMAGE.replace('\\', '/') if e.IMAGE else '' %}
 {% set data_image_path = data_image_path[7:] if data_image_path.startswith('static/') else data_image_path %}
 data-image="{{ url_for('static', filename=data_image_path) if data_image_path else '' }}">
@@ -300,11 +316,13 @@ data-image="{{ url_for('static', filename=data_image_path) if data_image_path el
         const cancelUpdateModal = document.getElementById('cancelUpdateModal');
         const addForm = document.getElementById('addEventForm');
         const addSpinner = document.getElementById('addSpinner');
+        const addButtonText = document.getElementById('addButtonText');
 
         const updateModal = document.getElementById('updateModal');
         const closeUpdateModal = document.getElementById('closeUpdateModal');
         const updateForm = document.getElementById('updateEventForm');
         const updateSpinner = document.getElementById('updateSpinner');
+        const updateButtonText = document.getElementById('updateButtonText');
 
         // Modal toggle functions
         function openModal(modal) {
@@ -337,13 +355,14 @@ data-image="{{ url_for('static', filename=data_image_path) if data_image_path el
                 const currentImage = this.getAttribute('data-image');
                 
                 document.getElementById('updateEventId').value = eventId;
-                document.getElementById('updateName').value = this.getAttribute('data-name');
-                document.getElementById('updateOrganiser').value = this.getAttribute('data-organiser');
-                document.getElementById('updateType').value = this.getAttribute('data-type');
-                document.getElementById('updateDateBegin').value = this.getAttribute('data-date-begin');
-                document.getElementById('updateDateEnd').value = this.getAttribute('data-date-end');
-                document.getElementById('updateHour').value = this.getAttribute('data-hour');
-                document.getElementById('updatePlace').value = this.getAttribute('data-place');
+                document.getElementById('updateName').value = this.getAttribute('data-name') || '';
+                document.getElementById('updateOrganiser').value = this.getAttribute('data-organiser') || '';
+                document.getElementById('updateType').value = this.getAttribute('data-type') || '';
+                document.getElementById('updateDateBegin').value = this.getAttribute('data-date-begin') || '';
+                document.getElementById('updateDateEnd').value = this.getAttribute('data-date-end') || '';
+                document.getElementById('updateHour').value = this.getAttribute('data-hour') || '';
+                document.getElementById('updatePlace').value = this.getAttribute('data-place') || '';
+                document.getElementById('updateDescription').value = this.getAttribute('data-description') || '';
                 
                 // Show current image if exists
                 const currentImagePreview = document.getElementById('currentImagePreview');
@@ -364,7 +383,6 @@ data-image="{{ url_for('static', filename=data_image_path) if data_image_path el
         addForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            const addButtonText = document.getElementById('addButtonText');
             
             addButtonText.textContent = 'Creating...';
             addSpinner.style.display = 'inline-block';
@@ -374,20 +392,32 @@ data-image="{{ url_for('static', filename=data_image_path) if data_image_path el
                 body: formData
             })
             .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(JSON.stringify(data));
+                    });
+                }
                 return response.json();
             })
             .then(data => {
                 if (data.success) {
                     closeModal(addModal);
+                    alert('Event created successfully!');
                     window.location.reload();
+                } else if (data.alert) {
+                    alert(data.alert); // Displays "Conflict detected" for conflicts
                 } else {
-                    alert(data.error || 'Failed to create event');
+                    alert(data.error || 'Failed to create event: ' + (data.details || 'Unknown error'));
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while creating the event');
+                try {
+                    const errorData = JSON.parse(error.message);
+                    alert(errorData.alert || errorData.error || 'An error occurred while creating the event');
+                } catch {
+                    alert('An error occurred while creating the event');
+                }
             })
             .finally(() => {
                 addButtonText.textContent = 'Create Event';
@@ -399,7 +429,6 @@ data-image="{{ url_for('static', filename=data_image_path) if data_image_path el
             e.preventDefault();
             const formData = new FormData(this);
             const eventId = document.getElementById('updateEventId').value;
-            const updateButtonText = document.getElementById('updateButtonText');
             
             updateButtonText.textContent = 'Updating...';
             updateSpinner.style.display = 'inline-block';
@@ -409,20 +438,32 @@ data-image="{{ url_for('static', filename=data_image_path) if data_image_path el
                 body: formData
             })
             .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(JSON.stringify(data));
+                    });
+                }
                 return response.json();
             })
             .then(data => {
                 if (data.success) {
                     closeModal(updateModal);
+                    alert('Event updated successfully!');
                     window.location.reload();
+                } else if (data.alert) {
+                    alert(data.alert); // Displays "Conflict detected" for conflicts
                 } else {
-                    alert(data.error || 'Failed to update event');
+                    alert(data.error || 'Failed to update event: ' + (data.details || 'Unknown error'));
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while updating the event');
+                try {
+                    const errorData = JSON.parse(error.message);
+                    alert(errorData.alert || errorData.error || 'An error occurred while updating the event');
+                } catch {
+                    alert('An error occurred while updating the event');
+                }
             })
             .finally(() => {
                 updateButtonText.textContent = 'Update Event';

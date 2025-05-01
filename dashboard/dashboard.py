@@ -51,7 +51,7 @@ def events():
 def publications():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
-        publications = db.select_query("publications")
+        publications = db.select_query("PUBLICATION")
         return render_template('publications.dashboard.html', title='Publications', publications=publications)
     return redirect('/dashboard/login')
 
@@ -67,7 +67,7 @@ def partners():
 def researchers():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
-        researchers = db.select_query("researchers")
+        researchers = db.select_query("RESEARCHER")
         return render_template('researchers.dashboard.html', title='Researchers', researchers=researchers)
     return redirect('/dashboard/login')
 
