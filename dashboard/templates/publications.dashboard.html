@@ -4,7 +4,7 @@
     <title>Dashboard | Publications</title>
     <link href="{{ url_for('dashboard.static', filename='css/style1.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="{{url_for('dashboard.static', filename='css/project-style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/project-style.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -27,12 +27,12 @@
             <form id="addPublicationForm" method="POST" action="{{ url_for('publications.create_publication') }}" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" >
+                    <input type="text" class="form-control" id="title" name="title" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="id_researcher" class="form-label">Researcher</label>
-                    <select class="form-control" id="id_researcher" name="id_researcher" >
+                    <select class="form-control" id="id_researcher" name="id_researcher" required>
                         <option value="">Select Researcher</option>
                         {% for researcher in researchers %}
                             <option value="{{ researcher.id }}">{{ researcher.FULL_NAME }}</option>
@@ -42,17 +42,17 @@
                 
                 <div class="form-group">
                     <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label for="link" class="form-label">Link</label>
-                    <input type="url" class="form-control" id="link" name="link" >
+                    <input type="url" class="form-control" id="link" name="link">
                 </div>
                 
                 <div class="form-group">
                     <label for="date" class="form-label">Publication Date</label>
-                    <input type="text" class="form-control datepicker" id="date" name="date" >
+                    <input type="text" class="form-control datepicker" id="date" name="date" required>
                 </div>
                 
                 <div class="form-group">
@@ -65,7 +65,7 @@
                     <button type="button" id="cancelAddModal" class="btn-cancel">Cancel</button>
                     <button type="submit" class="btn btn-primary">
                         <span id="addButtonText">Create Publication</span>
-                        <div class="spinner" id="addSpinner"></div>
+                        <div class="spinner" id="addSpinner" style="display: none;"></div>
                     </button>
                 </div>
             </form>
@@ -85,12 +85,12 @@
                 
                 <div class="form-group">
                     <label for="updateTitle" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="updateTitle" name="title" >
+                    <input type="text" class="form-control" id="updateTitle" name="title" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="updateResearcher" class="form-label">Researcher</label>
-                    <select class="form-control" id="updateResearcher" name="id_researcher" >
+                    <select class="form-control" id="updateResearcher" name="id_researcher" required>
                         <option value="">Select Researcher</option>
                         {% for researcher in researchers %}
                             <option value="{{ researcher.id }}">{{ researcher.FULL_NAME }}</option>
@@ -100,17 +100,17 @@
                 
                 <div class="form-group">
                     <label for="updateDescription" class="form-label">Description</label>
-                    <textarea class="form-control" id="updateDescription" name="description" rows="4"></textarea>
+                    <textarea class="form-control" id="updateDescription" name="description" rows="4" required></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label for="updateLink" class="form-label">Link</label>
-                    <input type="url" class="form-control" id="updateLink" name="link" >
+                    <input type="url" class="form-control" id="updateLink" name="link">
                 </div>
                 
                 <div class="form-group">
                     <label for="updateDate" class="form-label">Publication Date</label>
-                    <input type="text" class="form-control datepicker" id="updateDate" name="date" >
+                    <input type="text" class="form-control datepicker" id="updateDate" name="date" required>
                 </div>
                 
                 <div class="form-group">
@@ -126,7 +126,7 @@
                     <button type="button" id="cancelUpdateModal" class="btn-cancel">Cancel</button>
                     <button type="submit" class="btn btn-success">
                         <span id="updateButtonText">Update Publication</span>
-                        <div class="spinner" id="updateSpinner"></div>
+                        <div class="spinner" id="updateSpinner" style="display: none;"></div>
                     </button>
                 </div>
             </form>
@@ -145,23 +145,23 @@
              data-date="{{ publication.DATE if publication.DATE else '' }}"
              data-description="{{ publication.DESCRIPTION|default('No description available') }}"
              data-link="{{ publication.LINK|default('') }}"
-             data-image="{{ url_for('static', filename=publication.IMAGE.replace('\\', '/')[7:]) if publication.IMAGE else '' }}">
+             data-image="{{ url_for('static', filename=publication.IMAGE[7:]) if publication.IMAGE else '' }}">
             <div class="card h-100">
                 <!-- Researcher Profile -->
                 <div class="card-header d-flex align-items-center">
-                    <img src="{{ url_for('static', filename=researcher.IMAGE.replace('\\', '/')[7:]) if researcher.IMAGE else url_for('static', filename='images/satff/avatar-placeholder.png') }}" 
-                         alt="{{ researcher.FULL_NAME }}" class="rounded-circle me-3" width="50" height="50">
+                    <img src="{{ url_for('static', filename=researcher.IMAGE[7:]) if researcher and researcher.IMAGE else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
+                         alt="{{ researcher.FULL_NAME if researcher else 'Unknown' }}" class="rounded-circle me-3" width="50" height="50">
                     <div>
-                        <h6 class="mb-0">{{ researcher.FULL_NAME }}</h6>
-                        <small class="text-muted">{{ researcher.POSITION or 'Researcher' }}</small>
+                        <h6 class="mb-0">{{ researcher.FULL_NAME if researcher else 'Unknown Researcher' }}</h6>
+                        <small class="text-muted">{{ researcher.ID_GRADE if researcher and researcher.ID_GRADE else 'Researcher' }}</small>
                     </div>
                 </div>
                 
                 <!-- Publication Content -->
                 <div class="card-body">
                     <small class="text-muted d-block mb-2">
-                        {% if publication.DATE_OBJ %}
-                            {{ publication.DATE_OBJ.strftime('%B %d, %Y') }}
+                        {% if publication.DATE %}
+                            {{ publication.DATE|datetimeformat('%B %d, %Y') }}
                         {% else %}
                             Date not available
                         {% endif %}
@@ -170,7 +170,7 @@
                     <p class="card-text">{{ publication.DESCRIPTION|default('No description available')|truncate(150) }}</p>
                     
                     {% if publication.IMAGE %}
-                    <img src="{{ url_for('static', filename=publication.IMAGE.replace('\\', '/')[7:]) }}" 
+                    <img src="{{ url_for('static', filename=publication.IMAGE[7:]) }}" 
                          alt="{{ publication.TITLE }}" class="img-fluid mb-3">
                     {% endif %}
                     
@@ -182,7 +182,7 @@
                                 data-date="{{ publication.DATE if publication.DATE else '' }}"
                                 data-description="{{ publication.DESCRIPTION|default('No description available') }}"
                                 data-link="{{ publication.LINK|default('') }}"
-                                data-image="{{ url_for('static', filename=publication.IMAGE.replace('\\', '/')[7:]) if publication.IMAGE else '' }}">
+                                data-image="{{ url_for('static', filename=publication.IMAGE[7:]) if publication.IMAGE else '' }}">
                             <i class="fas fa-edit me-1"></i>Edit
                         </button>
                         <button class="btn-action btn-delete" onclick="delete_publication({{publication.id}})" data-publication-id="{{ publication.id }}">
@@ -235,7 +235,8 @@
         // Initialize date pickers
         flatpickr('.datepicker', {
             dateFormat: "Y-m-d",
-            allowInput: true
+            allowInput: true,
+            maxDate: "today"
         });
 
         // Modal elements
@@ -284,7 +285,7 @@
                 
                 document.getElementById('updatePublicationId').value = publicationId;
                 document.getElementById('updateTitle').value = this.getAttribute('data-title');
-                document.getElementById('updateResearcher').value = this.getAttribute('data-researcher');
+                document.getElementById('updateResearcher').value = this.getAttribute('data-researcher') || '';
                 document.getElementById('updateDescription').value = this.getAttribute('data-description');
                 document.getElementById('updateLink').value = this.getAttribute('data-link');
                 document.getElementById('updateDate').value = this.getAttribute('data-date');
@@ -326,7 +327,7 @@
                     closeModal(addModal);
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Failed to create publication');
+                    alert(data.error || 'Failed to create publication. Please check the form data.');
                 }
             })
             .catch(error => {
@@ -361,7 +362,7 @@
                     closeModal(updateModal);
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Failed to update publication');
+                    alert(data.error || 'Failed to update publication. Please check the form data.');
                 }
             })
             .catch(error => {

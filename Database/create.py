@@ -231,8 +231,8 @@ class Database:
         CREATE TABLE LABORATORY (
             LABO_ID INTEGER PRIMARY KEY,
             NAME_LAB TEXT,
-            DIRECTOR TEXT,
-            foreign key (DIRECTOR) references RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
+            DIRECTOR INTEGER,
+            FOREIGN KEY (DIRECTOR) REFERENCES RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
         )
         ''')
 
@@ -244,6 +244,8 @@ class Database:
             FULL_NAME TEXT NOT NULL,
             NUM_TEL INTEGER NOT NULL,
             EMAIL TEXT,
+            BIO TEXT,
+            PASSWORD TEXT NOT NULL,
             FOREIGN KEY (ID_GRADE) REFERENCES GRADE(ID_GRADE) ON DELETE CASCADE
         )
         ''')
@@ -258,7 +260,8 @@ class Database:
             DATE_BEGIN TEXT,
             DATE_END TEXT,
             STATE TEXT,
-            foreign key (ID_MANAGER) references RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
+            DESCRIPTION TEXT,
+            FOREIGN KEY (ID_MANAGER) REFERENCES RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
         )
         ''')
 
@@ -307,15 +310,9 @@ class Database:
             PLACE TEXT NOT NULL,
             DATEND TEXT,
             ID_ORGANISOR INTEGER,
+            DESCRIPTION TEXT,
             FOREIGN KEY (TYPE_EV) REFERENCES TYPE_EV(TYPE_EV),
             FOREIGN KEY (ID_ORGANISOR) REFERENCES RESEARCHER(ID_RESEARCHER) ON DELETE CASCADE
-        )
-        ''')
-    def _create_grade_table(self):
-        self.execute_query('''
-        CREATE TABLE GRADE (
-            ID_GRADE INTEGER PRIMARY KEY,
-            NAME_GRADE TEXT
         )
         ''')
 
@@ -327,6 +324,7 @@ class Database:
             TITLE TEXT,
             DATE_PUB TEXT,
             LIEN TEXT,
+            DESCRIPTION TEXT,
             FOREIGN KEY (ID_RESEARCHER) REFERENCES RESEARCHER(ID_RESEARCHER)
         )
         ''')
@@ -405,22 +403,35 @@ def test_database(db_type="sqlite"):
     
     # Test data
     grade_data = {"NAME_GRADE": "Senior Researcher"} if db_type == "json" else None
-    lab_data = {"NAME_LAB": "BioTech Lab", "DIRECTOR": "Dr. Smith"} if db_type == "json" else None
+    lab_data = {"NAME_LAB": "BioTech Lab", "DIRECTOR": 1} if db_type == "json" else None
+    researcher_data = {
+        "ID_GRADE": 1,
+        "FULL_NAME": "Dr. Smith",
+        "NUM_TEL": 1234567890,
+        "EMAIL": "dr.smith@example.com",
+        "BIO": "Expert in bioinformatics",
+        "PASSWORD": "hashed_password_example"
+    } if db_type == "json" else None
     
     # Insert test data
     if db_type == "sqlite":
         db.execute_query("INSERT INTO GRADE (NAME_GRADE) VALUES (?)", ("Senior Researcher",))
+        db.execute_query("INSERT INTO RESEARCHER (ID_GRADE, FULL_NAME, NUM_TEL, EMAIL, BIO, PASSWORD) VALUES (?, ?, ?, ?, ?, ?)", 
+                        (1, "Dr. Smith", 1234567890, "dr.smith@example.com", "Expert in bioinformatics", "hashed_password_example"))
         db.execute_query("INSERT INTO LABORATORY (NAME_LAB, DIRECTOR) VALUES (?, ?)", 
-                        ("BioTech Lab", "Dr. Smith"))
+                        ("BioTech Lab", 1))
     else:
-        db.insert_query(table="GRADE", record={"NAME_GRA": "Senior Researcher"})
-        db.insert_query(table="LABORATORY", record={"NAME_LAB": "BioTech Lab", "DIRECTOR": "Dr. Smith"})
+        db.insert_query(table="GRADE", record={"NAME_GRADE": "Senior Researcher"})
+        db.insert_query(table="RESEARCHER", record=researcher_data)
+        db.insert_query(table="LABORATORY", record={"NAME_LAB": "BioTech Lab", "DIRECTOR": 1})
     
     # Query data
     grades = db.select_query("SELECT * FROM GRADE") if db_type == "sqlite" else db.select_query(table="GRADE")
+    researchers = db.select_query("SELECT * FROM RESEARCHER") if db_type == "sqlite" else db.select_query(table="RESEARCHER")
     labs = db.select_query("SELECT * FROM LABORATORY") if db_type == "sqlite" else db.select_query(table="LABORATORY")
     
     print("Grades:", grades)
+    print("Researchers:", researchers)
     print("Laboratories:", labs)
     
     db.close()

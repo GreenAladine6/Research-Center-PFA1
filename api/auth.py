@@ -1,43 +1,83 @@
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
-from flask import Blueprint, request, jsonify, make_response
-from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
+from flask import Blueprint, request, jsonify, make_response, current_app
+from flask_jwt_extended import (
+    create_access_token,
+    set_access_cookies,
+    unset_jwt_cookies,
+    JWTManager
+)
+from werkzeug.security import check_password_hash
+from Database.db import JSONDatabase
+
+# Load environment variables
+load_dotenv()
 
 # Create Blueprint for authentication
 auth_bp = Blueprint('auth', __name__)
 
+# Initialize JWT
+jwt = JWTManager()
+
 # Get credentials from environment variables
-ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
-ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME').strip()
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD').strip()
 
 @auth_bp.post('/login')
 def login():
-    data = request.json
-    if not data:
-        return jsonify({'message': 'Invalid request'}), 400
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'message': 'Invalid request'}), 400
 
-    username = data.get('username')
-    password = data.get('password')
+        username = data.get('username', '').strip()
+        password = data.get('password', '')
 
-    # Check if credentials match
-    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-        # Create JWT token that expires in 3 hours
-        token = create_access_token(identity=username, expires_delta=timedelta(hours=3))
+        # Admin authentication
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            token = create_access_token(
+                identity={
+                    'username': username,
+                    'role': 'admin',
+                    'name': 'Administrator'
+                }
+            )
+            response = make_response(jsonify({
+                'message': 'Admin login successful',
+                'redirect': '/dashboard/projects'
+            }))
+            set_access_cookies(response, token)
+            return response
 
-        # Set the token in an HTTP-only cookie
-        response = make_response(jsonify({'message': 'Login successful'}))
-        set_access_cookies(response, token)
+        # User authentication
+        db = JSONDatabase()
+        user = db.find_researcher_by_email(username)
+        
+        if user and check_password_hash(user.get('PASSWORD', ''), password):
+            token = create_access_token(
+                identity={
+                    'username': user['EMAIL'],
+                    'role': 'user',
+                    'name': user['FULL_NAME'],
+                    'user_id': user['id']
+                }
+            )
+            response = make_response(jsonify({
+                'message': 'User login successful',
+                'redirect': '/dashboard/user'
+            }))
+            set_access_cookies(response, token)
+            return response
 
-        return response
+        return jsonify({'message': 'Invalid username or password'}), 401
 
-    return jsonify({'message': 'Login failed'}), 401
+    except Exception as e:
+        current_app.logger.error(f"Login error: {str(e)}")
+        return jsonify({'message': 'Internal server error'}), 500
+
 @auth_bp.post('/logout')
 def logout():
-    # Create a response object
     response = make_response(jsonify({'message': 'Logout successful'}))
-
-    # Unset the JWT cookie
     unset_jwt_cookies(response)
-
     return response

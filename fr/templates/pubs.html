@@ -15,13 +15,37 @@
   <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
 
   <!-- Additional CSS Files -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/events.css') }}" />
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-chain-app-dev.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/animated.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pubs.css') }}" />
 
+  <style>
+    /* Ensure profile images are round and smaller */
+    .card-header img.rounded-circle {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 50%;
+
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.5); 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal-body img.rounded-circle {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+      
+    }
+    </style>
 </head>
 <body>
   <!-- ***** Preloader Start ***** -->
@@ -72,7 +96,7 @@
     <h1 class="text-center mb-4">Publications</h1>
     <div class="container">
         <!-- Search Input -->
-        <div class="search-container" style="max-width: 800px;">
+        <div class="search-container" style="max-width: 800px; margin: 0 auto;">
           <div style="flex-grow: 1;">
               <label for="publication-input">Search by Title:</label>
               <div class="search-group">
@@ -84,13 +108,6 @@
                          class="form-control">
               </div>
           </div>
-          
-          <button id="addPublicationBtn" 
-                  class="btn btn-success add-btn" 
-                  data-bs-toggle="modal" 
-                  data-bs-target="#addPublicationModal">
-              Add Publication
-          </button>
       </div>
 
         <!-- Publications Grid -->
@@ -103,8 +120,8 @@
                 <div class="card h-100">
                     <!-- Researcher Profile -->
                     <div class="card-header d-flex align-items-center">
-                        <img src="{{ url_for('static', filename=researcher.IMAGE) if researcher.IMAGE else url_for('static', filename='images/avatar-placeholder.png') }}" 
-                             alt="{{ researcher.FULL_NAME }}" class="rounded-circle me-3" width="50" height="50">
+                        <img src="{{ url_for('static', filename=researcher.IMAGE) if researcher.IMAGE else url_for('static', filename='images/uploads/publications/publications-placeholder.png') }}" 
+                             alt="{{ researcher.FULL_NAME }}" class="rounded-circle me-3">
                         <div>
                             <h6 class="mb-0">{{ researcher.FULL_NAME }}</h6>
                             <small class="text-muted">{{ researcher.POSITION or 'Researcher' }}</small>
@@ -134,12 +151,12 @@
                                 data-title="{{ publication.TITLE }}"
                                 data-researcher="{{ researcher.FULL_NAME }}"
                                 data-position="{{ researcher.POSITION or 'Researcher' }}"
-                                data-researcher-img="{{ url_for('static', filename=researcher.IMAGE) if researcher.IMAGE else url_for('static', filename='images/avatar-placeholder.png') }}"
+                                data-researcher-img="{{ url_for('static', filename=researcher.IMAGE) if researcher.IMAGE else url_for('static', filename='images/uploads/publications/publications-placeholder.png') }}"
                                 data-image="{{ url_for('static', filename=publication.IMAGE) if publication.IMAGE else '' }}"
                                 data-description="{{ publication.DESCRIPTION|default('No description available') }}"
                                 data-link="{{ publication.LINK or '' }}"
                                 data-date="{% if publication.DATE_OBJ %}{{ publication.DATE_OBJ.strftime('%B %d, %Y') }}{% else %}Date not available{% endif %}">
-                            View Details
+                            Learn More
                         </button>
                     </div>
                 </div>
@@ -168,7 +185,7 @@
             </div>
             <div class="modal-body">
                 <div class="d-flex align-items-center mb-4">
-                    <img id="modalResearcherImg" src="" alt="Researcher" class="rounded-circle me-3" width="60" height="60">
+                    <img id="modalResearcherImg" src="" alt="Researcher" class="rounded-circle me-3">
                     <div>
                         <h6 id="modalResearcherName" class="mb-0"></h6>
                         <small id="modalResearcherPosition" class="text-muted"></small>
@@ -177,7 +194,7 @@
                 </div>
                 
                 <div id="modalImageContainer" class="mb-3 text-center">
-                    <img id="modalImage" src="" alt="Publication Image" class="img-fluid" style="display: none;">
+                    <img id="modalImage" src="" alt="Publication Image" class="img-fluid" style="max-height: 400px; width: auto;">
                 </div>
                 
                 <div class="mb-3">
@@ -185,7 +202,7 @@
                     <p id="modalDescription" class="text-muted"></p>
                 </div>
                 
-                <div id="modalLinkContainer" style="display: none;">
+                <div id="modalLinkContainer">
                     <h6>Link</h6>
                     <a id="modalLink" href="#" target="_blank" class="text-decoration-none"></a>
                 </div>
@@ -196,60 +213,6 @@
         </div>
     </div>
 </div>
-
-<!-- Add Publication Modal -->
-<div class="modal fade" id="addPublicationModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title">Add New Publication</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <form id="addPublicationForm" enctype="multipart/form-data">
-              <div class="modal-body">
-                  <div class="mb-3">
-                      <label class="form-label">Researcher ID and Full Name</label>
-                      <input type="text" name="researcher_info" id="researcherInfo" class="form-control" 
-                             placeholder="Enter researcher ID and full name (e.g., 123 - John Doe)" required>
-                      <div id="researcherValidation" class="mt-2" style="display: none;">
-                          <span id="validResearcher" class="text-success" style="display: none;">
-                              <i class="fas fa-check-circle"></i> Valid researcher
-                          </span>
-                          <span id="invalidResearcher" class="text-danger" style="display: none;">
-                              <i class="fas fa-times-circle"></i> Researcher not found
-                          </span>
-                      </div>
-                  </div>
-                  <div class="mb-3">
-                      <label class="form-label">Title</label>
-                      <input type="text" name="title" class="form-control" required>
-                  </div>
-                  <div class="mb-3">
-                      <label class="form-label">Publication Date</label>
-                      <input type="date" name="DATE_PUB" class="form-control">
-                  </div>
-                  <div class="mb-3">
-                      <label class="form-label">Description</label>
-                      <textarea name="description" rows="4" class="form-control" required></textarea>
-                  </div>
-                  <div class="mb-3">
-                      <label class="form-label">Link (URL)</label>
-                      <input type="url" name="link" class="form-control">
-                  </div>
-                  <div class="mb-3">
-                      <label class="form-label">Image</label>
-                      <input type="file" name="image" class="form-control" accept="image/*">
-                  </div>
-              </div>
-              <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="submit" class="btn btn-primary" id="submitPublicationBtn" disabled>Save Publication</button>
-              </div>
-          </form>
-      </div>
-  </div>
-</div>
- 
 
   <footer id="contact">
     <div class="container">
@@ -316,62 +279,53 @@
     document.addEventListener('DOMContentLoaded', function() {
       // Element references
       const publicationsRow = document.getElementById('publicationsRow');
-      const morePublicationsBtn = document.getElementById('morePublicationsBtn');
-      const lessPublicationsBtn = document.getElementById('lessPublicationsBtn');
-      const addPublicationBtn = document.getElementById('addPublicationBtn');
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      const showLessBtn = document.getElementById('showLessBtn');
       const publicationCards = document.querySelectorAll('.publication-card');
-      const detailsModal = document.getElementById('detailsModal');
-      const modalClose = document.querySelector('#detailsModal .modal-close');
-      const modalResearcherImage = document.getElementById('modal-researcher-image');
-      const modalResearcherName = document.getElementById('modal-researcher-name');
-      const modalResearcherPosition = document.getElementById('modal-researcher-position');
-      const modalImage = document.getElementById('modal-image');
-      const modalTitle = document.getElementById('modal-title');
-      const modalDate = document.getElementById('modal-date');
-      const modalDescription = document.getElementById('modal-description');
-      const modalLink = document.getElementById('modal-link');
       const publicationInput = document.getElementById('publication-input');
-      const addPublicationModal = document.getElementById('addPublicationModal');
-      const addModalClose = document.querySelector('#addPublicationModal .modal-close');
-      const contactFormOverlay = document.getElementById('form-overlay');
-      const cancelContactBtn = document.getElementById('cancel-contact-btn');
-      const contactCloseBtn = document.querySelector('#form-overlay .modal-close');
-      const contactButtons = document.querySelectorAll('.contact-btn');
       const initialDisplayCount = 16;
       let visibleCount = Math.min(initialDisplayCount, publicationCards.length);
 
       // Function to update button states
       function updateButtonStates() {
-        if (!morePublicationsBtn || !lessPublicationsBtn) return;
-        const visibleCards = Array.from(publicationCards).filter(card => !card.classList.contains('d-none'));
-        morePublicationsBtn.disabled = visibleCards.length >= publicationCards.length;
-        lessPublicationsBtn.disabled = visibleCards.length <= initialDisplayCount;
+        if (!loadMoreBtn || !showLessBtn) return;
+        
+        const hiddenCards = Array.from(publicationCards).filter(card => card.classList.contains('d-none')).length;
+        const visibleCards = publicationCards.length - hiddenCards;
+        
+        loadMoreBtn.disabled = hiddenCards === 0;
+        showLessBtn.disabled = visibleCards <= initialDisplayCount;
       }
 
       // Initial button state
       updateButtonStates();
 
-      // More button click handler
-      if (morePublicationsBtn) {
-        morePublicationsBtn.addEventListener('click', function() {
+      // Load More button click handler
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
           const nextBatch = Array.from(publicationCards)
             .filter(card => card.classList.contains('d-none'))
             .slice(0, initialDisplayCount);
+          
           nextBatch.forEach(card => {
             card.classList.remove('d-none');
           });
+          
           visibleCount = Math.min(visibleCount + nextBatch.length, publicationCards.length);
           updateButtonStates();
         });
       }
 
-      // Less button click handler
-      if (lessPublicationsBtn) {
-        lessPublicationsBtn.addEventListener('click', function() {
-          const excessCards = Array.from(publicationCards).slice(initialDisplayCount);
-          excessCards.forEach(card => {
+      // Show Less button click handler
+      if (showLessBtn) {
+        showLessBtn.addEventListener('click', function() {
+          const allCards = Array.from(publicationCards);
+          const cardsToHide = allCards.slice(initialDisplayCount);
+          
+          cardsToHide.forEach(card => {
             card.classList.add('d-none');
           });
+          
           visibleCount = initialDisplayCount;
           updateButtonStates();
         });
@@ -381,284 +335,79 @@
       if (publicationInput) {
         publicationInput.addEventListener('input', function() {
           const searchValue = this.value.toLowerCase().trim();
-          publicationCards.forEach((card, index) => {
-            const title = card.dataset.title ? card.dataset.title.toLowerCase() : '';
+          
+          publicationCards.forEach(card => {
+            const title = card.dataset.title || '';
             const matchesSearch = title.includes(searchValue);
-            card.classList.toggle('d-none', !matchesSearch || index >= visibleCount);
+            
+            if (matchesSearch) {
+              card.classList.remove('d-none');
+            } else {
+              card.classList.add('d-none');
+            }
           });
+          
           updateButtonStates();
         });
       }
 
-      // Learn More button and Details Modal handling
-      const learnMoreButtons = document.querySelectorAll('.learn-more-btn');
-      learnMoreButtons.forEach(button => {
+      // Publication Details Modal handling
+      const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+      viewDetailsButtons.forEach(button => {
         button.addEventListener('click', function() {
-          if (!detailsModal) return;
-          modalResearcherImage.src = this.dataset.researcherImage || '';
-          modalResearcherName.textContent = this.dataset.researcherName || 'Unknown';
-          modalResearcherPosition.textContent = this.dataset.researcherPosition || 'Researcher';
-          modalTitle.textContent = this.dataset.title || 'Unknown';
-          modalDate.textContent = this.dataset.date || '';
-          modalImage.src = this.dataset.image || '';
-          modalImage.style.display = this.dataset.image ? 'block' : 'none';
-          modalDescription.textContent = this.dataset.description || 'No description available';
-          modalLink.innerHTML = this.dataset.link ? `<a href="${this.dataset.link}" target="_blank">${this.dataset.link}</a>` : 'No link available';
-          detailsModal.style.display = 'block';
+          const modal = new bootstrap.Modal(document.getElementById('publicationModal'));
+          const modalTitle = document.getElementById('modalTitle');
+          const modalResearcherImg = document.getElementById('modalResearcherImg');
+          const modalResearcherName = document.getElementById('modalResearcherName');
+          const modalResearcherPosition = document.getElementById('modalResearcherPosition');
+          const modalImage = document.getElementById('modalImage');
+          const modalDescription = document.getElementById('modalDescription');
+          const modalLink = document.getElementById('modalLink');
+          const modalDate = document.getElementById('modalDate');
+          const modalLinkContainer = document.getElementById('modalLinkContainer');
+          
+          // Set modal content
+          modalTitle.textContent = this.dataset.title;
+          modalResearcherImg.src = this.dataset.researcherImg;
+          modalResearcherImg.alt = this.dataset.researcher;
+          modalResearcherName.textContent = this.dataset.researcher;
+          modalResearcherPosition.textContent = this.dataset.position;
+          modalDate.textContent = this.dataset.date;
+          modalDescription.textContent = this.dataset.description;
+          
+          // Handle image
+          if (this.dataset.image) {
+            modalImage.src = this.dataset.image;
+            modalImage.style.display = 'block';
+          } else {
+            modalImage.style.display = 'none';
+          }
+          
+          // Handle link
+          if (this.dataset.link) {
+            modalLink.href = this.dataset.link;
+            modalLink.textContent = this.dataset.link;
+            modalLinkContainer.style.display = 'block';
+          } else {
+            modalLinkContainer.style.display = 'none';
+          }
+          
+          modal.show();
         });
       });
 
-      if (modalClose) {
-        modalClose.addEventListener('click', function() {
-          if (detailsModal) detailsModal.style.display = 'none';
-        });
-      }
-
-      if (detailsModal) {
-        detailsModal.addEventListener('click', function(e) {
-          if (e.target === detailsModal) {
-            detailsModal.style.display = 'none';
-          }
-        });
-      }
-
-      // Add Publication Modal handling
-      if (addPublicationBtn) {
-        addPublicationBtn.addEventListener('click', function() {
-          if (addPublicationModal) addPublicationModal.style.display = 'block';
-        });
-      }
-
-      if (addModalClose) {
-        addModalClose.addEventListener('click', function() {
-          if (addPublicationModal) addPublicationModal.style.display = 'none';
-        });
-      }
-
-      if (addPublicationModal) {
-        addPublicationModal.addEventListener('click', function(e) {
-          if (e.target === addPublicationModal) {
-            addPublicationModal.style.display = 'none';
-          }
-        });
-      }
-
-      // Add Publication Form handling
-      const addPublicationForm = document.getElementById('addPublicationForm');
-      if (addPublicationForm) {
-        addPublicationForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          const formData = new FormData(this);
-          fetch(this.action, {
-            method: 'POST',
-            body: formData
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              const newPublicationId = data.id || 'new-' + Date.now();
-              const researcherSelect = document.getElementById('researcherId');
-              const researcherName = researcherSelect.options[researcherSelect.selectedIndex].text;
-              const publicationDate = new Date(formData.get('DATE_PUB')).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              });
-              const newPublication = `
-                <div class="col-md-4 mb-4 publication-card" data-publication-id="${newPublicationId}" data-title="${formData.get('title')}">
-                  <div class="publication-card">
-                    <div class="publication-header">
-                      <img src="{{ url_for('static', filename='images/uploads/pubs/pubs-placeholder.png') }}" alt="${researcherName}" class="researcher-photo">
-                      <div class="researcher-info">
-                        <p class="researcher-name">${researcherName}</p>
-                        <p class="researcher-position">Researcher</p>
-                      </div>
-                    </div>
-                    <div class="publication-content">
-                      <p class="publication-date">${publicationDate}</p>
-                      <h3 class="publication-title">${formData.get('title')}</h3>
-                      <p class="publication-description">${formData.get('description').substring(0, 150)}${formData.get('description').length > 150 ? '...' : ''}</p>
-                      <button class="btn btn-primary learn-more-btn" 
-                              data-title="${formData.get('title')}"
-                              data-researcher-name="${researcherName}"
-                              data-researcher-position="Researcher"
-                              data-researcher-image="{{ url_for('static', filename='images/uploads/pubs/pubs-placeholder.png') }}"
-                              data-image=""
-                              data-description="${ Grassland.get('description')}"
-                              data-link="${formData.get('link') || ''}"
-                              data-date="${publicationDate}">Learn More</button>
-                    </div>
-                  </div>
-                </div>
-              `;
-              publicationsRow.insertAdjacentHTML('beforeend', newPublication);
-              const newCard = publicationsRow.querySelector(`[data-publication-id="${newPublicationId}"]`);
-              if (newCard && visibleCount < initialDisplayCount) {
-                newCard.classList.remove('d-none');
-                visibleCount++;
-              }
-              addPublicationForm.reset();
-              addPublicationModal.style.display = 'none';
-              alert('Publication added successfully!');
-              // Update event listeners for new Learn More button
-              const newLearnMoreBtn = newCard.querySelector('.learn-more-btn');
-              newLearnMoreBtn.addEventListener('click', function() {
-                modalResearcherImage.src = this.dataset.researcherImage;
-                modalResearcherName.textContent = this.dataset.researcherName;
-                modalResearcherPosition.textContent = this.dataset.researcherPosition;
-                modalTitle.textContent = this.dataset.title;
-                modalDate.textContent = this.dataset.date;
-                modalImage.src = this.dataset.image;
-                modalImage.style.display = this.dataset.image ? 'block' : 'none';
-                modalDescription.textContent = this.dataset.description;
-                modalLink.innerHTML = this.dataset.link ? `<a href="${this.dataset.link}" target="_blank">${this.dataset.link}</a>` : 'No link available';
-                detailsModal.style.display = 'block';
-              });
-              updateButtonStates();
-            } else {
-              alert('Error adding publication: ' + (data.message || 'Unknown error'));
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while adding the publication.');
-          });
-        });
-      }
-
-      // Contact Form Handling
-      contactButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-          e.preventDefault();
-          if (contactFormOverlay) contactFormOverlay.style.display = 'block';
-        });
-      });
-
-      function hideContactForm() {
-        if (contactFormOverlay) contactFormOverlay.style.display = 'none';
-      }
-
-      if (cancelContactBtn) {
-        cancelContactBtn.addEventListener('click', hideContactForm);
-      }
-
-      if (contactCloseBtn) {
-        contactCloseBtn.addEventListener('click', hideContactForm);
-      }
-
-      const contactForm = document.getElementById('contact-form');
-      if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          alert('Thank you for your message! We will get back to you soon.');
-          hideContactForm();
-          contactForm.reset();
-        });
-      }
-
-      if (contactFormOverlay) {
-        contactFormOverlay.addEventListener('click', function(e) {
-          if (e.target === contactFormOverlay) {
-            hideContactForm();
-          }
+      // Fix scrolling issue after modal close
+      const publicationModal = document.getElementById('publicationModal');
+      if (publicationModal) {
+        publicationModal.addEventListener('hidden.bs.modal', function () {
+          document.body.classList.remove('modal-open');
+          document.body.style.overflow = '';
+          document.body.style.paddingRight = '';
+          const modals = document.querySelectorAll('.modal-backdrop');
+          modals.forEach(modal => modal.remove());
         });
       }
     });
   </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Researcher validation
-        const researcherInfo = document.getElementById('researcherInfo');
-        const researcherValidation = document.getElementById('researcherValidation');
-        const validResearcher = document.getElementById('validResearcher');
-        const invalidResearcher = document.getElementById('invalidResearcher');
-        const submitPublicationBtn = document.getElementById('submitPublicationBtn');
-        
-        // Debounce function to limit API calls
-        function debounce(func, timeout = 500) {
-            let timer;
-            return (...args) => {
-                clearTimeout(timer);
-                timer = setTimeout(() => { func.apply(this, args); }, timeout);
-            };
-        }
-        
-        // Validate researcher when input changes
-        researcherInfo.addEventListener('input', debounce(function() {
-            const input = researcherInfo.value.trim();
-            // Expected format: "ID - Full Name" (e.g., "123 - John Doe")
-            const match = input.match(/^(\d+)\s*-\s*(.+)$/);
-            
-            if (!match) {
-                researcherValidation.style.display = 'none';
-                submitPublicationBtn.disabled = true;
-                return;
-            }
-            
-            const researcherId = match[1];
-            const researcherName = match[2];
-            
-            // Call API to validate researcher
-            fetch(`/api/validate-researcher?id=${researcherId}&name=${encodeURIComponent(researcherName)}`)
-                .then(response => response.json())
-                .then(data => {
-                    researcherValidation.style.display = 'block';
-                    
-                    if (data.exists) {
-                        validResearcher.style.display = 'inline';
-                        invalidResearcher.style.display = 'none';
-                        submitPublicationBtn.disabled = false;
-                    } else {
-                        validResearcher.style.display = 'none';
-                        invalidResearcher.style.display = 'inline';
-                        submitPublicationBtn.disabled = true;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error validating researcher:', error);
-                    researcherValidation.style.display = 'none';
-                    submitPublicationBtn.disabled = true;
-                });
-        }));
-        
-        // Form submission
-        const addForm = document.getElementById('addPublicationForm');
-        if (addForm) {
-            addForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Get researcher ID from input
-                const input = researcherInfo.value.trim();
-                const match = input.match(/^(\d+)\s*-\s*(.+)$/);
-                if (!match) {
-                    alert('Please enter a valid researcher ID and name (format: "ID - Full Name")');
-                    return;
-                }
-                
-                const formData = new FormData(this);
-                // Replace the researcher_info with just the ID
-                formData.set('researcher_id', match[1]);
-                
-                fetch("{{ url_for('fr.add_publication') }}", {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Publication added successfully!');
-                        window.location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while adding the publication.');
-                });
-            });
-        }
-    });
-    </script>
 </body>
 </html>

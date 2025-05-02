@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Welcome, {{ current_user.name }}</h2>
+        <a href="{{ url_for('dashboard.logout') }}" class="btn btn-outline-danger">Logout</a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h4>Your Profile</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Full Name:</strong> {{ researcher.FULL_NAME }}</p>
+                    <p><strong>Email:</strong> {{ researcher.EMAIL }}</p>
+                    <p><strong>Phone:</strong> {{ researcher.NUM_TEL }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Bio:</strong> {{ researcher.BIO }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add more user-specific content here -->
+</div>
+{% endblock %}

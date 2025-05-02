@@ -27,9 +27,14 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Set JWT configuration
-app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')  # Set JWT secret key
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']  # Store tokens in cookies
+def create_app():
+    app = Flask(__name__)
+    
+    # Load configuration
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+    app.config['JWT_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # Enable for production
 
 # Initialize JWTManager after Flask app
 jwt = JWTManager(app)

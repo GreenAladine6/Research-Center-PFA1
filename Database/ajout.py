@@ -1,6 +1,7 @@
 import random
 import string
 import os
+import bcrypt
 from datetime import datetime, timedelta
 from sqlite3 import OperationalError
 from db import Database, JSONDatabase  # Adjust import based on your project structure
@@ -44,10 +45,18 @@ def populate_large_data(db: Database):
                      "neuroscience", "robotics", "data science"]
         return f"{name} is a researcher specializing in {random.choice(interests)} with over {random.randint(3, 15)} years of experience."
 
-    # New helper function for password
-    def random_password(length: int = 12) -> str:
-        chars = string.ascii_letters + string.digits + string.punctuation
-        return ''.join(random.choices(chars, k=length))
+    # New helper function for password with hashing
+    def generate_hashed_password(password: str = None) -> str:
+        """Generate a hashed password using bcrypt."""
+        if password is None:
+            # Generate a random password if none provided
+            chars = string.ascii_letters + string.digits + string.punctuation
+            password = ''.join(random.choices(chars, k=12))
+        
+        # Hash the password with a randomly generated salt
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+        return hashed_password.decode('utf-8')  # Return as string for storage
 
     # 1. Add Grades (20 grades) - Unchanged
     grades = [
@@ -93,7 +102,7 @@ def populate_large_data(db: Database):
         else:
             db.insert_query(table="TYPE_EV", record={"TYPE_EV": event_type, "DESCRIPTION": f"Description for {event_type}"})
 
-    # 3. Add Researchers (500 researchers) - Modified to include BIO and PASSWORD
+    # 3. Add Researchers (500 researchers) - Modified to include hashed password
     researcher_ids = []
     first_names = ["James", "Emma", "Liam", "Olivia", "Noah", "Ava", "William", "Sophia", "Michael", "Isabella"]
     last_names = ["Smith", "Johnson", "Brown", "Taylor", "Wilson", "Davis", "Clark", "Harris", "Lewis", "Walker"]
@@ -104,8 +113,8 @@ def populate_large_data(db: Database):
             "NUM_TEL": random_phone(),
             "EMAIL": random_email(full_name),
             "ID_GRADE": random.choice(grade_ids),
-            "BIO": random_bio(full_name),  # New BIO field
-            "PASSWORD": random_password()  # New PASSWORD field
+            "BIO": random_bio(full_name),
+            "PASSWORD": generate_hashed_password()  # Now using hashed password
         }
         if db.db_type == "sqlite":
             db.execute_query(

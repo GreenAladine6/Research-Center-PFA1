@@ -336,7 +336,7 @@
             <div class="card h-100">
               {% set image_path = researcher.IMAGE.replace('\\', '/') if researcher.IMAGE else '' %}
               {% set image_path = image_path[7:] if image_path.startswith('static/') else image_path %}
-              <img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/staff-placeholder.png') }}" 
+              <img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
                    alt="{{ researcher.FULL_NAME }}" class="staff-image">
               <div class="staff-details">
                 <h3 class="staff-title">{{ researcher.FULL_NAME }}</h3>
@@ -347,7 +347,7 @@
                 <p class="staff-bio">{{ researcher.BIO|default('No bio available.', true)|truncate(100, true) }}</p>
                 <button class="btn btn-primary learn-more-btn" 
                         data-title="{{ researcher.FULL_NAME }}"
-                        data-image="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/staff-placeholder.png') }}"
+                        data-image="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}"
                         data-position="{{ researcher.POSITION if researcher.POSITION else 'N/A' }}"
                         data-bio="{{ researcher.BIO if researcher.BIO else 'No bio available' }}">Learn More</button>
               </div>

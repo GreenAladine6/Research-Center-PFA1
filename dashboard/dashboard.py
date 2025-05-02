@@ -1,40 +1,52 @@
-from datetime import datetime, timedelta
-from flask import make_response, render_template, Blueprint, request, jsonify, redirect, send_file
-from flask_jwt_extended import unset_jwt_cookies
+from flask import Blueprint, render_template, redirect, request, make_response
+from flask_jwt_extended import jwt_required, get_jwt_identity, unset_jwt_cookies
 from Database.db import JSONDatabase
-from utils.config import Config
 from dotenv import load_dotenv
 import os
 
-
 load_dotenv()
 
-dashboard_bp = Blueprint('dashboard', __name__, template_folder='templates', static_folder='static')
+dashboard_bp = Blueprint('dashboard', __name__,
+                        template_folder='templates',
+                        static_folder='static')
 
-TOKEN = os.getenv('TOKEN')
+def verify_user():
+    identity = get_jwt_identity()
+    return identity and identity.get('role') in ['admin', 'user']
 
 @dashboard_bp.route('/')
 def index():
-    if request.cookies.get(TOKEN):
-        return redirect('/dashboard/projects')
     return redirect('/dashboard/login')
 
 @dashboard_bp.route('/login', methods=['GET'])
 def login():
-    print(request.cookies.get(TOKEN))
-    if request.cookies.get(TOKEN):
-        return redirect('/dashboard/projects')
-    return render_template('login.html')
+    error = request.args.get('error', '')
+    return render_template('login.html', error=error)
 
 @dashboard_bp.get('/projects')
+@jwt_required()
 def projects():
-    if request.cookies.get(TOKEN):
-        db = JSONDatabase()
-        projects = db.select_query("PROJECT")
-        researchers = db.select_query("RESEARCHER")
-        return render_template('projects.dashboard.html', title='Projects', projects=projects, researchers=researchers)
-    return redirect('/dashboard/login')
+    if not verify_user():
+        return redirect('/dashboard/login?error=Unauthorized')
+    
+    db = JSONDatabase()
+    return render_template('projects.dashboard.html',
+                         projects=db.select_query("PROJECT"),
+                         researchers=db.select_query("RESEARCHER"))
 
+
+@dashboard_bp.get('/user')
+@jwt_required()
+def user_dashboard():
+    current_user = get_current_user()
+    if current_user['role'] != 'user':
+        return redirect(url_for('dashboard.login', error='Accès non autorisé'))
+    
+    db = JSONDatabase()
+    researcher = db.find_researcher_by_id(current_user['user_id'])
+    return render_template('user.dashboard.html',
+                         researcher=researcher,
+                         current_user=current_user)
 
 @dashboard_bp.get('/events')
 def events():
@@ -52,14 +64,15 @@ def publications():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
         publications = db.select_query("PUBLICATION")
-        return render_template('publications.dashboard.html', title='Publications', publications=publications)
+        researchers = db.select_query("RESEARCHER")
+        return render_template('publications.dashboard.html', title='Publications', publications=publications ,researchers=researchers)
     return redirect('/dashboard/login')
 
 @dashboard_bp.get('/partners')
 def partners():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
-        partners = db.select_query("partners")
+        partners = db.select_query("PARTNER")
         return render_template('partners.dashboard.html', title='Partners', partners=partners)
     return redirect('/dashboard/login')
 
@@ -68,7 +81,7 @@ def researchers():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
         researchers = db.select_query("RESEARCHER")
-        grades=db.select_query("GRADE")
+        grades= db.select_query("GRADE")
         return render_template('researchers.dashboard.html', title='Researchers', researchers=researchers, grades=grades)
     return redirect('/dashboard/login')
 
@@ -77,19 +90,14 @@ def researchers():
 def equipments():
     if request.cookies.get(TOKEN):
         db = JSONDatabase()
-        equipments = db.select_query("equipements")
+        equipments = db.select_query("EQUIPEMENT")
         return render_template('equipements.dashboard.html', title='Equipments', equipments=equipments)
     return redirect('/dashboard/login')
 
 @dashboard_bp.get("/logout")
 def logout():
-    # Create a response object to redirect the user
-    response = make_response(redirect("/dashboard/login"))
-    
-    # Use unset_jwt_cookies to remove the JWT token from cookies
+    response = make_response(redirect(url_for('dashboard.login')))
     unset_jwt_cookies(response)
-    
     return response
-
 
 

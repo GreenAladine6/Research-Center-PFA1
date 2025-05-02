@@ -1,7 +1,5 @@
 import os
 import uuid
-from datetime import datetime
-from typing import Tuple, Optional, Dict, Any
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 from Database.db import JSONDatabase
@@ -16,17 +14,9 @@ def is_allowed_file(filename: str) -> bool:
     """Check if the uploaded file has a valid extension."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def validate_researcher_data(data: Dict[str, Any], require_all_fields: bool = True) -> list:
-    """Validate researcher data before insertion or update.
-
-    Args:
-        data: Dictionary containing researcher data.
-        require_all_fields: Whether all fields are required (True for create, False for update).
-
-    Returns:
-        List of error messages; empty if valid.
-    """
-    required_fields = ['full_name', 'position', 'bio']
+def validate_researcher_data(data: dict, require_all_fields: bool = True) -> list:
+    """Validate researcher data before insertion or update."""
+    required_fields = ['full_name', 'Grade']
     errors = []
     
     if require_all_fields:
@@ -34,26 +24,24 @@ def validate_researcher_data(data: Dict[str, Any], require_all_fields: bool = Tr
             if field not in data or not str(data[field]).strip():
                 errors.append(f"Missing or empty required field: {field}")
     
+    # Validate Grade
+    if 'Grade' in data:
+        grade_value = data['Grade']
+        if grade_value != 'No grade':
+            try:
+                int(grade_value)  # Ensure it's a valid integer
+            except ValueError:
+                errors.append("Invalid grade ID")
+    
     return errors
 
 def handle_image_upload(
-    request: Any, 
-    old_image_path: Optional[str], 
-    update_data: Dict[str, Any], 
+    request, 
+    old_image_path: str | None, 
+    update_data: dict, 
     upload_folder: str = UPLOAD_FOLDER
-) -> Tuple[bool, Optional[Dict[str, str]], Optional[int]]:
-    """Handle image upload, preserve old image if no new image is provided.
-
-    Args:
-        request: Flask request object containing the file.
-        old_image_path: Path to the old image (e.g., 'images/uploads/staff/oldfile.jpg').
-        update_data: Dictionary to store the new or existing image path.
-        upload_folder: Folder where images are stored.
-
-    Returns:
-        Tuple: (success, response, status_code)
-    """
-    # If no new image, preserve old image path
+) -> tuple[bool, dict | None, int | None]:
+    """Handle image upload, preserve old image if no new image is provided."""
     if 'image' not in request.files or request.files['image'].filename == '':
         if old_image_path:
             update_data["IMAGE"] = old_image_path
@@ -65,7 +53,6 @@ def handle_image_upload(
     if not is_allowed_file(file.filename):
         return False, {"error": "Invalid file type. Allowed: jpg, jpeg, png, svg"}, 400
 
-    # Check file size
     file.seek(0, os.SEEK_END)
     file_size = file.tell()
     file.seek(0)
@@ -73,17 +60,14 @@ def handle_image_upload(
         return False, {"error": f"File too large. Maximum size: {MAX_FILE_SIZE // 1024 // 1024}MB"}, 400
 
     try:
-        # Generate unique filename
         base_filename = secure_filename(file.filename)
         filename = f"{uuid.uuid4()}_{base_filename}"
         filepath = os.path.join(upload_folder, filename)
         image_path = f"images/uploads/staff/{filename}"
 
-        # Save new file
         os.makedirs(upload_folder, exist_ok=True)
         file.save(filepath)
         
-        # Verify file was saved
         if not os.path.exists(filepath):
             current_app.logger.error(f"Failed to save image: {filepath}")
             return False, {"error": "Failed to save image"}, 500
@@ -97,10 +81,10 @@ def handle_image_upload(
         current_app.logger.error(f"Error handling file upload: {str(e)}")
         return False, {"error": "Failed to process image"}, 500
 
-def remove_old_image(old_image_path: Optional[str], new_image_path: Optional[str]):
+def remove_old_image(old_image_path: str | None, new_image_path: str | None):
     """Remove old image if it exists and is different from the new image."""
     if old_image_path and new_image_path and old_image_path != new_image_path:
-        old_file_path = os.path.join("fr/static", old_image_path)
+        old_file_path = os.path.join("static", old_image_path)
         if os.path.exists(old_file_path):
             try:
                 os.remove(old_file_path)
@@ -110,31 +94,33 @@ def remove_old_image(old_image_path: Optional[str], new_image_path: Optional[str
 
 @researchers_bp.post('/')
 def create_researcher():
-    """Create a new researcher.
-
-    Returns:
-        JSON response with researcher ID and status.
-    """
+    """Create a new researcher."""
     db = JSONDatabase()
     
-    # Validate form data
     validation_errors = validate_researcher_data(request.form)
     if validation_errors:
         return jsonify({"error": "Validation failed", "details": validation_errors}), 400
     
-    # Prepare researcher data
     update_data = {}
-    for field in ['full_name', 'position', 'bio']:
+    for field in ['full_name', 'bio']:
         if field in request.form and request.form[field].strip():
             update_data[field.upper()] = request.form[field]
     
-    # Handle file upload
+    if 'Grade' in request.form:
+        grade_value = request.form['Grade']
+        if grade_value == 'No grade':
+            update_data['GRADE'] = None
+        else:
+            try:
+                update_data['GRADE'] = int(grade_value)
+            except ValueError:
+                return jsonify({"error": "Invalid grade ID"}), 400
+    
     success, response, status_code = handle_image_upload(request, None, update_data)
     if not success:
         return jsonify(response), status_code
     
     try:
-        # Insert researcher
         researcher_id = db.insert_query("RESEARCHER", update_data)
         current_app.logger.info(f"Created researcher ID {researcher_id} with data: {update_data}")
         
@@ -150,11 +136,7 @@ def create_researcher():
 
 @researchers_bp.get('/')
 def get_researchers():
-    """Get all researchers.
-
-    Returns:
-        JSON list of all researchers.
-    """
+    """Get all researchers."""
     try:
         db = JSONDatabase()
         researchers = db.select_query("RESEARCHER")
@@ -166,14 +148,7 @@ def get_researchers():
 
 @researchers_bp.get('/<int:researcher_id>')
 def get_researcher(researcher_id: int):
-    """Get a single researcher by ID.
-
-    Args:
-        researcher_id: The ID of the researcher to retrieve.
-
-    Returns:
-        JSON response with researcher data or error.
-    """
+    """Get a single researcher by ID."""
     try:
         db = JSONDatabase()
         researcher = db.get_item("RESEARCHER", researcher_id)
@@ -188,23 +163,9 @@ def get_researcher(researcher_id: int):
 
 @researchers_bp.put('/<int:researcher_id>')
 def update_researcher(researcher_id: int):
-    """Update an existing researcher.
-
-    Args:
-        researcher_id: The ID of the researcher to update.
-
-    Request Form:
-        - image: (optional) New researcher image.
-        - full_name: (optional) Researcher name.
-        - position: (optional) Researcher position.
-        - bio: (optional) Researcher bio.
-
-    Returns:
-        JSON response with status.
-    """
+    """Update an existing researcher."""
     db = JSONDatabase()
     
-    # Check if researcher exists
     researcher = db.get_item("RESEARCHER", researcher_id)
     if not researcher:
         current_app.logger.warning(f"Researcher ID {researcher_id} not found")
@@ -212,38 +173,41 @@ def update_researcher(researcher_id: int):
     
     old_image_path = researcher.get("IMAGE", "")
     
-    # Validate input data
     validation_errors = validate_researcher_data(request.form, require_all_fields=False)
     if validation_errors:
         return jsonify({"error": "Validation failed", "details": validation_errors}), 400
     
-    # Prepare update data by merging with existing researcher
-    update_data = researcher.copy()  # Start with existing record
-    for field in ['full_name', 'position', 'bio']:
+    update_data = researcher.copy()
+    for field in ['full_name', 'bio']:
         if field in request.form and request.form[field].strip():
             update_data[field.upper()] = request.form[field]
     
-    # Handle file upload
+    if 'Grade' in request.form:
+        grade_value = request.form['Grade']
+        if grade_value == 'No grade':
+            update_data['GRADE'] = None
+        else:
+            try:
+                update_data['GRADE'] = int(grade_value)
+            except ValueError:
+                return jsonify({"error": "Invalid grade ID"}), 400
+    
     success, response, status_code = handle_image_upload(request, old_image_path, update_data)
     if not success:
         return jsonify(response), status_code
     
-    # Check if there are any changes
     if update_data == researcher:
         current_app.logger.info(f"No changes provided for researcher ID {researcher_id}")
         return jsonify({"success": True, "message": "No changes provided"}), 200
     
     try:
-        # Update researcher
         if not db.update_query("RESEARCHER", researcher_id, update_data):
             current_app.logger.error(f"Failed to update researcher {researcher_id}: Record not found")
             return jsonify({"error": "Researcher not found"}), 404
         
-        # Remove old image after successful database update
         remove_old_image(old_image_path, update_data.get("IMAGE"))
         current_app.logger.info(f"Updated researcher ID {researcher_id} with data: {update_data}")
         
-        # Verify updated record
         updated_researcher = db.get_item("RESEARCHER", researcher_id)
         if not updated_researcher or updated_researcher["id"] != researcher_id:
             current_app.logger.error(f"Updated researcher ID {researcher_id} is corrupted or missing")
@@ -261,14 +225,7 @@ def update_researcher(researcher_id: int):
 
 @researchers_bp.delete('/<int:researcher_id>')
 def delete_researcher(researcher_id: int):
-    """Delete a researcher.
-
-    Args:
-        researcher_id: The ID of the researcher to delete.
-
-    Returns:
-        JSON response with status.
-    """
+    """Delete a researcher."""
     db = JSONDatabase()
     
     try:
@@ -277,9 +234,8 @@ def delete_researcher(researcher_id: int):
             current_app.logger.warning(f"Researcher ID {researcher_id} not found")
             return jsonify({"error": "Researcher not found"}), 404
         
-        # Delete associated image
         if "IMAGE" in researcher:
-            image_path = os.path.join("fr/static", researcher["IMAGE"])
+            image_path = os.path.join("static", researcher["IMAGE"])
             if os.path.exists(image_path):
                 try:
                     os.remove(image_path)
@@ -287,7 +243,6 @@ def delete_researcher(researcher_id: int):
                 except Exception as e:
                     current_app.logger.warning(f"Could not remove researcher image: {str(e)}")
         
-        # Delete researcher
         if not db.delete_query("RESEARCHER", researcher_id):
             current_app.logger.error(f"Failed to delete researcher {researcher_id}: Record not found")
             return jsonify({"error": "Researcher not found"}), 404
@@ -305,14 +260,7 @@ def delete_researcher(researcher_id: int):
 
 @researchers_bp.get('/items')
 def get_multiple_researchers():
-    """Get multiple researchers by their IDs.
-
-    Request JSON:
-        List of researcher IDs to retrieve.
-
-    Returns:
-        JSON list of requested researchers.
-    """
+    """Get multiple researchers by their IDs."""
     try:
         db = JSONDatabase()
         

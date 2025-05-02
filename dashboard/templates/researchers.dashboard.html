@@ -4,7 +4,7 @@
     <title>Dashboard | Researchers</title>
     <link href="{{ url_for('dashboard.static', filename='css/style1.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="{{url_for('dashboard.static', filename='css/project-style.css')}}">
+    <link rel="stylesheet" href="{{url_for('dashboard.static', filename='css/researcher.css')}}">
 {% endblock %}
 
 {% block content %}
@@ -27,12 +27,17 @@
             <form id="addResearcherForm" method="POST" action="{{ url_for('researchers.create_researcher') }}" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="full_name" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" id="full_name" name="full_name" >
+                    <input type="text" class="form-control" id="full_name" name="full_name" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="position" class="form-label">Position</label>
-                    <input type="text" class="form-control" id="position" name="position" >
+                    <label for="Grade" class="form-label">Grade</label>
+                    <select class="form-control" id="Grade" name="Grade" required>
+                        <option value="No grade">No grade</option>
+                        {% for grade in grades %}
+                        <option value="{{ grade.id }}">{{ grade.NAME_GRADE }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -50,7 +55,7 @@
                     <button type="button" id="cancelAddModal" class="btn-cancel">Cancel</button>
                     <button type="submit" class="btn btn-primary">
                         <span id="addButtonText">Create Researcher</span>
-                        <div class="spinner" id="addSpinner"></div>
+                        <div class="spinner" id="addSpinner" style="display: none;"></div>
                     </button>
                 </div>
             </form>
@@ -70,12 +75,17 @@
                 
                 <div class="form-group">
                     <label for="updateName" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" id="updateName" name="full_name" >
+                    <input type="text" class="form-control" id="updateName" name="full_name" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="updatePosition" class="form-label">Position</label>
-                    <input type="text" class="form-control" id="updatePosition" name="position" >
+                    <label for="updateGrade" class="form-label">Grade</label>
+                    <select class="form-control" id="updateGrade" name="Grade" required>
+                        <option value="No grade">No grade</option>
+                        {% for grade in grades %}
+                        <option value="{{ grade.id }}">{{ grade.NAME_GRADE }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -96,7 +106,7 @@
                     <button type="button" id="cancelUpdateModal" class="btn-cancel">Cancel</button>
                     <button type="submit" class="btn btn-success">
                         <span id="updateButtonText">Update Researcher</span>
-                        <div class="spinner" id="updateSpinner"></div>
+                        <div class="spinner" id="updateSpinner" style="display: none;"></div>
                     </button>
                 </div>
             </form>
@@ -107,33 +117,35 @@
     {% if researchers %}
     <div class="row">
         {% for researcher in researchers %}
-        {% for grade in grades %}
-        
-        <div class="col-md-4 mb-4 staff-card" 
+        <div class="col-md-3 mb-3 staff-card" 
              data-researcher-id="{{ researcher.id }}"
              data-name="{{ researcher.FULL_NAME }}"
-             data-position="{{ grade.NAME_GRADE if grade.NAME_GRADE and grade.id==researcher.ID_GRADE else 'N/A' }}"
+             data-grade="{{ researcher.ID_GRADE if researcher.ID_GRADE else 'No grade' }}"
              data-bio="{{ researcher.BIO if researcher.BIO else 'No bio available' }}"
              data-image="{{ url_for('static', filename=researcher.IMAGE.replace('\\', '/')[7:]) if researcher.IMAGE else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}">
             <div class="card h-100">
                 <div class="researcher-image-container">
-                {% set image_path = researcher.IMAGE.replace('\\', '/') if researcher.IMAGE else '' %}
-                {% set image_path = image_path[7:] if image_path.startswith('static/') else image_path %}
-                <img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
-                     alt="{{ researcher.FULL_NAME }}" class="researcher-image">
+                    {% set image_path = researcher.IMAGE.replace('\\', '/') if researcher.IMAGE else '' %}
+                    {% set image_path = image_path[7:] if image_path.startswith('static/') else image_path %}
+                    <img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
+                         alt="{{ researcher.FULL_NAME }}" class="researcher-image">
                 </div>
                 <div class="staff-details">
                     <h3 class="staff-title">{{ researcher.FULL_NAME }}</h3>
-                    <div class="staff-position">
-                        <i class="fas fa-briefcase me-1"></i>
-                        <span>{{ grade.NAME_GRADE if grade.NAME_GRADE and grade.id==researcher.ID_GRADE else 'N/A'  }}</span>
+                    <div class="staff-grade">
+                        {% for grade in grades %}
+                            {% if grade.id == researcher.ID_GRADE %}
+                            <p class="fas fa-briefcase me-1 me-2"></p>
+                            <p>{{ grade.NAME_GRADE }}</p>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <p class="staff-bio">{{ researcher.BIO|default('No bio available.', true)|truncate(100, true) }}</p>
                     <div class="card-actions">
                         <button class="btn-action btn-update" 
                                 data-researcher-id="{{ researcher.id }}"
                                 data-name="{{ researcher.FULL_NAME }}"
-                                data-position="{{ grade.NAME_GRADE if grade.NAME_GRADE else 'N/A' }}"
+                                data-grade="{{ researcher.ID_GRADE if researcher.ID_GRADE else 'No grade' }}"
                                 data-bio="{{ researcher.BIO if researcher.BIO else 'No bio available' }}"
                                 data-image="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}">
                             <i class="fas fa-edit me-1"></i>Edit
@@ -145,7 +157,6 @@
                 </div>
             </div>
         </div>
-        {% endfor %}
         {% endfor %}
     </div>
     {% else %}
@@ -186,7 +197,7 @@
     }
     
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize date pickers
+        // Initialize date pickers (if any)
         flatpickr('.datepicker', {
             dateFormat: "Y-m-d",
             allowInput: true
@@ -238,7 +249,11 @@
                 
                 document.getElementById('updateResearcherId').value = researcherId;
                 document.getElementById('updateName').value = this.getAttribute('data-name');
-                document.getElementById('updatePosition').value = this.getAttribute('data-position');
+                
+                // Handle grade selection
+                const gradeValue = this.getAttribute('data-grade') === 'No grade' ? 'No grade' : this.getAttribute('data-grade');
+                document.getElementById('updateGrade').value = gradeValue;
+                
                 document.getElementById('updateBio').value = this.getAttribute('data-bio');
                 
                 // Show current image if exists
