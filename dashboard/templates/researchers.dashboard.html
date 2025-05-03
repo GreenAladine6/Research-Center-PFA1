@@ -31,6 +31,16 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                
+                <div class="form-group">
                     <label for="Grade" class="form-label">Grade</label>
                     <select class="form-control" id="Grade" name="Grade" required>
                         <option value="No grade">No grade</option>
@@ -79,6 +89,16 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="updateEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="updateEmail" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="updatePassword" class="form-label">Password (leave blank to keep unchanged)</label>
+                    <input type="password" class="form-control" id="updatePassword" name="password">
+                </div>
+                
+                <div class="form-group">
                     <label for="updateGrade" class="form-label">Grade</label>
                     <select class="form-control" id="updateGrade" name="Grade" required>
                         <option value="No grade">No grade</option>
@@ -120,6 +140,7 @@
         <div class="col-md-3 mb-3 staff-card" 
              data-researcher-id="{{ researcher.id }}"
              data-name="{{ researcher.FULL_NAME }}"
+             data-email="{{ researcher.EMAIL }}"
              data-grade="{{ researcher.ID_GRADE if researcher.ID_GRADE else 'No grade' }}"
              data-bio="{{ researcher.BIO if researcher.BIO else 'No bio available' }}"
              data-image="{{ url_for('static', filename=researcher.IMAGE.replace('\\', '/')[7:]) if researcher.IMAGE else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}">
@@ -132,6 +153,10 @@
                 </div>
                 <div class="staff-details">
                     <h3 class="staff-title">{{ researcher.FULL_NAME }}</h3>
+                    <div class="staff-email">
+                        <p class="fas fa-envelope me-1 me-2"></p>
+                        <p>{{ researcher.EMAIL }}</p>
+                    </div>
                     <div class="staff-grade">
                         {% for grade in grades %}
                             {% if grade.id == researcher.ID_GRADE %}
@@ -145,6 +170,7 @@
                         <button class="btn-action btn-update" 
                                 data-researcher-id="{{ researcher.id }}"
                                 data-name="{{ researcher.FULL_NAME }}"
+                                data-email="{{ researcher.EMAIL }}"
                                 data-grade="{{ researcher.ID_GRADE if researcher.ID_GRADE else 'No grade' }}"
                                 data-bio="{{ researcher.BIO if researcher.BIO else 'No bio available' }}"
                                 data-image="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}">
@@ -249,6 +275,7 @@
                 
                 document.getElementById('updateResearcherId').value = researcherId;
                 document.getElementById('updateName').value = this.getAttribute('data-name');
+                document.getElementById('updateEmail').value = this.getAttribute('data-email');
                 
                 // Handle grade selection
                 const gradeValue = this.getAttribute('data-grade') === 'No grade' ? 'No grade' : this.getAttribute('data-grade');

@@ -5311,7 +5311,9 @@
             "EMAIL": "dr.smith@example.com",
             "BIO": "Expert in bioinformatics",
             "PASSWORD": "hashed_password_example",
-            "id": 1
+            "id": 1,
+            "GRADE": null,
+            "IMAGE": "images/uploads/staff/9e478242-eda2-406b-8022-d0038c28e249_Screenshot_2025-04-19_210934.png"
         },
         {
             "FULL_NAME": "Ava Davis",

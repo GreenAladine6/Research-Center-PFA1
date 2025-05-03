@@ -8,6 +8,7 @@ from api.auth import auth_bp
 from api.researchers import researchers_bp
 from api.publications import publications_bp
 from fr.fr import fr_bp
+from api.user import user_bp
 from utils.config import Config
 from Database.db import JSONDatabase
 
@@ -48,6 +49,7 @@ app.register_blueprint(events_bp, url_prefix='/api/events')
 app.register_blueprint(fr_bp, url_prefix='/')
 app.register_blueprint(researchers_bp, url_prefix='/api/researcher')
 app.register_blueprint(publications_bp, url_prefix='/api/publication')
+app.register_blueprint(user_bp, url_prefix='/api/user')
 from flask import send_from_directory
 
 

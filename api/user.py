@@ -123,7 +123,7 @@ def update_profile():
     
     # Update fields if provided
     if 'email' in request.form and request.form['email'].strip():
-        update_data["MAIL"] = request.form['email']
+        update_data["EMAIL"] = request.form['email']
     
     if 'password' in request.form and request.form['password'].strip():
         update_data["PASSWORD"] = bcrypt.hashpw(

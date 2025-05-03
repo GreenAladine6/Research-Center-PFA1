@@ -46,8 +46,9 @@ def projects():
         projects = db.select_query("PROJECT")
     else:
         # Fetch projects associated with the current researcher
-        projects = db.select_filter("PROJECT", {"researcher_id": current_user_id})
-    
+        projects = db.select_filter("PROJECT", {"ID_MANAGER": current_user_id})
+        researchers = db.select_query("RESEARCHER")
+        return render_template('profile.html', title='Projects', projects=projects, researchers=researchers)
     researchers = db.select_query("RESEARCHER")
     return render_template('projects.dashboard.html', title='Projects', projects=projects, researchers=researchers)
 
@@ -58,14 +59,18 @@ def publications():
     claims = get_jwt()
     role = claims.get('role', 'user')
 
-    db = JSONDatabase()
     if role == 'admin':
+        db = JSONDatabase()
         publications = db.select_query("PUBLICATION")
+        researchers = db.select_query("RESEARCHER")
     else:
+        db = JSONDatabase()
         # Fetch publications associated with the current researcher
-        publications = db.select_filter("PUBLICATION",{"researcher_id": current_user_id})
-    
-    return render_template('publications.dashboard.html', title='Publications', publications=publications)
+        publications = db.select_filter("PUBLICATION",{"ID_RESEARCHER": current_user_id})
+        researchers = db.select_filter( "RESEARCHER" , {"id": current_user_id})
+        print(researchers)
+        print(publications)
+    return render_template('publications.dashboard.html', title='Publications', publications=publications , researchers=researchers)
 
 @dashboard_bp.get('/events')
 @jwt_required()
@@ -83,6 +88,7 @@ def events():
 def partners():
     db = JSONDatabase()
     partners = db.select_query("partners")
+    researchers=db.select_query("RESEARCHER")
     return render_template('partners.dashboard.html', title='Partners', partners=partners)
 
 @dashboard_bp.get('/researchers')

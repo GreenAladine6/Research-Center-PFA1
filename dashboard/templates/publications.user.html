@@ -35,9 +35,10 @@
                 <div class="form-group">
                     <label for="id_researcher" class="form-label">Researcher</label>
                     <select class="form-control" id="id_researcher" name="id_researcher" required>
-                        <option value="">Select Researcher</option>
                         {% for researcher in researchers %}
+                        {%if researcher.id == user_id.id %}
                             <option value="{{ researcher.id }}">{{ researcher.FULL_NAME }}</option>
+                        {%endif%}
                         {% endfor %}
 
                 <div class="form-group">
@@ -86,9 +87,10 @@
                 <div class="form-group">
                     <label for="updateResearcher" class="form-label">Researcher</label>
                     <select class="form-control" id="updateResearcher" name="id_researcher" required>
-                        <option value="">Select Researcher</option>
                         {% for researcher in researchers %}
+                        {%if researcher.id == user_id.id %}
                             <option value="{{ researcher.id }}">{{ researcher.FULL_NAME }}</option>
+                        {%endif%}
                         {% endfor %}
                     </select>
                 </div>
