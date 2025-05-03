@@ -84,10 +84,10 @@ def populate_large_data(db: Database):
                     (record["NAME_PARTNER"], record["EMAIL_PARTNER"], record["PHONE"], record["ADRESS"],
                      record["CREATION_DATE"], record["WEBSITE"], record["NOTES"], record["AMOUNT"])
                 )
-            elif table == "EQUIPEMENT":
+            elif table == "EQUIPMENT":
                 db.execute_query(
-                    "INSERT INTO EQUIPEMENT (NAME_EQUIPEMENT, PURCHASE_DATE, LABORATOIRE_ID) VALUES (?, ?, ?)",
-                    (record["NAME_EQUIPEMENT"], record["PURCHASE_DATE"], record["LABORATOIRE_ID"])
+                    "INSERT INTO EQUIPMENT (NAME_EQUIPMENT, PURCHASE_DATE, LABORATOIRE_ID) VALUES (?, ?, ?)",
+                    (record["NAME_EQUIPMENT"], record["PURCHASE_DATE"], record["LABORATOIRE_ID"])
                 )
             elif table == "EVENT":
                 db.execute_query(
@@ -120,9 +120,9 @@ def populate_large_data(db: Database):
                 )
             elif table == "RESERVE":
                 db.execute_query(
-                    """INSERT OR IGNORE INTO RESERVE (ID_PROJECT, ID_EQUIPEMENT, ID_RESERVATION, START_DATE, END_DATE)
+                    """INSERT OR IGNORE INTO RESERVE (ID_PROJECT, ID_EQUIPMENT, ID_RESERVATION, START_DATE, END_DATE)
                     VALUES (?, ?, ?, ?, ?)""",
-                    (record["ID_PROJECT"], record["ID_EQUIPEMENT"], record["ID_RESERVATION"],
+                    (record["ID_PROJECT"], record["ID_EQUIPMENT"], record["ID_RESERVATION"],
                      record["START_DATE"], record["END_DATE"])
                 )
             elif table == "WORK":
@@ -271,11 +271,11 @@ def populate_large_data(db: Database):
     equipment_ids = []
     for i in range(100):
         equipment = {
-            "NAME_EQUIPEMENT": f"{equipment_names[i % len(equipment_names)]} {i + 1}",
+            "NAME_EQUIPMENT": f"{equipment_names[i % len(equipment_names)]} {i + 1}",
             "PURCHASE_DATE": random_date(2015, 2024),
             "LABORATOIRE_ID": random.choice(lab_ids)
         }
-        equipment_id = limited_insert("EQUIPEMENT", equipment)
+        equipment_id = limited_insert("EQUIPMENT", equipment)
         if equipment_id:
             equipment_ids.append(equipment_id)
 
@@ -357,7 +357,7 @@ def populate_large_data(db: Database):
         end_date = (datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=random.randint(7, 90))).strftime("%Y-%m-%d")
         reserve = {
             "ID_PROJECT": random.choice(project_ids),
-            "ID_EQUIPEMENT": random.choice(equipment_ids),
+            "ID_EQUIPMENT": random.choice(equipment_ids),
             "ID_RESERVATION": i + 1,
             "START_DATE": start_date,
             "END_DATE": end_date
@@ -375,7 +375,7 @@ def populate_large_data(db: Database):
     # For SQLite: After all inserts, enforce limits by deleting excess records
     if db.db_type == "sqlite":
         tables_to_limit = ["RESEARCHER", "LABORATORY", "PROJECT", "PARTNER",
-                          "EQUIPEMENT", "EVENT", "PUBLICATION", "ASSIGN",
+                          "EQUIPMENT", "EVENT", "PUBLICATION", "ASSIGN",
                           "COLLABORATE", "PARTICIPATE", "RESERVE", "WORK",
                           "GRADE", "TYPE_EV"]
         for table in tables_to_limit:

@@ -51,7 +51,11 @@ def projects():
         # Fetch projects associated with the current researcher
         project = db.select_filter("PROJECT", {"ID_MANAGER": current_user_id })
         user = db.select_filter("RESEARCHER",{"id" : current_user_id })
-        return render_template('profile.html', title='Profile', projects=project, user=user , user_id=current_user_id)
+        user = user[0] if user else []
+        print (user)
+        grade=db.select_filter("GRADE",{"id" : user["ID_GRADE"] })
+        grade = grade[0] if grade else []
+        return render_template('profile.html', title='Profile', projects=project, grade=grade, user=user , user_id=current_user_id)
 
 
 
@@ -71,10 +75,12 @@ def publications():
         db = JSONDatabase()
         # Fetch publications associated with the current researcher
         publications = db.select_filter("PUBLICATION",{"ID_RESEARCHER": current_user_id})
-        researchers = db.select_filter( "RESEARCHER" , {"id": current_user_id})
-        print(researchers)
-        print(publications)
-    return render_template('publications.user.html', title='Publications', publications=publications , researchers=researchers, user_id=current_user_id)
+        user = db.select_filter( "RESEARCHER" , {"id": current_user_id})
+        user = user[0] if user else []
+        print(user)
+        grade=db.select_filter("GRADE",{"id" : user["ID_GRADE"] })
+        grade = grade[0] if grade else []
+    return render_template('publications.user.html', title='Publications', publications=publications , user=user,grade=grade, user_id=current_user_id)
 
 @dashboard_bp.get('/events')
 @jwt_required()
@@ -93,8 +99,13 @@ def events():
         db = JSONDatabase()
         # Fetch publications associated with the current researcher
         events = db.select_filter("EVENT",{"ID_ORGANISOR": current_user_id})
-        researchers = db.select_filter( "RESEARCHER" , {"id": current_user_id})
-        return render_template('events.user.html', title='Events', events=events , user=researchers, user_id=current_user_id)
+        user = db.select_filter( "RESEARCHER" , {"id": current_user_id})
+        user = user[0] if user else []
+        print(user)
+        grade=db.select_filter("GRADE",{"id" : user["ID_GRADE"] })
+        grade = grade[0] if grade else []
+        print(grade)
+        return render_template('events.user.html', title='Events', events=events,grade=grade , user=user, user_id=current_user_id)
     
 
 
@@ -103,9 +114,9 @@ def events():
 @jwt_required()
 def partners():
     db = JSONDatabase()
-    partners = db.select_query("partners")
+    partners = db.select_query("PARTNER")
     researchers=db.select_query("RESEARCHER")
-    return render_template('partners.dashboard.html', title='Partners', partners=partners)
+    return render_template('partners.dashboard.html', title='Partners', partners=partners , researchers=researchers)
 
 @dashboard_bp.get('/researchers')
 @jwt_required()
@@ -114,12 +125,13 @@ def researchers():
     researchers = db.select_query("RESEARCHER")
     return render_template('researchers.dashboard.html', title='Researchers', researchers=researchers)
 
-@dashboard_bp.get('/equipements')
+@dashboard_bp.get('/equipments')
 @jwt_required()
 def equipments():
     db = JSONDatabase()
-    equipments = db.select_query("equipements")
-    return render_template('equipements.dashboard.html', title='Equipments', equipments=equipments)
+    equipments = db.select_query("EQUIPMENT")
+    laboratories = db.select_query("LABORATOIRE")
+    return render_template('equipments.dashboard.html', title='Equipments', equipments=equipments , laboratories=laboratories)
 
 @dashboard_bp.get("/logout")
 def logout():

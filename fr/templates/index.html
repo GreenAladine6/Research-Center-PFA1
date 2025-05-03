@@ -209,34 +209,47 @@
       </div>
     </div>
   </section>
+<style>.staff-carousel .staff-card {
+  display: none; /* Hide all cards by default */
+}
 
+.staff-carousel .staff-card.active {
+  display: block; /* Show only the active card */
+}</style>
   <!-- Staff Section -->
-  <section id="staff" class="section" style="padding: 60px 0; background-color: #ffffff;">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <div class="section-heading">
-            <h4>Our <em>Staff</em></h4>
-            <img src="{{ url_for('static', filename='images/heading-line-dec.png') }}" alt="" />
-            <p>Meet the dedicated team behind our research excellence.</p>
-          </div>
-        </div>
-      </div>
-      <div class="row justify-content-center">
-        <div class="staff-carousel">
-          <div class="staff-card">
-            <img src="{{ url_for('static', filename='images/staff-placeholder.png') }}" alt="Dr. Jane Smith" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;" />
-            <h5 class="card-title">Dr. Jane Smith</h5>
-            <p class="card-text">Lead Researcher in AI, with over 20 years of experience in machine learning and data science.</p>
-            <a href="{{ url_for('fr.staff') }}" class="btn" style="background-color: #4b8ef1; color: white; padding: 10px 20px; border-radius: 4px;">Learn More</a>
-          </div>
-        </div>
-        <div class="carousel-dots">
-          <span class="dot"></span>
+<section id="staff" class="section" style="padding: 60px 0; background-color: #ffffff;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <div class="section-heading">
+          <h4>Our <em>Staff</em></h4>
+          <img src="{{ url_for('static', filename='images/heading-line-dec.png') }}" alt="" />
+          <p>Meet the dedicated team behind our research excellence.</p>
         </div>
       </div>
     </div>
-  </section>
+    <div class="row justify-content-center">
+      <div class="staff-carousel">
+        {% for researcher in researchers %}
+        <div class="staff-card">
+          {% set image_path = researcher.IMAGE.replace('\\', '/') if researcher.IMAGE else '' %}
+          {% set image_path = image_path[7:] if image_path.startswith('static/') else image_path %}
+          <img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
+               alt="{{ researcher.FULL_NAME }}" class="researcher-image" style="width: 150px; height: 150px; border-radius: 50%; margin-bottom: 20px;" />
+          <h5 class="card-title">{{ researcher.FULL_NAME }}</h5>
+          <p class="card-text">{{ researcher.BIO }}</p> <!-- Fixed: Use {{ researcher.BIO }} instead of plain text -->
+          <a href="{{ url_for('fr.staff') }}" class="btn" style="background-color: #4b8ef1; color: white; padding: 10px 20px; border-radius: 4px;">Learn More</a>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="carousel-dots">
+        {% for researcher in researchers %}
+        <span class="dot"></span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
 
   <!-- Project Statistics Section -->
   <section id="project-statistics" class="section" style="padding: 60px 0; background-color: #f9f9f9;">
@@ -417,18 +430,48 @@
       }
 
       // Staff carousel control (only one card, so just pause animation on dot click)
-      const staffCard = document.querySelector('.staff-carousel .staff-card');
-      const staffDot = document.querySelector('.staff-carousel + .carousel-dots .dot');
-      if (staffDot && staffCard) {
-        staffDot.addEventListener('click', () => {
-          if (staffCard.style.animationPlayState === 'paused') {
-            staffCard.style.animationPlayState = 'running';
-            staffDot.classList.remove('active');
+      const staffCards = document.querySelectorAll('.staff-carousel .staff-card');
+      const staffDots = document.querySelectorAll('.staff-carousel + .carousel-dots .dot');
+      let currentStaffIndex = 0;
+      let staffAnimationInterval;
+      
+      function showStaff(index) {
+        currentStaffIndex = index;
+        staffCards.forEach((card, i) => {
+          card.classList.remove('active', 'next', 'prev', 'hidden');
+          if (i === index) {
+            card.classList.add('active');
+          } else if (i === (index + 1) % staffCards.length) {
+            card.classList.add('next');
+          } else if (i === (index + staffCards.length - 1) % staffCards.length) {
+            card.classList.add('prev');
           } else {
-            staffCard.style.animationPlayState = 'paused';
-            staffDot.classList.add('active');
+            card.classList.add('hidden');
           }
         });
+        staffDots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      }
+      
+      function nextStaff() {
+        showStaff((currentStaffIndex + 1) % staffCards.length);
+      }
+      
+      staffDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          if (staffAnimationInterval) {
+            clearInterval(staffAnimationInterval);
+          }
+          showStaff(index);
+          staffAnimationInterval = setInterval(nextStaff, 3000);
+        });
+      });
+      
+      // Initialize
+      if (staffCards.length > 0) {
+        showStaff(0);
+        staffAnimationInterval = setInterval(nextStaff, 3000);
       }
 
       // Contact Form Handling

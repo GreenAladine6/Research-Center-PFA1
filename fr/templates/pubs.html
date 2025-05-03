@@ -80,6 +80,7 @@
               <li class="scroll-to-section"><a href="{{ url_for('fr.publications') }}">publications</a></li>
               <li class="scroll-to-section"><a href="{{ url_for('fr.about') }}">About Us</a></li>
               <li class="scroll-to-section"><a href="{{ url_for('fr.contact') }}">Contact</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('dashboard.login') }}" class="login-btn">Login</a></li>
             </ul>
             <a class="menu-trigger">
               <span>Menu</span>
@@ -113,8 +114,8 @@
         <!-- Publications Grid -->
         <div id="publicationsRow" class="row">
             {% for publication in publications %}
-            {% set researcher = researchers|selectattr('id', 'equalto', publication.ID_RESEARCHER)|first %}
-            <div class="col-md-4 mb-4 publication-card {% if loop.index > 16 %}d-none{% endif %}" 
+            {%for researcher in researchers%}
+            <div class="col-md-3 mb-3 publication-card {% if loop.index > 16 %}d-none{% endif %}" 
                  data-publication-id="{{ publication.id }}"
                  data-title="{{ publication.TITLE|lower }}">
                 <div class="card h-100">
@@ -165,6 +166,7 @@
             <div class="col-12">
                 <div class="alert alert-info">No publications found.</div>
             </div>
+            {%endfor%}
             {% endfor %}
         </div>
 

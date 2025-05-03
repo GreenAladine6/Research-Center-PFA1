@@ -18,7 +18,7 @@ class JSONDatabase:
             self.data = {
                 "PROJECT": [], "EVENT": [], "RESEARCHER": [], "WORK": [], 
                 "RESERVE": [], "PARTICIPATE": [], "COLLABORATE": [], 
-                "ASSIGN": [], "PUBLICATION": [], "EQUIPEMENT": [], 
+                "ASSIGN": [], "PUBLICATION": [], "EQUIPMENT": [], 
                 "PARTNER": [], "LABORATORY": [], "GRADE": [], "TYPE_EV": []
             }
             self._save_data()
@@ -193,7 +193,7 @@ class Database:
         self._create_researcher_table()
         self._create_project_table()
         self._create_partner_table()
-        self._create_equipement_table()
+        self._create_equipment_table()
         self._create_type_ev_table()
         self._create_event_table()
         self._create_publication_table()
@@ -208,7 +208,7 @@ class Database:
     def _drop_tables(self):
         tables = [
             "WORK", "RESERVE", "PARTICIPATE", "COLLABORATE", "ASSIGN",
-            "PUBLICATION", "EVENT", "EQUIPEMENT", "PARTNER", "PROJECT",
+            "PUBLICATION", "EVENT", "EQUIPMENT", "PARTNER", "PROJECT",
             "RESEARCHER", "LABORATORY", "GRADE", "TYPE_EV"
         ]
         
@@ -280,11 +280,11 @@ class Database:
         )
         ''')
 
-    def _create_equipement_table(self):
+    def _create_equipment_table(self):
         self.execute_query('''
-        CREATE TABLE EQUIPEMENT (
-            ID_EQUIPEMENT INTEGER PRIMARY KEY,
-            NAME_EQUIPEMENT TEXT,
+        CREATE TABLE EQUIPMENT (
+            ID_EQUIPMENT INTEGER PRIMARY KEY,
+            NAME_EQUIPMENT TEXT,
             PURCHASE_DATE TEXT,
             LABORATOIRE_ID INTEGER,
             FOREIGN KEY (LABORATOIRE_ID) REFERENCES LABORATORY(LABO_ID) ON DELETE CASCADE
@@ -366,13 +366,13 @@ class Database:
         self.execute_query('''
         CREATE TABLE RESERVE (
             ID_PROJECT INTEGER NOT NULL,
-            ID_EQUIPEMENT INTEGER NOT NULL,
+            ID_EQUIPMENT INTEGER NOT NULL,
             ID_RESERVATION INTEGER,
             START_DATE TEXT,
             END_DATE TEXT,
-            PRIMARY KEY (ID_PROJECT, ID_EQUIPEMENT),
+            PRIMARY KEY (ID_PROJECT, ID_EQUIPMENT),
             FOREIGN KEY (ID_PROJECT) REFERENCES PROJECT(ID_PROJECT),
-            FOREIGN KEY (ID_EQUIPEMENT) REFERENCES EQUIPEMENT(ID_EQUIPEMENT)
+            FOREIGN KEY (ID_EQUIPMENT) REFERENCES EQUIPMENT(ID_EQUIPMENT)
         )
         ''')
 

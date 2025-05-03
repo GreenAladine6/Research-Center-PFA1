@@ -27,13 +27,13 @@
             <form id="addEventForm" method="POST" action="{{ url_for('events.create_event') }}" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="name_event" class="form-label">Event Name</label>
-                    <input type="text" class="form-control" id="name_event" name="name_event" required>
+                    <input type="text" class="form-control" id="name_event" name="name_event" >
                 </div>
                 
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="id_organisor" class="form-label">Organiser</label>
-                        <select class="form-control" id="id_organisor" name="id_organisor" required>
+                        <select class="form-control" id="id_organisor" name="id_organisor" >
                             <option value="">Select Organiser</option>
                             {% for researcher in researchers %} 
                                 <option value="{{ researcher.id }}">{{ researcher.FULL_NAME }}</option>
@@ -42,7 +42,7 @@
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="type_event" class="form-label">Event Type</label>
-                        <select class="form-control" id="type_event" name="type_event" required>
+                        <select class="form-control" id="type_event" name="type_event" >
                             <option value="">Select Type</option>
                             {% for type in ev_types %}
                                 <option value="{{ type.TYPE_EV }}">{{ type.TYPE_EV }}</option>
@@ -54,22 +54,22 @@
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="date_begin" class="form-label">Start Date</label>
-                        <input type="text" class="form-control datepicker" id="date_begin" name="date_begin" required>
+                        <input type="text" class="form-control datepicker" id="date_begin" name="date_begin" >
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="date_end" class="form-label">End Date</label>
-                        <input type="text" class="form-control datepicker" id="date_end" name="date_end" required>
+                        <input type="text" class="form-control datepicker" id="date_end" name="date_end" >
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="hour" class="form-label">Time</label>
-                        <input type="text" class="form-control timepicker" id="hour" name="hour" placeholder="HH:MM" required>
+                        <input type="text" class="form-control timepicker" id="hour" name="hour" placeholder="HH:MM" >
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="place" class="form-label">Place</label>
-                        <input type="text" class="form-control" id="place" name="place" required>
+                        <input type="text" class="form-control" id="place" name="place" >
                     </div>
                 </div>
                 
@@ -210,8 +210,8 @@
                 <div class="event-dates">
                     <i class="far fa-calendar-alt me-1"></i>
                     Date: <span class="date-values">
-                        {{ e.DATE_BEG if e.DATE_BEG else 'N/A' }} -
-                        {{ e.DATEND if e.DATEND else 'N/A' }}
+                        {{ e.DATE_BEGIN if e.DATE_BEGIN else 'N/A' }} -
+                        {{ e.DATE_END if e.DATE_END else 'N/A' }}
                     </span>
                 </div>
                 
@@ -237,8 +237,8 @@
                             data-name="{{ e.NAME_EVENT if e.NAME_EVENT else '' }}"
                             data-organiser="{{ e.ID_ORGANISOR if e.ID_ORGANISOR else '' }}"
                             data-type="{{ e.TYPE_EV if e.TYPE_EV else '' }}"
-                            data-date-begin="{{ e.DATE_BEG if e.DATE_BEG else '' }}"
-                            data-date-end="{{ e.DATEND if e.DATEND else '' }}"
+                            data-date-begin="{{ e.DATE_BEGIN if e.DATE_BEGIN else '' }}"
+                            data-date-end="{{ e.DATE_END if e.DATE_END else '' }}"
                             data-hour="{{ e.HOUR if e.HOUR else '' }}"
                             data-place="{{ e.PLACE if e.PLACE else '' }}"
                             data-description="{{ e.DESCRIPTION if e.DESCRIPTION else '' }}"

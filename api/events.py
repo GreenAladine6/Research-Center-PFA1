@@ -1,8 +1,10 @@
+from asyncio import Event
 import os
 import uuid
 from datetime import datetime
 from typing import Tuple, Optional, Dict, Any
 from flask import Blueprint, request, jsonify, current_app
+from flask_jwt_extended import current_user
 from werkzeug.utils import secure_filename
 from Database.db import JSONDatabase
 
@@ -62,12 +64,14 @@ def check_event_conflict(db: JSONDatabase, date_begin: str, place: str, exclude_
     """Check if an event conflicts with another event at the same date_begin and place."""
     conditions = {"DATE_BEGIN": date_begin, "PLACE": place}
     try:
-        conflicting_events = db.select_query(table="EVENT",)
-        
+        conflicting_events = db.select_filter("EVENT", {"PLACE": place})
+        if exclude_event_id:
+            conflicting_events = [event for event in conflicting_events if str(event.get("id")) != str(exclude_event_id)]
         for event in conflicting_events:
-            if exclude_event_id is None or event.get("ID") != exclude_event_id:
+            if event.get("DATE_BEGIN") == date_begin:
                 current_app.logger.info(f"Conflict found: Event ID {event.get('ID')} at {place} on {date_begin}")
                 return True
+
         return False
     except Exception as e:
         current_app.logger.error(f"Error checking event conflict for {date_begin}, {place}: {str(e)}")
@@ -155,7 +159,7 @@ def create_event():
     
     # Check for event conflict
     try:
-        if check_event_conflict(db, update_data["DATE_BEGIN"], update_data["PLACE"]):
+        if check_event_conflict(db, update_data["DATE_BEGIN"], update_data["PLACE"], exclude_event_id=None):
             return jsonify({
                 "alert": "Conflict detected",
                 "error": "Event conflict",
@@ -188,7 +192,7 @@ def get_events():
     """Get all events."""
     try:
         db = JSONDatabase()
-        events = db.select_query(table="EVENT")
+        events = db.select_query("EVENT")
         current_app.logger.info(f"Fetched {len(events)} events")
         return jsonify(events), 200
     except Exception as e:
@@ -264,7 +268,7 @@ def update_event(event_id: int):
         current_app.logger.info(f"Updated event ID {event_id} with data: {update_data}")
         
         updated_event = db.get_item("EVENT", event_id)
-        if not updated_event or updated_event.get("ID") != event_id:
+        if not updated_event or updated_event.get("id") != event_id:
             current_app.logger.error(f"Updated event ID {event_id} is corrupted or missing")
             return jsonify({"error": "Event update failed due to data corruption"}), 500
         
@@ -342,3 +346,20 @@ def get_multiple_events():
     except Exception as e:
         current_app.logger.error(f"Error fetching multiple events: {str(e)}")
         return jsonify({"error": "Failed to fetch events", "details": str(e)}), 500
+
+
+@events_bp.route('/api/events/<int:id>/quit', methods=['PATCH'])
+def quit_event(id):
+    try:
+        db = JSONDatabase()
+        event = Event.query.get_or_404(id)
+        
+        if event.id_manager != current_user.id:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+        event.id_manager = None
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500

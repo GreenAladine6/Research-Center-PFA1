@@ -29,7 +29,8 @@ def index():
         return response
     db = JSONDatabase()
     projects = db.select_query("PROJECT")
-    return render_template('index.html', projects=projects[:6], page='')
+    researchers=db.select_query("RESEARCHER")
+    return render_template('index.html', projects=projects[:6], researchers=researchers[:6])
 
 
 

@@ -376,3 +376,24 @@ def get_multiple_projects():
     except Exception as e:
         current_app.logger.error(f"Error fetching multiple projects: {str(e)}")
         return jsonify({"error": "Failed to fetch projects", "details": str(e)}), 500
+    
+@projects_bp.patch('/<int:project_id>/quit')
+def quit_project(project_id: int):
+    """Remove the current user as manager from the project or mark project as quit."""
+    db = JSONDatabase()
+    project = db.get_item("PROJECT", project_id)
+    if not project:
+        current_app.logger.warning(f"Project ID {project_id} not found for quit")
+        return jsonify({"error": "Project not found"}), 404
+    try:
+        update_data = project.copy()
+        # Assuming quitting means removing the manager
+        update_data['ID_MANAGER'] = None
+        if not db.update_query("PROJECT", project_id, update_data):
+            current_app.logger.error(f"Failed to quit project {project_id}")
+            return jsonify({"error": "Failed to quit project"}), 500
+        current_app.logger.info(f"Project ID {project_id} quit successfully")
+        return jsonify({"success": True, "message": "Project quit successfully"}), 200
+    except Exception as e:
+        current_app.logger.error(f"Error quitting project {project_id}: {str(e)}")
+        return jsonify({"error": "Failed to quit project", "details": str(e)}), 500

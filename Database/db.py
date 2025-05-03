@@ -32,7 +32,7 @@ class JSONDatabase:
         """Retrieve all records from a table."""
         return self.data.get(table, [])
 
-    def select_filter(self, table: str, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def select_filter(self, table: str, filters: Dict) -> List[Dict[str, Any]]:
         """Retrieve records from a table with optional filters."""
         results = []
         items = self.data.get(table, [])
@@ -55,7 +55,7 @@ class JSONDatabase:
                 results.append(item)
         
         return results
-
+    
     def get_item(self, table: str, id: int) -> Optional[Dict[str, Any]]:
         """Retrieve a single record from a table filtered by id."""
         return next((item for item in self.data.get(table, []) if item.get("id") == id), None)

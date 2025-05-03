@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 from Database.db import JSONDatabase
 
 user_bp = Blueprint('user', __name__)
-UPLOAD_FOLDER = os.path.join("static", "images", "uploads", "users")
+UPLOAD_FOLDER = os.path.join("static", "images", "uploads", "staff")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'svg'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
@@ -67,7 +67,7 @@ def handle_image_upload(
         base_filename = secure_filename(file.filename)
         filename = f"{uuid.uuid4()}_{base_filename}"
         filepath = os.path.join(upload_folder, filename)
-        image_path = f"images/uploads/users/{filename}"
+        image_path = f"images/uploads/staff/{filename}"
 
         os.makedirs(upload_folder, exist_ok=True)
         file.save(filepath)
@@ -96,72 +96,83 @@ def remove_old_image(old_image_path: str | None, new_image_path: str | None):
             except Exception as e:
                 current_app.logger.warning(f"Could not remove old image: {str(e)}")
 
-@user_bp.put('/profile')
-@jwt_required()
-def update_profile():
-    """Update user profile (photo, password, email)."""
-    identity = get_jwt_identity()
-    if identity['role'] != 'user':
-        return jsonify({"error": "Unauthorized: Only users can update profiles"}), 403
-    
-    user_id = identity['user_id']
+@user_bp.put('/<int:user_id>')
+def update_profile(user_id: int):
+    """Update an existing user."""
     db = JSONDatabase()
     
-    # Fetch current user from RESEARCHER table
-    user = db.get_item("RESEARCHER", user_id)
+    user = db.get_item("USER", user_id)
     if not user:
         current_app.logger.warning(f"User ID {user_id} not found")
         return jsonify({"error": "User not found"}), 404
     
     old_image_path = user.get("IMAGE", "")
-    update_data = user.copy()
     
-    # Validate form data
-    validation_errors = validate_user_data(request.form)
+    validation_errors = validate_user_data(request.form, require_all_fields=False)
     if validation_errors:
         return jsonify({"error": "Validation failed", "details": validation_errors}), 400
     
-    # Update fields if provided
-    if 'email' in request.form and request.form['email'].strip():
-        update_data["EMAIL"] = request.form['email']
+    update_data = user.copy()
+    for field in ['full_name', 'bio']:
+        if field in request.form and request.form[field].strip():
+            update_data[field.upper()] = request.form[field]
     
-    if 'password' in request.form and request.form['password'].strip():
-        update_data["PASSWORD"] = bcrypt.hashpw(
-            request.form['password'].encode('utf-8'), bcrypt.gensalt()
-        ).decode('utf-8')
+    if 'Grade' in request.form:
+        grade_value = request.form['Grade']
+        if grade_value == 'No grade':
+            update_data['GRADE'] = None
+        else:
+            try:
+                update_data['GRADE'] = int(grade_value)
+            except ValueError:
+                return jsonify({"error": "Invalid grade ID"}), 400
     
-    # Handle image upload
     success, response, status_code = handle_image_upload(request, old_image_path, update_data)
     if not success:
         return jsonify(response), status_code
     
-    # Check if there are any changes
     if update_data == user:
         current_app.logger.info(f"No changes provided for user ID {user_id}")
         return jsonify({"success": True, "message": "No changes provided"}), 200
     
     try:
-        # Update user
-        if not db.update_query("RESEARCHER", user_id, update_data):
+        if not db.update_query("USER", user_id, update_data):
             current_app.logger.error(f"Failed to update user {user_id}: Record not found")
             return jsonify({"error": "User not found"}), 404
         
-        # Remove old image after successful update
         remove_old_image(old_image_path, update_data.get("IMAGE"))
         current_app.logger.info(f"Updated user ID {user_id} with data: {update_data}")
         
-        # Verify updated record
-        updated_user = db.get_item("RESEARCHER", user_id)
+        updated_user = db.get_item("USER", user_id)
         if not updated_user or updated_user["id"] != user_id:
             current_app.logger.error(f"Updated user ID {user_id} is corrupted or missing")
             return jsonify({"error": "User update failed due to data corruption"}), 500
         
         return jsonify({
             "success": True,
-            "message": "Profile updated successfully",
+            "message": "User updated successfully",
             "user_id": user_id
         }), 200
     
     except Exception as e:
         current_app.logger.error(f"Error updating user {user_id}: {str(e)}")
-        return jsonify({"error": "Failed to update profile", "details": str(e)}), 500
+        return jsonify({"error": "Failed to update user", "details": str(e)}), 500
+@user_bp.patch('/<int:user_id>/quit')
+def quit_profile(user_id: int):
+    """Deactivate a user profile."""
+    db = JSONDatabase()
+    user = db.get_item("USER", user_id)
+    if not user:
+        current_app.logger.warning(f"User ID {user_id} not found for quit")
+        return jsonify({"error": "User not found"}), 404
+    try:
+        update_data = user.copy()
+        update_data['ACTIVE'] = False  # Assuming 'ACTIVE' field controls active status
+        if not db.update_query("USER", user_id, update_data):
+            current_app.logger.error(f"Failed to deactivate user {user_id}")
+            return jsonify({"error": "Failed to deactivate user"}), 500
+        current_app.logger.info(f"User ID {user_id} deactivated successfully")
+        return jsonify({"success": True, "message": "User deactivated successfully"}), 200
+    except Exception as e:
+        current_app.logger.error(f"Error deactivating user {user_id}: {str(e)}")
+        return jsonify({"error": "Failed to deactivate user", "details": str(e)}), 500

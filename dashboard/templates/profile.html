@@ -3,9 +3,9 @@
 {% block head %} 
     <title>Dashboard | Projects</title>
     <link href="{{ url_for('dashboard.static', filename='css/style1.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/project-style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/events.css') }}">
     <style>
         .profile-img {
             width: 150px;
@@ -62,6 +62,14 @@
             margin-right: 10px;
             cursor: pointer;
         }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
         .spinner {
             border: 2px solid #f3f3f3;
             border-top: 2px solid #3498db;
@@ -87,15 +95,19 @@
     <div class="card mb-4">
         <div class="card-body text-center">
             {% if user and user.IMAGE %}
-                <img src="{{ url_for('static', filename=user.IMAGE[7:]) }}" alt="Profile Picture" class="profile-img mb-3">
+                <img src="{{ url_for('static', filename=user.IMAGE) }}" alt="Profile Picture" class="profile-img mb-3">
             {% else %}
                 <img src="{{ url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" alt="Profile Picture" class="profile-img mb-3">
             {% endif %}
-            <h4>{{ user.MAIL if user else '' }}</h4>
+            <h4>{{ user.FULL_NAME if user and user.FULL_NAME else 'Unknown User' }}</h4>
+            <h5>{{ grade.NAME_GRADE if user and user.ID_GRADE else 'No Grade' }}</h5>
             <div class="d-flex justify-content-center gap-2">
                 <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#updateProfileModal">Update Profile</button>
                 <button id="openAddModal" class="btn btn-primary mt-2">
                     <i class="fas fa-plus me-2"></i>Add Project
+                </button>
+                <button id="openQuitModal" class="btn btn-danger mt-2">
+                    <i class="fas fa-sign-out-alt me-2"></i>Quit Profile
                 </button>
             </div>
         </div>
@@ -106,18 +118,18 @@
     {% if projects %}
     <div class="projects-grid">
         {% for p in projects %}
-        {% set researcher = researchers|selectattr('id', 'equalto', p.ID_MANAGER)|first %}
+        
         <div class="project-card" 
              data-project-id="{{ p.id }}"
              data-name="{{ p.NAME_PROJECT if p.NAME_PROJECT else '' }}"
-             data-manager="{{ p.ID_MANAGER if p.ID_MANAGER else '' }}"
+             data-user="{{ p.ID_MANAGER if p.ID_MANAGER else '' }}"
              data-date-begin="{{ p.DATE_BEGIN if p.DATE_BEGIN else '' }}"
              data-date-end="{{ p.DATE_END if p.DATE_END else '' }}"
              data-state="{{ p.STATE if p.STATE else 'Not Started' }}"
              data-budget="{{ p.BUDGET if p.BUDGET else '0.00' }}"
-             data-image="{{ url_for('static', filename=p.IMAGE[7:]) if p.IMAGE else '' }}">
+             data-image="{{ url_for('static', filename=p.IMAGE) if p.IMAGE else '' }}">
             <div class="project-image-container">
-                <img src="{{ url_for('static', filename=p.IMAGE[7:]) if p.IMAGE else url_for('static', filename='images/uploads/projects/default-project.jpg') }}" 
+                <img src="{{ url_for('static', filename=p.IMAGE) if p.IMAGE else url_for('static', filename='images/uploads/projects/default-project.jpg') }}" 
                      alt="{{ p.NAME_PROJECT }}" class="project-image">
             </div>
             <div class="project-details">
@@ -128,7 +140,7 @@
                 </div>
                 <div class="project-meta">
                     <i class="fas fa-user me-1"></i>
-                    {{ researcher.FULL_NAME if researcher else 'Unknown Manager' }}
+                    {{ user.FULL_NAME if user else 'Unknown User' }}
                 </div>
                 
                 <div class="project-dates">
@@ -152,7 +164,7 @@
                                 data-date-end="{{ p.DATE_END if p.DATE_END else '' }}"
                                 data-state="{{ p.STATE if p.STATE else 'Not Started' }}"
                                 data-budget="{{ p.BUDGET if p.BUDGET else '0.00' }}"
-                                data-image="{{ url_for('static', filename=p.IMAGE[7:]) if p.IMAGE else '' }}">
+                                data-image="{{ url_for('static', filename=p.IMAGE) if p.IMAGE else '' }}">
                             <i class="fas fa-edit me-1"></i>Edit
                         </button>
                         <button class="btn-action btn-quit" onclick="quit_project({{ p.id }})" data-project-id="{{ p.id }}">
@@ -179,24 +191,34 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="updateProfileForm" method="POST" action="{{ url_for('user.update_profile') }}" enctype="multipart/form-data">
+                    <form id="updateProfileForm" method="PUT" enctype="multipart/form-data">
                         <div class="form-group mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ user.MAIL if user else '' }}">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.FULL_NAME if user and user.FULL_NAME else '' }}" required>
                         </div>
                         <div class="form-group mb-3">
-                            <label for="password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="password" name="password">
-                            <small class="text-muted">Minimum 8 characters</small>
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="4">{{ user.BIO if user and user.BIO else '' }}</textarea>
                         </div>
                         <div class="form-group mb-3">
-                            <label for="confirm_password" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                            <label for="Grade" class="form-label">Grade</label>
+                            <select class="form-control" id="Grade" name="Grade">
+                                <option value="No grade" {% if user and not user.GRADE %}selected{% endif %}>No Grade</option>
+                                {% for grade in grades %}
+                                    <option value="{{ grade.id }}">{{ grade.name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div class="form-group mb-3">
                             <label for="image" class="form-label">Profile Picture</label>
                             <input type="file" class="form-control" id="image" name="image" accept="image/*">
                             <small class="text-muted">Recommended size: 100x100px (JPG, PNG, SVG)</small>
+                            {% if user and user.IMAGE %}
+                            <div class="mt-2">
+                                <small>Current Image:</small>
+                                <img src="{{ url_for('static', filename=user.IMAGE) }}" class="img-thumbnail mt-1" style="max-height: 80px;">
+                            </div>
+                            {% endif %}
                         </div>
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">
@@ -206,6 +228,24 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quit Profile Confirmation Modal -->
+    <div id="quitProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Confirm Quit Profile</h2>
+                <button id="closeQuitModal" class="btn-close"></button>
+            </div>
+            <p>Are you sure you want to deactivate your profile? This will mark your account as inactive, and you will lose access to manage projects and other features. This action can only be undone by an administrator.</p>
+            <div class="d-flex justify-content-end mt-4">
+                <button type="button" id="cancelQuitModal" class="btn-cancel">Cancel</button>
+                <button id="confirmQuitProfile" class="btn btn-danger">
+                    <span id="quitButtonText">Confirm Quit</span>
+                    <div class="spinner" id="quitSpinner" style="display: none;"></div>
+                </button>
             </div>
         </div>
     </div>
@@ -247,7 +287,7 @@
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="date_end" class="form-label">End Date</label>
-                        <input type="text" class="form-control datepicker" id="date_end" name="date_end" required>
+                        <input type="text" class="form-control datepicker" id="date_end" name="date_end">
                     </div>
                 </div>
                 
@@ -307,7 +347,7 @@
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="updateDateEnd" class="form-label">End Date</label>
-                        <input type="text" class="form-control datepicker" id="updateDateEnd" name="date_end" required>
+                        <input type="text" class="form-control datepicker" id="updateDateEnd" name="date_end">
                     </div>
                 </div>
                 
@@ -333,213 +373,294 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize date pickers
-        flatpickr('.datepicker', {
-            dateFormat: "Y-m-d",
-            allowInput: true
-        });
-
-        // Profile Form Submission
-        const updateProfileForm = document.getElementById('updateProfileForm');
-        const updateProfileButtonText = document.getElementById('updateProfileButtonText');
-        const updateProfileSpinner = document.getElementById('updateProfileSpinner');
-
-        updateProfileForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            
-            updateProfileButtonText.textContent = 'Updating...';
-            updateProfileSpinner.style.display = 'inline-block';
-            
-            fetch("{{ url_for('user.update_profile') }}", {
-                method: 'PUT',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                } else {
-                    alert(data.error || 'Failed to update profile. Please check the form data.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the profile');
-            })
-            .finally(() => {
-                updateProfileButtonText.textContent = 'Update Profile';
-                updateProfileSpinner.style.display = 'none';
-                bootstrap.Modal.getInstance(document.getElementById('updateProfileModal')).hide();
+        try {
+            // Initialize date pickers
+            flatpickr('.datepicker', {
+                dateFormat: "Y-m-d",
+                allowInput: true
             });
-        });
-
-        // Project Management
-        const addModal = document.getElementById('addModal');
-        const updateModal = document.getElementById('updateModal');
-        const openAddModal = document.getElementById('openAddModal');
-        const closeAddModal = document.getElementById('closeAddModal');
-        const cancelAddModal = document.getElementById('cancelAddModal');
-        const closeUpdateModal = document.getElementById('closeUpdateModal');
-        const cancelUpdateModal = document.getElementById('cancelUpdateModal');
-        const addForm = document.getElementById('addProjectForm');
-        const updateForm = document.getElementById('updateProjectForm');
-        const addSpinner = document.getElementById('addSpinner');
-        const addButtonText = document.getElementById('addButtonText');
-        const updateSpinner = document.getElementById('updateSpinner');
-        const updateButtonText = document.getElementById('updateButtonText');
-
-        // Modal toggle functions
-        function openModal(modal) {
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal(modal) {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Event listeners for modals
-        openAddModal.addEventListener('click', () => openModal(addModal));
-        closeAddModal.addEventListener('click', () => closeModal(addModal));
-        closeUpdateModal.addEventListener('click', () => closeModal(updateModal));
-        cancelAddModal.addEventListener('click', () => closeModal(addModal));
-        cancelUpdateModal.addEventListener('click', () => closeModal(updateModal));
-
-        // Close modals when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target === addModal) closeModal(addModal);
-            if (e.target === updateModal) closeModal(updateModal);
-        });
-
-        // Update project button handlers
-        document.querySelectorAll('.btn-update').forEach(button => {
-            button.addEventListener('click', function() {
-                const projectId = this.getAttribute('data-project-id');
-                const currentImage = this.getAttribute('data-image');
-                
-                document.getElementById('updateProjectId').value = projectId;
-                document.getElementById('updateName').value = this.getAttribute('data-name');
-                document.getElementById('updateBudget').value = this.getAttribute('data-budget');
-                document.getElementById('updateDateBegin').value = this.getAttribute('data-date-begin');
-                document.getElementById('updateDateEnd').value = this.getAttribute('data-date-end');
-                document.getElementById('updateState').value = this.getAttribute('data-state');
-                
-                const currentImagePreview = document.getElementById('currentImagePreview');
-                const currentImageContainer = document.getElementById('currentImageContainer');
-                
-                if (currentImage) {
-                    currentImagePreview.src = currentImage;
-                    currentImageContainer.style.display = 'block';
-                } else {
-                    currentImageContainer.style.display = 'none';
-                }
-                
-                openModal(updateModal);
-            });
-        });
-
-        // Add Project Form Submission
-        addForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            formData.append('id_manager', '{{ user.id }}'); // Set manager to current user
-            
-            addButtonText.textContent = 'Creating...';
-            addSpinner.style.display = 'inline-block';
-            
-            fetch("{{ url_for('projects.create_project') }}", {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    closeModal(addModal);
-                    alert('Project created successfully!');
-                    window.location.reload();
-                } else {
-                    alert(data.error || 'Failed to create project. Please check the form data.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while creating the project');
-            })
-            .finally(() => {
-                addButtonText.textContent = 'Create Project';
-                addSpinner.style.display = 'none';
-            });
-        });
-
-        // Update Project Form Submission
-        updateForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const projectId = document.getElementById('updateProjectId').value;
-            
-            updateButtonText.textContent = 'Updating...';
-            updateSpinner.style.display = 'inline-block';
-            
-            fetch(`/api/projects/${projectId}`, {
-                method: 'PUT',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    closeModal(updateModal);
-                    alert('Project updated successfully!');
-                    window.location.reload();
-                } else {
-                    alert(data.error || 'Failed to update project. Please check the form data.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the project');
-            })
-            .finally(() => {
-                updateButtonText.textContent = 'Update Project';
-                updateSpinner.style.display = 'none';
-            });
-        });
-
-        // Quit Project
-        window.quit_project = function(id) {
-            if (confirm('Are you sure you want to quit managing this project? This action cannot be undone.')) {
-                fetch(`/api/projects/${id}/quit`, {
-                    method: 'PATCH'
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        window.location.reload();
-                    } else {
-                        alert(data.error || 'Failed to quit project');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while quitting the project');
+    
+            // Check if Bootstrap is loaded
+            if (typeof bootstrap === 'undefined') {
+                console.error('Bootstrap JavaScript is not loaded. Update Profile modal may not work.');
+            }
+    
+            // Profile Form Submission
+            const updateProfileForm = document.getElementById('updateProfileForm');
+            const updateProfileButtonText = document.getElementById('updateProfileButtonText');
+            const updateProfileSpinner = document.getElementById('updateProfileSpinner');
+            const userId = {{ user.id | safe if user else 0 }};
+    
+            if (updateProfileForm) {
+                updateProfileForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    
+                    updateProfileButtonText.textContent = 'Updating...';
+                    updateProfileSpinner.style.display = 'inline-block';
+                    
+                    fetch(`/api/user/${userId}`, {
+                        method: 'PUT',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.error || 'Update failed');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('updateProfileModal'));
+                            if (modal) modal.hide();
+                            alert('Profile updated successfully!');
+                            window.location.reload();
+                        } else {
+                            alert(data.error || 'Failed to update profile. Please check the form data.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while updating the profile: ' + error.message);
+                    })
+                    .finally(() => {
+                        updateProfileButtonText.textContent = 'Update Profile';
+                        updateProfileSpinner.style.display = 'none';
+                    });
                 });
             }
-        };
+    
+            // Quit Profile Modal
+            const quitProfileModal = document.getElementById('quitProfileModal');
+            const openQuitModal = document.getElementById('openQuitModal');
+            const closeQuitModal = document.getElementById('closeQuitModal');
+            const cancelQuitModal = document.getElementById('cancelQuitModal');
+            const confirmQuitProfile = document.getElementById('confirmQuitProfile');
+            const quitButtonText = document.getElementById('quitButtonText');
+            const quitSpinner = document.getElementById('quitSpinner');
+    
+            function openModal(modal) {
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+    
+            function closeModal(modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+    
+            if (openQuitModal) {
+                openQuitModal.addEventListener('click', () => openModal(quitProfileModal));
+            }
+            if (closeQuitModal) {
+                closeQuitModal.addEventListener('click', () => closeModal(quitProfileModal));
+            }
+            if (cancelQuitModal) {
+                cancelQuitModal.addEventListener('click', () => closeModal(quitProfileModal));
+            }
+            window.addEventListener('click', (e) => {
+                if (e.target === quitProfileModal) closeModal(quitProfileModal);
+            });
+    
+            if (confirmQuitProfile) {
+                confirmQuitProfile.addEventListener('click', function() {
+                    quitButtonText.textContent = 'Deactivating...';
+                    quitSpinner.style.display = 'inline-block';
+                    
+                    fetch(`/user/${userId}/quit`, {
+                        method: 'PATCH'
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            closeModal(quitProfileModal);
+                            alert('Profile deactivated successfully! You will be logged out.');
+                            window.location.href = '/logout';
+                        } else {
+                            alert(data.error || 'Failed to deactivate profile');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while deactivating the profile');
+                    })
+                    .finally(() => {
+                        quitButtonText.textContent = 'Confirm Quit';
+                        quitSpinner.style.display = 'none';
+                    });
+                });
+            }
+    
+            // Project Management
+            const addModal = document.getElementById('addModal');
+            const updateModal = document.getElementById('updateModal');
+            const openAddModal = document.getElementById('openAddModal');
+            const closeAddModal = document.getElementById('closeAddModal');
+            const cancelAddModal = document.getElementById('cancelAddModal');
+            const closeUpdateModal = document.getElementById('closeUpdateModal');
+            const cancelUpdateModal = document.getElementById('cancelUpdateModal');
+            const addForm = document.getElementById('addProjectForm');
+            const updateForm = document.getElementById('updateProjectForm');
+            const addSpinner = document.getElementById('addSpinner');
+            const addButtonText = document.getElementById('addButtonText');
+            const updateSpinner = document.getElementById('updateSpinner');
+            const updateButtonText = document.getElementById('updateButtonText');
+    
+            if (openAddModal) {
+                openAddModal.addEventListener('click', () => openModal(addModal));
+            }
+            if (closeAddModal) {
+                closeAddModal.addEventListener('click', () => closeModal(addModal));
+            }
+            if (closeUpdateModal) {
+                closeUpdateModal.addEventListener('click', () => closeModal(updateModal));
+            }
+            if (cancelAddModal) {
+                cancelAddModal.addEventListener('click', () => closeModal(addModal));
+            }
+            if (cancelUpdateModal) {
+                cancelUpdateModal.addEventListener('click', () => closeModal(updateModal));
+            }
+    
+            window.addEventListener('click', (e) => {
+                if (e.target === addModal) closeModal(addModal);
+                if (e.target === updateModal) closeModal(updateModal);
+            });
+    
+            document.querySelectorAll('.btn-update').forEach(button => {
+                button.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-project-id');
+                    const currentImage = this.getAttribute('data-image');
+                    
+                    document.getElementById('updateProjectId').value = projectId;
+                    document.getElementById('updateName').value = this.getAttribute('data-name');
+                    document.getElementById('updateBudget').value = this.getAttribute('data-budget');
+                    document.getElementById('updateDateBegin').value = this.getAttribute('data-date-begin');
+                    document.getElementById('updateDateEnd').value = this.getAttribute('data-date-end');
+                    document.getElementById('updateState').value = this.getAttribute('data-state');
+                    
+                    const currentImagePreview = document.getElementById('currentImagePreview');
+                    const currentImageContainer = document.getElementById('currentImageContainer');
+                    
+                    if (currentImage) {
+                        currentImagePreview.src = currentImage;
+                        currentImageContainer.style.display = 'block';
+                    } else {
+                        currentImageContainer.style.display = 'none';
+                    }
+                    
+                    openModal(updateModal);
+                });
+            });
+    
+            if (addForm) {
+                addForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    formData.append('id_user', userId);
+                    
+                    addButtonText.textContent = 'Creating...';
+                    addSpinner.style.display = 'inline-block';
+                    
+                    fetch("{{ url_for('projects.create_project') }}", {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            closeModal(addModal);
+                            alert('Project created successfully!');
+                            window.location.reload();
+                        } else {
+                            alert(data.error || 'Failed to create project. Please check the form data.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while creating the project');
+                    })
+                    .finally(() => {
+                        addButtonText.textContent = 'Create Project';
+                        addSpinner.style.display = 'none';
+                    });
+                });
+            }
+    
+            if (updateForm) {
+                updateForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const projectId = document.getElementById('updateProjectId').value;
+                    
+                    updateButtonText.textContent = 'Updating...';
+                    updateSpinner.style.display = 'inline-block';
+                    
+                    fetch(`/api/project/${projectId}`, {
+                        method: 'PUT',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            closeModal(updateModal);
+                            alert('Project updated successfully!');
+                            window.location.reload();
+                        } else {
+                            alert(data.error || 'Failed to update project. Please check the form data.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while updating the project');
+                    })
+                    .finally(() => {
+                        updateButtonText.textContent = 'Update Project';
+                        updateSpinner.style.display = 'none';
+                    });
+                });
+            }
+    
+            window.quit_project = function(id) {
+                if (confirm('Are you sure you want to quit managing this project? This action cannot be undone.')) {
+                    fetch(`/api/project/${id}/quit`, {
+                        method: 'PATCH'
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Successfully quit project!');
+                            window.location.reload();
+                        } else {
+                            alert(data.error || 'Failed to quit project');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while quitting the project');
+                    });
+                }
+            };
+        } catch (error) {
+            console.error('Script error:', error);
+        }
     });
 </script>
 {% endblock %}
