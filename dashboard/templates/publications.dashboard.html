@@ -130,10 +130,10 @@
 
     <!-- Publications Grid -->
     {% if publications %}
-    <div id="publicationsRow" class="row mb-1">
+    <div id="publicationsRow" class="row mb-2">
         {% for publication in publications %}
         {% set researcher = researchers|selectattr('id', 'equalto', publication.ID_RESEARCHER)|first %}
-        <div class="col-md-4 mb-4 publication-card" 
+        <div class="col-md-3 mb-3 publication-card" 
              data-publication-id="{{ publication.id }}"
              data-title="{{ publication.TITLE|lower }}"
              data-researcher="{{ publication.ID_RESEARCHER }}"

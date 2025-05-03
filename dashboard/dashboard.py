@@ -35,22 +35,25 @@ from flask_jwt_extended import get_jwt_identity, get_jwt
 # ... existing imports ...
 
 @dashboard_bp.get('/projects')
+@dashboard_bp.get('/profile')
 @jwt_required()
 def projects():
     current_user_id = get_jwt_identity()
     claims = get_jwt()
-    role = claims.get('role', 'user')  
-
+    role = claims.get('role', 'user')
+    print(current_user_id)
     db = JSONDatabase()
     if role == 'admin':
         projects = db.select_query("PROJECT")
+        researchers = db.select_query("RESEARCHER")
+        return render_template('projects.dashboard.html', title='Projects', projects=projects, researchers=researchers)
     else:
         # Fetch projects associated with the current researcher
-        projects = db.select_filter("PROJECT", {"ID_MANAGER": current_user_id})
-        researchers = db.select_query("RESEARCHER")
-        return render_template('profile.html', title='Projects', projects=projects, researchers=researchers)
-    researchers = db.select_query("RESEARCHER")
-    return render_template('projects.dashboard.html', title='Projects', projects=projects, researchers=researchers)
+        project = db.select_filter("PROJECT", {"ID_MANAGER": current_user_id })
+        researcher = db.select_filter("RESEARCHER",{"id" : current_user_id })
+        return render_template('profile.html', title='Projects', projects=project, researchers=researcher , user_id=current_user_id)
+
+
 
 @dashboard_bp.get('/publications')
 @jwt_required()
@@ -63,6 +66,7 @@ def publications():
         db = JSONDatabase()
         publications = db.select_query("PUBLICATION")
         researchers = db.select_query("RESEARCHER")
+        return render_template('publications.dashboard.html', title='Publications', publications=publications , researchers=researchers)
     else:
         db = JSONDatabase()
         # Fetch publications associated with the current researcher
@@ -70,16 +74,28 @@ def publications():
         researchers = db.select_filter( "RESEARCHER" , {"id": current_user_id})
         print(researchers)
         print(publications)
-    return render_template('publications.dashboard.html', title='Publications', publications=publications , researchers=researchers)
+    return render_template('publications.user.html', title='Publications', publications=publications , researchers=researchers, user_id=current_user_id)
 
 @dashboard_bp.get('/events')
 @jwt_required()
 def events():
-    db = JSONDatabase()
-    events = db.select_query("EVENT")
-    researchers = db.select_query("RESEARCHER")
-    ev_types = db.select_query("TYPE_EV")
-    return render_template('events.dashboard.html', title='Events', events=events , researchers=researchers , ev_types=ev_types)
+    current_user_id = get_jwt_identity()
+    claims = get_jwt()
+    role = claims.get('role', 'user')
+
+    if role == 'admin':
+        db = JSONDatabase()
+        events = db.select_query("EVENT")
+        researchers = db.select_query("RESEARCHER")
+        ev_types= db.select_query("TYPE_EV")
+        return render_template('events.dashboard.html', title='Events', events=events , researchers=researchers , ev_types=ev_types)
+    else:
+        db = JSONDatabase()
+        # Fetch publications associated with the current researcher
+        events = db.select_filter("EVENT",{"ID_ORGANISOR": current_user_id})
+        researchers = db.select_filter( "RESEARCHER" , {"id": current_user_id})
+        return render_template('events.user.html', title='Publications', events=events , researchers=researchers, user_id=current_user_id)
+    
 
 
 

@@ -34,19 +34,25 @@ class JSONDatabase:
 
     def select_filter(self, table: str, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Retrieve records from a table with optional filters."""
-        results = set()
+        results = []
         items = self.data.get(table, [])
-        #print(items)
+        
         for item in items:
             matches_all_filters = True
             for key, value in filters.items():
-                if key not in item or item[key] != value:
-                    print(item[key])
-                    print(value)
+                # Debug prints (optional)
+                # print("filters")
+                # print(key, value)
+                # print("element key,value")
+                # print(key, item.get(key, "N/A"))  # Safer access with .get()
+                
+                if key not in item or str(item.get(key, "N/A")) != str(value):
+                    # print(item)
                     matches_all_filters = False
                     break
+            
             if matches_all_filters:
-                    results+=item
+                results.append(item)
         
         return results
 
