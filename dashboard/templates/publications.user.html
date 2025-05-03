@@ -7,135 +7,108 @@
     <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/projects-style.css') }}">
     <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/publications.css') }}">
     <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/event-style.css') }}">
+    <style>
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #dee2e6;
+        }
+        .publication-card {
+            transition: transform 0.2s;
+        }
+        .publication-card:hover {
+            transform: translateY(-5px);
+        }
+        .publication-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px 5px 0 0;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Publications Management</h1>
-        <button id="openAddModal" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Add Publication
-        </button>
-    </div>
+    <h1 class="mb-4">User Profile</h1>
     
-    <!-- Add Publication Modal -->
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="mb-0">Add New Publication</h2>
-                <button id="closeAddModal" class="btn-close"></button>
+    <!-- Profile Picture and Info -->
+    <div class="card mb-4">
+        <div class="card-body text-center">
+            {% if user and user.IMAGE %}
+                <img src="{{ url_for('static', filename=user.IMAGE[7:]) }}" alt="Profile Picture" class="profile-img mb-3">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" alt="Profile Picture" class="profile-img mb-3">
+            {% endif %}
+            <h4>{{ user.MAIL if user else '' }}</h4>
+            <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#updateProfileModal">Update Profile</button>
+                <button id="openAddModal" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus me-2"></i>Add Publication
+                </button>
             </div>
-            
-            <form id="addPublicationForm" method="POST" action="{{ url_for('publications.create_publication') }}" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="id_researcher" class="form-label">Researcher</label>
-                    <select class="form-control" id="id_researcher" name="id_researcher" required>
-                        {% for researcher in researchers %}
-                        {%if researcher.id == user_id.id %}
-                            <option value="{{ researcher.id }}">{{ researcher.FULL_NAME }}</option>
-                        {%endif%}
-                        {% endfor %}
-
-                <div class="form-group">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="link" class="form-label">Link</label>
-                    <input type="url" class="form-control" id="link" name="link">
-                </div>
-                
-                <div class="form-group">
-                    <label for="image" class="form-label">Publication Image</label>
-                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
-                    <small class="text-muted">Recommended size: 800x450px (JPG, PNG, SVG)</small>
-                </div>
-                
-                <div class="d-flex justify-content-end mt-4">
-                    <button type="button" id="cancelAddModal" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
-                        <span id="addButtonText">Create Publication</span>
-                        <div class="spinner" id="addSpinner" style="display: none;"></div>
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <!-- Update Publication Modal -->
-    <div id="updateModal" class="modal">
-        <div class="modal-content">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="mb-0">Update Publication</h2>
-                <button id="closeUpdateModal" class="btn-close"></button>
-            </div>
-            
-            <form id="updatePublicationForm" method="PUT" enctype="multipart/form-data">
-                <input type="hidden" id="updatePublicationId" name="publication_id">
-                
-                <div class="form-group">
-                    <label for="updateTitle" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="updateTitle" name="title" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="updateResearcher" class="form-label">Researcher</label>
-                    <select class="form-control" id="updateResearcher" name="id_researcher" required>
-                        {% for researcher in researchers %}
-                        {%if researcher.id == user_id.id %}
-                            <option value="{{ researcher.id }}">{{ researcher.FULL_NAME }}</option>
-                        {%endif%}
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="updateDescription" class="form-label">Description</label>
-                    <textarea class="form-control" id="updateDescription" name="description" rows="4" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="updateLink" class="form-label">Link</label>
-                    <input type="url" class="form-control" id="updateLink" name="link">
-                </div>
-                
-                <div class="form-group">
-                    <label for="updateDate" class="form-label">Publication Date</label>
-                    <input type="text" class="form-control datepicker" id="updateDate" name="date" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="updateImage" class="form-label">Update Image</label>
-                    <input type="file" class="form-control" id="updateImage" name="image" accept="image/*">
-                    <div class="mt-2" id="currentImageContainer">
-                        <small>Current Image:</small>
-                        <img id="currentImagePreview" src="" class="img-thumbnail mt-1" style="max-height: 80px;">
-                    </div>
-                </div>
-                
-                <div class="d-flex justify-content-end mt-4">
-                    <button type="button" id="cancelUpdateModal" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn btn-success">
-                        <span id="updateButtonText">Update Publication</span>
-                        <div class="spinner" id="updateSpinner" style="display: none;"></div>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Publications Grid -->
+    <!-- Publications Section -->
+    <h2 class="mb-3">Your Publications</h2>
     {% if publications %}
-    <div id="publicationsRow" class="row mb-1">
+    <div id="publicationsRow" class="row mb-2">
         {% for publication in publications %}
         {% set researcher = researchers|selectattr('id', 'equalto', publication.ID_RESEARCHER)|first %}
-        <div class="col-md-4 mb-4 publication-card" 
+        <div class="col-md-3 mb-3 publication-card" 
              data-publication-id="{{ publication.id }}"
              data-title="{{ publication.TITLE|lower }}"
              data-researcher="{{ publication.ID_RESEARCHER }}"
@@ -196,19 +169,190 @@
         <i class="fas fa-info-circle me-2"></i>No publications found. Create your first publication using the button above.
     </div>
     {% endif %}
+
+    <!-- Update Profile Modal -->
+    <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateProfileModalLabel">Update Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateProfileForm" method="POST" action="{{ url_for('user.update_profile') }}" enctype="multipart/form-data">
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.MAIL if user else '' }}">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                            <small class="text-muted">Minimum 8 characters</small>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="image" class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                            <small class="text-muted">Recommended size: 100x100px (JPG, PNG, SVG)</small>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">
+                                <span id="updateProfileButtonText">Update Profile</span>
+                                <div class="spinner" id="updateProfileSpinner" style="display: none;"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Publication Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Add New Publication</h2>
+                <button id="closeAddModal" class="btn-close"></button>
+            </div>
+            
+            <form id="addPublicationForm" method="POST" action="{{ url_for('publications.create_publication') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_researcher" class="form-label">Researcher</label>
+                    <select class="form-control" id="id_researcher" name="id_researcher" required>
+                        <option value="">Select Researcher</option>
+                        {% for researcher in researchers %}
+                            <option value="{{ researcher.id }}">{{ researcher.FULL_NAME }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="link" class="form-label">Link</label>
+                    <input type="url" class="form-control" id="link" name="link">
+                </div>
+                
+                <div class="form-group">
+                    <label for="date" class="form-label">Publication Date</label>
+                    <input type="text" class="form-control datepicker" id="date" name="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image" class="form-label">Publication Image</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    <small class="text-muted">Recommended size: 800x450px (JPG, PNG, SVG)</small>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="button" id="cancelAddModal" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="addButtonText">Create Publication</span>
+                        <div class="spinner" id="addSpinner" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Publication Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Update Publication</h2>
+                <button id="closeUpdateModal" class="btn-close"></button>
+            </div>
+            
+            <form id="updatePublicationForm" method="PUT" enctype="multipart/form-data">
+                <input type="hidden" id="updatePublicationId" name="publication_id">
+                
+                <div class="form-group">
+                    <label for="updateTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="updateTitle" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateResearcher" class="form-label">Researcher</label>
+                    <select class="form-control" id="updateResearcher" name="id_researcher" required>
+                        <option value="">Select Researcher</option>
+                        {% for researcher in researchers %}
+                            <option value="{{ researcher.id }}">{{ researcher.FULL_NAME }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateDescription" class="form-label">Description</label>
+                    <textarea class="form-control" id="updateDescription" name="description" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateLink" class="form-label">Link</label>
+                    <input type="url" class="form-control" id="updateLink" name="link">
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateDate" class="form-label">Publication Date</label>
+                    <input type="text" class="form-control datepicker" id="updateDate" name="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="updateImage" class="form-label">Update Image</label>
+                    <input type="file" class="form-control" id="updateImage" name="image" accept="image/*">
+                    <div class="mt-2" id="currentImageContainer">
+                        <small>Current Image:</small>
+                        <img id="currentImagePreview" src="" class="img-thumbnail mt-1" style="max-height: 80px;">
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="button" id="cancelUpdateModal" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <span id="updateButtonText">Update Publication</span>
+                        <div class="spinner" id="updateSpinner" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-<!-- JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    // Delete publication button handlers
-    function delete_publication(id) {
-        const publicationId = id;
-        console.log('Publication ID:', publicationId);
-        
-        if (confirm('Are you sure you want to delete this publication? This action cannot be undone.')) {
-            fetch(`/api/publication/${publicationId}`, { 
-                method: 'DELETE' 
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date pickers
+        flatpickr('.datepicker', {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            maxDate: "today"
+        });
+
+        // Profile Form Submission
+        const updateProfileForm = document.getElementById('updateProfileForm');
+        const updateProfileButtonText = document.getElementById('updateProfileButtonText');
+        const updateProfileSpinner = document.getElementById('updateProfileSpinner');
+
+        updateProfileForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            updateProfileButtonText.textContent = 'Updating...';
+            updateProfileSpinner.style.display = 'inline-block';
+            
+            fetch("{{ url_for('user.update_profile') }}", {
+                method: 'PUT',
+                body: formData
             })
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -218,37 +362,34 @@
                 if (data.success) {
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Failed to delete publication');
+                    alert(data.error || 'Failed to update profile. Please check the form data.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while deleting the publication');
+                alert('An error occurred while updating the profile');
+            })
+            .finally(() => {
+                updateProfileButtonText.textContent = 'Update Profile';
+                updateProfileSpinner.style.display = 'none';
+                bootstrap.Modal.getInstance(document.getElementById('updateProfileModal')).hide();
             });
-        }
-    }
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize date pickers for update form only
-        flatpickr('.datepicker', {
-            dateFormat: "Y-m-d",
-            allowInput: true,
-            maxDate: "today"
         });
 
-        // Modal elements
+        // Publication Management
         const addModal = document.getElementById('addModal');
+        const updateModal = document.getElementById('updateModal');
         const openAddModal = document.getElementById('openAddModal');
         const closeAddModal = document.getElementById('closeAddModal');
         const cancelAddModal = document.getElementById('cancelAddModal');
+        const closeUpdateModal = document.getElementById('closeUpdateModal');
         const cancelUpdateModal = document.getElementById('cancelUpdateModal');
         const addForm = document.getElementById('addPublicationForm');
-        const addSpinner = document.getElementById('addSpinner');
-
-        const updateModal = document.getElementById('updateModal');
-        const closeUpdateModal = document.getElementById('closeUpdateModal');
         const updateForm = document.getElementById('updatePublicationForm');
+        const addSpinner = document.getElementById('addSpinner');
+        const addButtonText = document.getElementById('addButtonText');
         const updateSpinner = document.getElementById('updateSpinner');
+        const updateButtonText = document.getElementById('updateButtonText');
 
         // Modal toggle functions
         function openModal(modal) {
@@ -266,7 +407,7 @@
         closeAddModal.addEventListener('click', () => closeModal(addModal));
         closeUpdateModal.addEventListener('click', () => closeModal(updateModal));
         cancelAddModal.addEventListener('click', () => closeModal(addModal));
-        cancelUpdateModal.addEventListener('click', () => closeModal(updateModal)); 
+        cancelUpdateModal.addEventListener('click', () => closeModal(updateModal));
 
         // Close modals when clicking outside
         window.addEventListener('click', (e) => {
@@ -287,7 +428,6 @@
                 document.getElementById('updateLink').value = this.getAttribute('data-link');
                 document.getElementById('updateDate').value = this.getAttribute('data-date');
                 
-                // Show current image if exists
                 const currentImagePreview = document.getElementById('currentImagePreview');
                 const currentImageContainer = document.getElementById('currentImageContainer');
                 
@@ -302,11 +442,10 @@
             });
         });
 
-        // Form submission handlers
+        // Add Publication Form Submission
         addForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            const addButtonText = document.getElementById('addButtonText');
             
             addButtonText.textContent = 'Creating...';
             addSpinner.style.display = 'inline-block';
@@ -322,6 +461,7 @@
             .then(data => {
                 if (data.success) {
                     closeModal(addModal);
+                    alert('Publication created successfully!');
                     window.location.reload();
                 } else {
                     alert(data.error || 'Failed to create publication. Please check the form data.');
@@ -337,11 +477,11 @@
             });
         });
 
+        // Update Publication Form Submission
         updateForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             const publicationId = document.getElementById('updatePublicationId').value;
-            const updateButtonText = document.getElementById('updateButtonText');
             
             updateButtonText.textContent = 'Updating...';
             updateSpinner.style.display = 'inline-block';
@@ -357,6 +497,7 @@
             .then(data => {
                 if (data.success) {
                     closeModal(updateModal);
+                    alert('Publication updated successfully!');
                     window.location.reload();
                 } else {
                     alert(data.error || 'Failed to update publication. Please check the form data.');
@@ -371,6 +512,30 @@
                 updateSpinner.style.display = 'none';
             });
         });
+
+        // Delete Publication
+        window.delete_publication = function(id) {
+            if (confirm('Are you sure you want to delete this publication? This action cannot be undone.')) {
+                fetch(`/api/publication/${id}`, { 
+                    method: 'DELETE' 
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert(data.error || 'Failed to delete publication');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the publication');
+                });
+            }
+        };
     });
 </script>
 {% endblock %}

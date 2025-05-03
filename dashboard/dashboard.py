@@ -50,8 +50,8 @@ def projects():
     else:
         # Fetch projects associated with the current researcher
         project = db.select_filter("PROJECT", {"ID_MANAGER": current_user_id })
-        researcher = db.select_filter("RESEARCHER",{"id" : current_user_id })
-        return render_template('profile.html', title='Projects', projects=project, researchers=researcher , user_id=current_user_id)
+        user = db.select_filter("RESEARCHER",{"id" : current_user_id })
+        return render_template('profile.html', title='Profile', projects=project, user=user , user_id=current_user_id)
 
 
 
@@ -94,7 +94,7 @@ def events():
         # Fetch publications associated with the current researcher
         events = db.select_filter("EVENT",{"ID_ORGANISOR": current_user_id})
         researchers = db.select_filter( "RESEARCHER" , {"id": current_user_id})
-        return render_template('events.user.html', title='Publications', events=events , researchers=researchers, user_id=current_user_id)
+        return render_template('events.user.html', title='Events', events=events , user=researchers, user_id=current_user_id)
     
 
 

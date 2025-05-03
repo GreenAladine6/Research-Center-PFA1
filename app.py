@@ -7,6 +7,8 @@ from api.events import events_bp
 from api.auth import auth_bp
 from api.researchers import researchers_bp
 from api.publications import publications_bp
+from api.publications_routes import publication
+from api.events_routes import event
 from fr.fr import fr_bp
 from api.user import user_bp
 from utils.config import Config
@@ -48,8 +50,10 @@ app.register_blueprint(projects_bp, url_prefix='/api/project')
 app.register_blueprint(events_bp, url_prefix='/api/events')
 app.register_blueprint(fr_bp, url_prefix='/')
 app.register_blueprint(researchers_bp, url_prefix='/api/researcher')
-app.register_blueprint(publications_bp, url_prefix='/api/publication')
+app.register_blueprint(publications_bp, url_prefix='/api/publications')
 app.register_blueprint(user_bp, url_prefix='/api/user')
+app.register_blueprint(publication,url_prefix='/api/publications_routes')
+app.register_blueprint(event,url_prefix='/api/events_routes')
 from flask import send_from_directory
 
 

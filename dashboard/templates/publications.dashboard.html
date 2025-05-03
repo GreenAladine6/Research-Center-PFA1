@@ -309,7 +309,7 @@
             addButtonText.textContent = 'Creating...';
             addSpinner.style.display = 'inline-block';
             
-            fetch("{{ url_for('publications.create_publication') }}", {
+            fetch("{{ url_for('publication.create_publication') }}", {
                 method: 'POST',
                 body: formData
             })
