@@ -23,6 +23,7 @@ class JSONDatabase:
             }
             self._save_data()
 
+
     def _save_data(self):
         """Save database to JSON file."""
         with open(self.filename, "w", encoding="utf-8") as file:
@@ -32,12 +33,18 @@ class JSONDatabase:
         """Retrieve all records from a table."""
         return self.data.get(table, [])
     
-    def select_query_filter(self, table: str, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def select_filter(self, table: str, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Retrieve records from a table with optional filters."""
         results = []
-        for item in self.data.get(table, []):
-            if all(key in item and item[key] == value for key, value in filters.items()):
-                results.append(item)
+        #print(filters)
+        items=self.data.get(table, [])
+        for item in items:
+            for key,value in filters.items():
+                if key in item : 
+                    if item[key] == value:
+                       # print(item) 
+                        results.append(item)
+                        
         return results
 
     def get_item(self, table: str, id: int) -> Optional[Dict[str, Any]]:
@@ -117,7 +124,7 @@ class Database:
                 raise ValueError("Query required for SQLite select")
         else:
             if conditions:
-                return self.conn.select_query_filter(table, conditions)
+                return self.conn.select_filter(table, conditions)
             return self.conn.select_query(table)
 
     def insert_query(self, query: str = None, table: str = None, record: Dict[str, Any] = None) -> int:

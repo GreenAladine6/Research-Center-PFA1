@@ -47,16 +47,15 @@ def populate_large_data(db: Database):
 
     # New helper function for password with hashing
     def generate_hashed_password(password: str = None) -> str:
-        """Generate a hashed password using bcrypt."""
+        """Generate a hashed password using bcrypt with test defaults."""
+        # Default to test password if not provided
         if password is None:
-            # Generate a random password if none provided
-            chars = string.ascii_letters + string.digits + string.punctuation
-            password = ''.join(random.choices(chars, k=12))
+            password = "researcher123"
         
-        # Hash the password with a randomly generated salt
+        # Generate secure hash
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-        return hashed_password.decode('utf-8')  # Return as string for storage
+        return hashed_password.decode('utf-8')
 
     # 1. Add Grades (20 grades) - Unchanged
     grades = [

@@ -46,7 +46,7 @@ def projects():
         projects = db.select_query("PROJECT")
     else:
         # Fetch projects associated with the current researcher
-        projects = db.select_query("PROJECT", where={"researcher_id": current_user_id})
+        projects = db.select_filter("PROJECT", {"researcher_id": current_user_id})
     
     researchers = db.select_query("RESEARCHER")
     return render_template('projects.dashboard.html', title='Projects', projects=projects, researchers=researchers)
@@ -63,7 +63,7 @@ def publications():
         publications = db.select_query("PUBLICATION")
     else:
         # Fetch publications associated with the current researcher
-        publications = db.select_query_filter("PUBLICATION", where={"researcher_id": current_user_id})
+        publications = db.select_filter("PUBLICATION",{"researcher_id": current_user_id})
     
     return render_template('publications.dashboard.html', title='Publications', publications=publications)
 
