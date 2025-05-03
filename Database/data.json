@@ -9812,6 +9812,15 @@
             "BIO": "James Taylor is a researcher specializing in genomics with over 15 years of experience.",
             "PASSWORD": "$2b$12$tb/0UIIMcBCbDgwtQYdtu.7z87NhPQP4BMGsbfGEj4jKSscWNL2R.",
             "id": 501
+        },
+        {
+            "FULL_NAME": "mehdi Green",
+            "BIO": "green softaware and mobile services technical enginner",
+            "GRADE": null,
+            "EMAIL":"mehdigreen@gmail.com",
+            "PASSWORD":"$2b$12$6h6lUa3W7y9Q5dJq1vZs0Oe9Q3X1x8r0bWz1VYbG2cR3dS4tN5uY6",
+            "IMAGE": "images/uploads/staff/e04091be-b2ce-416a-b9dc-c91987761fdd_Screenshot_2025-03-19_175504.png",
+            "id": 502
         }
     ],
     "WORK": [

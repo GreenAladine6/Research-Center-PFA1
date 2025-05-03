@@ -1,83 +1,71 @@
 from datetime import timedelta
 import os
-from dotenv import load_dotenv
-from flask import Blueprint, request, jsonify, make_response, current_app
-from flask_jwt_extended import (
-    create_access_token,
-    set_access_cookies,
-    unset_jwt_cookies,
-    JWTManager
-)
-from werkzeug.security import check_password_hash
+import bcrypt
+from flask import Blueprint, request, jsonify, make_response
+from flask_jwt_extended import create_access_token, set_access_cookies
 from Database.db import JSONDatabase
 
-# Load environment variables
-load_dotenv()
-
-# Create Blueprint for authentication
 auth_bp = Blueprint('auth', __name__)
 
-# Initialize JWT
-jwt = JWTManager()
+# Environment variables
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')  # Stored in plaintext
+db = JSONDatabase()
 
-# Get credentials from environment variables
-ADMIN_USERNAME = os.getenv('ADMIN_USERNAME').strip()
-ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD').strip()
+def ensure_string(value, default=''):
+    """Ensure the value is a string, casting if necessary"""
+    try:
+        return str(value) if value is not None else default
+    except:
+        return default
 
 @auth_bp.post('/login')
 def login():
+    data = request.json
+    if not data:
+        return jsonify({'message': 'Invalid request'}), 400
+
+    # Get and validate credentials
+    username = ensure_string(data.get('username'))
+    password = ensure_string(data.get('password'))
+    
+    if not username or not password:
+        return jsonify({'message': 'Username and password are required'}), 400
+
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({'message': 'Invalid request'}), 400
+        # Admin login (plaintext comparison)
+        if username == ADMIN_USERNAME:
+            if password == ADMIN_PASSWORD:
+                token = create_access_token(
+                    identity=username,
+                    additional_claims={'role': 'admin'},
+                    expires_delta=timedelta(hours=3))
+                response = make_response(jsonify({'message': 'Admin login successful'}))
+                set_access_cookies(response, token)
+                return response
+            return jsonify({'message': 'Invalid admin credentials'}), 401
 
-        username = data.get('username', '').strip()
-        password = data.get('password', '')
+        # Researcher login (hashed passwords)
+        researchers = db.select_query("RESEARCHER")
+        for researcher in researchers:
+            # Cast all fields to strings
+            researcher_email = ensure_string(researcher.get('EMAIL', '')).lower().strip()
+            researcher_password = ensure_string(researcher.get('PASSWORD', ''))
+            researcher_id = ensure_string(researcher.get('id', ''))
 
-        # Admin authentication
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            token = create_access_token(
-                identity={
-                    'username': username,
-                    'role': 'admin',
-                    'name': 'Administrator'
-                }
-            )
-            response = make_response(jsonify({
-                'message': 'Admin login successful',
-                'redirect': '/dashboard/projects'
-            }))
-            set_access_cookies(response, token)
-            return response
+            if researcher_email == username.lower().strip():
+                # Verify hashed password
+                if bcrypt.checkpw(password.encode('utf-8'), researcher_password.encode('utf-8')):
+                    token = create_access_token(
+                        identity=researcher_id,
+                        additional_claims={'role': 'user'},
+                        expires_delta=timedelta(hours=3)
+                    )
+                    response = make_response(jsonify({'message': 'Researcher login successful'}))
+                    set_access_cookies(response, token)
+                    return response
 
-        # User authentication
-        db = JSONDatabase()
-        user = db.find_researcher_by_email(username)
-        
-        if user and check_password_hash(user.get('PASSWORD', ''), password):
-            token = create_access_token(
-                identity={
-                    'username': user['EMAIL'],
-                    'role': 'user',
-                    'name': user['FULL_NAME'],
-                    'user_id': user['id']
-                }
-            )
-            response = make_response(jsonify({
-                'message': 'User login successful',
-                'redirect': '/dashboard/user'
-            }))
-            set_access_cookies(response, token)
-            return response
+        return jsonify({'message': 'Invalid credentials'}), 401
 
-        return jsonify({'message': 'Invalid username or password'}), 401
-
-    except Exception as e:
-        current_app.logger.error(f"Login error: {str(e)}")
-        return jsonify({'message': 'Internal server error'}), 500
-
-@auth_bp.post('/logout')
-def logout():
-    response = make_response(jsonify({'message': 'Logout successful'}))
-    unset_jwt_cookies(response)
-    return response
+    except (bcrypt.exceptions.InvalidHash, ValueError) as e:
+        return jsonify({'message': 'Authentication error'}), 500
