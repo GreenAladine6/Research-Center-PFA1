@@ -193,10 +193,11 @@
             <div class="card h-100">
                 <!-- Manager Profile -->
                 <div class="card-header d-flex align-items-center">
-                    <img src="{{ url_for('static', filename='images/uploads/staff/user.IMAGE') if user and user.IMAGE else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
-                         alt="{{ user.FULL_NAME if user else 'Unknown' }}" class="rounded-circle me-3">
+                    <img src="{{ url_for('static', filename=user.IMAGE) if user and user.IMAGE else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
+                    alt="{{ user.FULL_NAME if user else 'Unknown' }}" class="rounded-circle me-3" >
                     <div>
                         <h5 class="mb-0">{{ user.FULL_NAME if user else 'Unknown Manager' }}</h5>
+                        
                         <small class="text-muted">{{ grade.NAME_GRADE if user and user.ID_GRADE else 'Manager' }}</small>
                     </div>
                 </div>
@@ -211,6 +212,7 @@
                         {% endif %}
                     </small>
                     <h5 class="card-title">{{ event.NAME_EVENT }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{event.TYPE_EV}}</h6>    
                     <p class="card-text">{{ event.DESCRIPTION|default('No description available')|truncate(150) }}</p>
                     
                     {% if event.IMAGE %}

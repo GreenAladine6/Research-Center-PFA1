@@ -5,66 +5,8 @@
     <link href="{{ url_for('dashboard.static', filename='css/style1.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/publications.css') }}">
-    <style>
-        .profile-img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid #dee2e6;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            overflow: auto;
-        }
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 5px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .btn-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        .btn-cancel {
-            background-color: #6c757d;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-        .spinner {
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #3498db;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-left: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/publication.css') }}">
+    
 {% endblock %}
 
 {% block content %}
@@ -74,7 +16,10 @@
     
 
     <!-- Publications Section -->
-    <h2 class="mb-3">Your Publications</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Your Publications</h2>
+        <button id="openAddModal" class="btn btn-primary">Add Publication</button>
+    </div>
     {% if publications %}
     <div id="publicationsRow" class="row mb-2">
         {% for publication in publications %}
@@ -93,7 +38,6 @@
                          alt="{{ user.FULL_NAME if user else 'Unknown' }}" class="rounded-circle me-3" width="50" height="50">
                     <div>
                         <h6 class="mb-0">{{ user.FULL_NAME if user else 'Unknown User' }}</h6>
-                        {% for grade in grades%}
                         <small class="text-muted">{{ grade.NAME_GRADE if user and user.ID_GRADE==grade.id else 'User' }}</small>
                     </div>
                 </div>
@@ -154,22 +98,21 @@
             <form id="addPublicationForm" method="POST" action="{{ url_for('publications.create_publication') }}" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" required>
+                    <input type="text" class="form-control" id="title" name="title" >
                 </div>
                 
                 <div class="form-group">
                     <label for="id_user" class="form-label">User</label>
-                    <select class="form-control" id="id_user" name="id_user" required>
+                    <select class="form-control" id="id_user" name="id_user" >
                         <option value="">Select User</option>
-                        {% for u in users %}
-                            <option value="{{ u.id }}">{{ u.FULL_NAME }}</option>
-                        {% endfor %}
+                        <option value="{{ user.id }}">{{ user.FULL_NAME }}</option>
+              
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                    <textarea class="form-control" id="description" name="description" rows="4" ></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -179,7 +122,7 @@
                 
                 <div class="form-group">
                     <label for="date" class="form-label">Publication Date</label>
-                    <input type="text" class="form-control datepicker" id="date" name="date" required>
+                    <input type="text" class="form-control datepicker" id="date" name="date" >
                 </div>
                 
                 <div class="form-group">
@@ -212,22 +155,22 @@
                 
                 <div class="form-group">
                     <label for="updateTitle" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="updateTitle" name="title" required>
+                    <input type="text" class="form-control" id="updateTitle" name="title" >
                 </div>
                 
                 <div class="form-group">
                     <label for="updateUser" class="form-label">User</label>
-                    <select class="form-control" id="updateUser" name="id_user" required>
+                    <select class="form-control" id="updateUser" name="id_user" >
                         <option value="">Select User</option>
-                        {% for u in users %}
-                            <option value="{{ u.id }}">{{ u.FULL_NAME }}</option>
-                        {% endfor %}
+                        
+                            <option value="{{ user.id }}">{{ user.FULL_NAME }}</option>
+                        
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="updateDescription" class="form-label">Description</label>
-                    <textarea class="form-control" id="updateDescription" name="description" rows="4" required></textarea>
+                    <textarea class="form-control" id="updateDescription" name="description" rows="4" ></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -237,7 +180,7 @@
                 
                 <div class="form-group">
                     <label for="updateDate" class="form-label">Publication Date</label>
-                    <input type="text" class="form-control datepicker" id="updateDate" name="date" required>
+                    <input type="text" class="form-control datepicker" id="updateDate" name="date" >
                 </div>
                 
                 <div class="form-group">
@@ -411,7 +354,7 @@
                 updateButtonText.textContent = 'Updating...';
                 updateSpinner.style.display = 'inline-block';
                 
-                fetch(`/api/publication/${publicationId}`, {
+                fetch(`/api/publications/${publicationId}`, {
                     method: 'PUT',
                     body: formData
                 })
@@ -444,9 +387,9 @@
         // Delete Publication
         window.delete_publication = function(id) {
             if (confirm('Are you sure you want to delete this publication? This action cannot be undone.')) {
-                fetch(`/api/publication/${id}`, { 
-                    method: 'DELETE' 
-                })
+            fetch(`/api/publications/${id}`, { 
+                method: 'DELETE' 
+            })
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();

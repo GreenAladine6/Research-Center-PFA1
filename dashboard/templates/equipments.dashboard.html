@@ -40,7 +40,7 @@
                     <select class="form-control" id="laboratoire_id" name="laboratoire_id" required>
                         <option value="">Select Laboratory</option>
                         {% for lab in laboratories %}
-                            <option value="{{ lab.id }}">{{ lab.NAME_LABORATOIRE }}</option>
+                            <option value="{{ lab.id }}">{{ lab.NAME_LAB }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -82,7 +82,7 @@
                     <select class="form-control" id="updateLaboratoireId" name="laboratoire_id">
                         <option value="">Select Laboratory</option>
                         {% for lab in laboratories %}
-                            <option value="{{ lab.id }}">{{ lab.NAME_LABORATOIRE }}</option>
+                            <option value="{{ lab.id }}">{{ lab.NAME_LAB}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -116,7 +116,7 @@
                     Laboratory: <span>
                         {% for lab in laboratories %}
                             {% if lab.id == eq.LABORATOIRE_ID %}
-                                {{ lab.NAME_LABORATOIRE }}
+                                {{ lab.NAME_LAB }}
                             {% endif %}
                         {% endfor %}
                     </span>

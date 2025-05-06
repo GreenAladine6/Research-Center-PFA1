@@ -248,7 +248,8 @@
             "STATE": "Canceled",
             "ID_MANAGER": 12,
             "DESCRIPTION": "Project overview for collaborative efforts in onjzBKzmlD field.",
-            "id": 24
+            "id": 24,
+            "IMAGE": "images/uploads/projects/b79aa79f-367f-4fc1-b3ff-643c8e365ea5_download_3.jpeg"
         },
         {
             "NAME_PROJECT": "Genome Sequencing Project 25",
@@ -1846,7 +1847,8 @@
             "DATE_END": "2023-04-10",
             "ID_ORGANISOR": 12,
             "DESCRIPTION": "Event overview for data-driven insights in XfkPXyZJiN field.",
-            "id": 75
+            "id": 75,
+            "IMAGE": "images/uploads/events/a8ebed28-1bb7-43a1-87eb-e01faca5ae22_download.jpeg"
         },
         {
             "NAME_EVENT": "Bioinformatics Summit 76",
@@ -6393,7 +6395,8 @@
             "LINK": "https://journal.org/publication/68",
             "ID_RESEARCHER": 12,
             "DESCRIPTION": "Publication summary for technological innovations in BNQXhdFknd field.",
-            "id": 68
+            "id": 68,
+            "IMAGE": "images/uploads/publications/e51a4f1a-15f5-4130-afe2-26784dcaba5e_images_1.jpeg"
         },
         {
             "TITLE": "Innovations in Cancer Research 69",

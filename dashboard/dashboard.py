@@ -104,8 +104,9 @@ def events():
         print(user)
         grade=db.select_filter("GRADE",{"id" : user["ID_GRADE"] })
         grade = grade[0] if grade else []
+        ev_types=db.select_query("TYPE_EV")
         print(grade)
-        return render_template('events.user.html', title='Events', events=events,grade=grade , user=user, user_id=current_user_id)
+        return render_template('events.user.html', title='Events', events=events,grade=grade , user=user, user_id=current_user_id,ev_types=ev_types)
     
 
 
