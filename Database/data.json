@@ -187,7 +187,8 @@
             "STATE": "Not Started",
             "ID_MANAGER": 14,
             "DESCRIPTION": "Project overview for experimental methodologies in fXZcLbWtnL field.",
-            "id": 18
+            "id": 18,
+            "IMAGE": "images/uploads/projects/a721f989-7a17-4c1c-a323-f59b6b52a599_Screenshot_2025-01-22_215231.png"
         },
         {
             "NAME_PROJECT": "Nanotech Development Project 19",
@@ -5854,7 +5855,7 @@
             "TITLE": "Advances in Neural Network 1",
             "DATE": "2025-06-04",
             "LINK": "https://journal.org/publication/1",
-            "ID_RESEARCHER": 17,
+            "ID_RESEARCHER": 9,
             "DESCRIPTION": "Publication summary for experimental methodologies in EmymQXNPXj field.",
             "id": 1
         },
@@ -5862,7 +5863,7 @@
             "TITLE": "Breakthroughs in Climate Impact 2",
             "DATE": "2020-06-25",
             "LINK": "https://journal.org/publication/2",
-            "ID_RESEARCHER": 80,
+            "ID_RESEARCHER": 1,
             "DESCRIPTION": "Publication summary for data-driven insights in vaRnjxgfli field.",
             "id": 2
         },
@@ -5870,7 +5871,7 @@
             "TITLE": "New Insights into Robotics Automation 3",
             "DATE": "2024-06-01",
             "LINK": "https://journal.org/publication/3",
-            "ID_RESEARCHER": 73,
+            "ID_RESEARCHER": 2,
             "DESCRIPTION": "Publication summary for scientific discoveries in qlmfDseMNI field.",
             "id": 3
         },
@@ -5878,7 +5879,7 @@
             "TITLE": "Exploring Cancer Research 4",
             "DATE": "2023-06-19",
             "LINK": "https://journal.org/publication/4",
-            "ID_RESEARCHER": 81,
+            "ID_RESEARCHER": 6,
             "DESCRIPTION": "Publication summary for research advancements in PaXcsVKGDn field.",
             "id": 4
         },
@@ -6174,7 +6175,7 @@
             "TITLE": "Advances in Quantum Algorithm 41",
             "DATE": "2024-08-31",
             "LINK": "https://journal.org/publication/41",
-            "ID_RESEARCHER": 85,
+            "ID_RESEARCHER": 100,
             "DESCRIPTION": "Publication summary for research advancements in ItOLCLwqAl field.",
             "id": 41
         },

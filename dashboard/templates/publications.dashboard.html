@@ -4,8 +4,7 @@
     <title>Dashboard | Publications</title>
     <link href="{{ url_for('dashboard.static', filename='css/style1.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/projects-style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/publications.css') }}">
+    <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/project-style.css') }}">
     <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/event-style.css') }}">
 {% endblock %}
 
@@ -140,11 +139,11 @@
              data-date="{{ publication.DATE if publication.DATE else '' }}"
              data-description="{{ publication.DESCRIPTION|default('No description available') }}"
              data-link="{{ publication.LINK|default('') }}"
-             data-image="{{ url_for('static', filename=publication.IMAGE[7:]) if publication.IMAGE else '' }}">
+             data-image="{{ url_for('static', filename=publication.IMAGE) if publication.IMAGE else '' }}">
             <div class="card h-100">
                 <!-- Researcher Profile -->
                 <div class="card-header d-flex align-items-center">
-                    <img src="{{ url_for('static', filename=researcher.IMAGE[7:]) if researcher and researcher.IMAGE else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
+                    <img src="{{ url_for('static', filename=researcher.IMAGE) if researcher and researcher.IMAGE else url_for('static', filename='images/uploads/staff/avatar-placeholder.png') }}" 
                          alt="{{ researcher.FULL_NAME if researcher else 'Unknown' }}" class="rounded-circle me-3" width="50" height="50">
                     <div>
                         <h6 class="mb-0">{{ researcher.FULL_NAME if researcher else 'Unknown Researcher' }}</h6>
@@ -165,7 +164,7 @@
                     <p class="card-text">{{ publication.DESCRIPTION|default('No description available')|truncate(150) }}</p>
                     
                     {% if publication.IMAGE %}
-                    <img src="{{ url_for('static', filename=publication.IMAGE[7:]) }}" 
+                    <img src="{{ url_for('static', filename=publication.IMAGE) }}" 
                          alt="{{ publication.TITLE }}" class="img-fluid mb-3">
                     {% endif %}
                     
@@ -177,7 +176,7 @@
                                 data-date="{{ publication.DATE if publication.DATE else '' }}"
                                 data-description="{{ publication.DESCRIPTION|default('No description available') }}"
                                 data-link="{{ publication.LINK|default('') }}"
-                                data-image="{{ url_for('static', filename=publication.IMAGE[7:]) if publication.IMAGE else '' }}">
+                                data-image="{{ url_for('static', filename=publication.IMAGE) if publication.IMAGE else '' }}">
                             <i class="fas fa-edit me-1"></i>Edit
                         </button>
                         <button class="btn-action btn-delete" onclick="delete_publication({{publication.id}})" data-publication-id="{{ publication.id }}">

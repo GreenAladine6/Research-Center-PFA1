@@ -1,15 +1,31 @@
 # Reaserch-center
+To be able to run ower the website you need to :
+  -Download the requirements shown in description below
 
-Chawarma ya hala is a web application built with Flask, providing a dashboard and API for managing designer-related services, portfolios, and team information.
+    . Install dependencies:
+    ```bash
+    pip install -r requirements.txt
 
-## Features
 
-- User authentication and login system
-- Dashboard for managing:
-  - Orders
-  - Menu
-- RESTful API for programmatic access
-- Responsive design with static assets
+  -Next you should run the command:
+  ``` bash
+   py app.py
+   
+   python app.py
+
+   ```
+
+
+  -For login Admin:
+    loginadmin@gmail.com
+    password: adminadmin
+
+  -For Researcher (User) login try :
+    william.davis481@science.net
+    password: researcher123
+
+  or try any researcher email from data.json using the same password researcher123
+
 
 ## Prerequisites
 
@@ -22,7 +38,7 @@ Chawarma ya hala is a web application built with Flask, providing a dashboard an
 1. Clone the repository:
 ```bash
 git clone [repository-url]
-cd Designers-Junior-Entreprise
+cd RESEARCH-CENTER-PFA1
 ```
 
 2. Create and activate a virtual environment:
@@ -31,9 +47,6 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
 ```
 
 4. Set up environment variables in `.env`:
